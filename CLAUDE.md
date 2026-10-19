@@ -29,7 +29,8 @@ y hacen una gymkhana física. Un PC por grupo (Windows), con SDR, antena y decod
 
 ## Estilo visual (copiar el de la plataforma GranaSAT)
 Referencia: https://sstv.groundcontrol.granasat.space/retos (oscuro) y /academia (base).
-- Estilo **oscuro "Explorador Enigma"**: fondo espacial (`recursos/imagenes/space_bg.jpg`), tarjetas oscuras
+- Estilo **oscuro "Explorador Enigma"**: fondo espacial (`recursos/imagenes/fondo_alma_eso_beletsky.jpg`: Vía Láctea sobre ALMA,
+  ESO/Y. Beletsky, CC BY 4.0, con su crédito en el pie de la web), tarjetas oscuras
   translúcidas, candado y la palabra "ENCRIPTADO" en los retos bloqueados, botones ámbar, expedientes con texto
   tipo terminal, ventanas "RX_MONITOR" con tres puntos de colores.
 - Colores: azul marino `#0f172a`, naranja `#d97706`, ámbar `#fbbf24`, texto claro `#f8fafc` / `#cbd5e1`,

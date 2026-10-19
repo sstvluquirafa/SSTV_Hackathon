@@ -36,10 +36,12 @@ body {
   font-size: 15px;
   line-height: 1.55;
   background-color: #050811;
-  background-image: linear-gradient(180deg, rgba(5, 8, 17, 0.55), rgba(5, 8, 17, 0.88)),
-                    url("../assets/img/space_bg.jpg");
+  /* Fondo: Vía Láctea sobre las antenas de ALMA (ESO/Y. Beletsky, CC BY 4.0). Velo más oscuro arriba,
+     donde va el texto, y más claro abajo para que asomen las antenas. */
+  background-image: linear-gradient(180deg, rgba(5, 8, 17, 0.62) 0%, rgba(5, 8, 17, 0.5) 55%, rgba(5, 8, 17, 0.35) 100%),
+                    url("../assets/img/fondo.jpg");
   background-size: cover;
-  background-position: center 30%;
+  background-position: center bottom;
   background-attachment: fixed;
 }
 img { max-width: 100%; }

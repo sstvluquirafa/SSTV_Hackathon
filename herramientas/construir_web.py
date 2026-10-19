@@ -30,6 +30,7 @@ from pathlib import Path
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.hashes import SHA256
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from PIL import Image
 
 RAIZ = Path(__file__).resolve().parent.parent
 WEB = RAIZ / "web"
@@ -100,8 +101,12 @@ def main():
     IMG.mkdir(parents=True, exist_ok=True)
 
     # 1) Imágenes de la interfaz
-    for nombre in ["logo.jpg", "space_bg.jpg"]:
-        shutil.copyfile(RAIZ / "recursos" / "imagenes" / nombre, IMG / nombre)
+    shutil.copyfile(RAIZ / "recursos" / "imagenes" / "logo.jpg", IMG / "logo.jpg")
+    # Fondo: "Milky Way over ALMA", ESO/Y. Beletsky, CC BY 4.0 (hay que citarlo: está en el pie de la web).
+    # El original pesa 6 MB; a 2560 px de ancho se ve nítido en pantallas grandes y pesa < 1 MB.
+    fondo = Image.open(RAIZ / "recursos" / "imagenes" / "fondo_alma_eso_beletsky.jpg").convert("RGB")
+    fondo = fondo.resize((2560, round(2560 * fondo.height / fondo.width)), Image.LANCZOS)
+    fondo.save(IMG / "fondo.jpg", quality=80, optimize=True, progressive=True)
 
     # 2) Pista del reto 1 (no va cifrada: decodificarla ES el reto). Se carga solo al entrar al reto.
     pista = RAIZ / "generado" / "reto1" / "pista_reto1_11k.wav"

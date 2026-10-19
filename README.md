@@ -16,7 +16,8 @@ Web_Hackathon/
 │   ├── imagenes/
 │   │   ├── mapa.png                 mapa del recinto (3380×1248), pendiente de añadir estaciones
 │   │   ├── logo.jpg                 logo GranaSAT
-│   │   ├── space_bg.jpg             fondo espacial
+│   │   ├── space_bg.jpg             fondo espacial antiguo (ya no se usa)
+│   │   ├── fondo_alma_eso_beletsky.jpg  fondo de la web: Vía Láctea sobre ALMA (ESO/Y. Beletsky, CC BY 4.0)
 │   │   └── Mapping_the_night.jpg    foto de alta resolución (uso por decidir)
 │   └── audios/
 │       └── pista_reto1_armstrong.wav   pista del reto 1 (SSTV PD120)

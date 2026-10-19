@@ -1,0 +1,9 @@
+fondo.jpg
+  "Milky Way over ALMA" — ESO/Y. Beletsky
+  https://www.eso.org/public/images/uhd_beletsky_alma_15/
+  Licencia: Creative Commons Atribución 4.0 (CC BY 4.0). El crédito aparece en el pie de la web.
+  Original a resolución completa: recursos/imagenes/fondo_alma_eso_beletsky.jpg
+  (redimensionado a 2560 px por herramientas/construir_web.py).
+
+logo.jpg
+  Logo de GranaSAT (Universidad de Granada).
