@@ -1,0 +1,97 @@
+# Hackathon SSTV · GranaSAT (Universidad de Granada)
+
+Actividad docente de Lucas González García y Rafael Carrillo Rondón.
+
+## Estructura de la carpeta
+
+Este proyecto (la web y sus herramientas) vive en `SSTV/Web_Hackathon/`. La parte de organización
+(notebooks, documentos y versiones antiguas) está aparte, en `SSTV/Organización/`.
+
+```
+Web_Hackathon/
+├── README.md            ← este archivo
+├── CLAUDE.md            ← instrucciones para Claude Code (contexto, reglas y estilo)
+├── .claude/skills/      ← skills del proyecto: audio-sstv, nuevo-reto, probar-web
+├── recursos/            ← materiales originales (no editar a mano)
+│   ├── imagenes/
+│   │   ├── mapa.png                 mapa del recinto (3380×1248), pendiente de añadir estaciones
+│   │   ├── logo.jpg                 logo GranaSAT
+│   │   ├── space_bg.jpg             fondo espacial
+│   │   └── Mapping_the_night.jpg    foto de alta resolución (uso por decidir)
+│   └── audios/
+│       └── pista_reto1_armstrong.wav   pista del reto 1 (SSTV PD120)
+├── herramientas/         ← scripts de Python (se pueden volver a ejecutar)
+│   ├── sstv_pd120.py               codificador y decodificador SSTV PD120, comentado
+│   ├── generar_fragmentos_mapa.py  corta mapa.png en 4 fragmentos y crea sus WAV
+│   └── reto2_generador.py          genera y verifica las cadenas del reto 2 (referencia para la web)
+├── generado/mapa/        ← salida del script (no editar: se regenera)
+│   ├── fragmento_N_nombre.png / .wav   los 4 fragmentos (PD120, 127 s, 2,8 MB)
+│   ├── comprobacion_mapa_decodificado.png  mapa reconstruido a partir de los audios
+│   └── solucion_organizadores.json     orden correcto de los fragmentos
+├── referencia/
+│   └── reto1_prototipo.html  ← prototipo del reto 1 (pista → nombre → puzle 3×3 → audio)
+└── web/                  ← la web local (por crear)
+```
+
+**Si cambias `mapa.png`** (por ejemplo, al añadir las estaciones), vuelve a ejecutar `python herramientas/generar_fragmentos_mapa.py`.
+
+## Decisiones tomadas
+
+- **Plataforma:** web local (carpeta + `index.html` con doble clic). Sin servidor, sin Voilà, sin internet.
+- **Equipos:** un PC por grupo, con SDR y antena.
+- **Pantalla principal "Desbloquea el mapa":** 4 tarjetas de reto en orden libre.
+- **Recompensa de cada reto:** un audio SSTV (modo PD120, 640×496) con un trozo del mapa.
+- **Decodificación:** con software externo en directo (Black Cat SSTV, MMSSTV, RX-SSTV) mediante cable de audio virtual.
+  Un decodificador propio en la web se deja para más adelante; si se hace, con el código visible (nada de caja negra).
+- **Montaje final:** zona en la web donde el grupo sube sus 4 imágenes decodificadas, las ordena hasta que el mapa cuadre y descarga el mapa unificado.
+- **Fragmentos del mapa:** 4 tiras verticales enviadas giradas 90° (el mapa es 2,7:1 y PD120 es casi cuadrado;
+  así se conserva un 35 % más de detalle). Cabecera con nombre de constelación (LYRA, ORIÓN, CYGNUS, ANDRÓMEDA)
+  que no revela el orden. Al montar el mapa hay que girar y ordenar las piezas.
+- **Retos:** el reto 1 existe (prototipo). Los retos 2–4 se definen más adelante.
+- **Jupyter:** solo para la clase guiada y para generar los WAV.
+- **Asignación de fragmentos:** Reto 1 → ORIÓN · Reto 2 → CYGNUS · Reto 3 → LYRA · Reto 4 → ANDRÓMEDA.
+- **Estilo:** el oscuro de "Explorador Enigma" (https://sstv.groundcontrol.granasat.space/retos): fondo espacial,
+  tarjetas oscuras con candado y "ENCRIPTADO", botones ámbar, expedientes con texto tipo terminal.
+- **Estética base:** como https://sstv.groundcontrol.granasat.space/academia
+  - Azul marino `#0f172a` (cabecera), naranja `#d97706` (acento), fondo claro `#f8fafc`, texto `#1e293b` / `#64748b`.
+  - Títulos en Merriweather (serif, 900), texto en Inter, detalles técnicos en JetBrains Mono.
+  - Tarjetas blancas redondeadas, paneles oscuros con rejilla y ventanas tipo "RX_MONITOR".
+  - Las fuentes e iconos deben ir incluidos en la carpeta (la web funciona sin internet).
+
+## Reto 2 · "Telemetría interceptada" (duración objetivo: ~15 min)
+
+**Mecánica:** el alumno recibe una cadena cifrada aleatoria y la descifra en un mini-CyberChef integrado en la web.
+
+1. **Vigenère** con la clave `APOLO`, que obtienen respondiendo a «¿Qué misión de la NASA llevó al ser humano a la Luna en 1969?».
+2. **Dos capas más**, en una combinación sorteada. Tras cada paso hay que volver a consultar la "Chuleta del Espía".
+3. El resultado es la frase `LA CLAVE ES MACROSCOPIO-69` (una frase legible, para saber cuándo se ha acertado con César).
+4. Introducen `MACROSCOPIO-69` en la caja fuerte de la web, que desbloquea el audio SSTV de su fragmento del mapa.
+
+**Combinaciones sorteadas** (orden en que el alumno las quita tras Vigenère). Están verificadas en `herramientas/reto2_generador.py`:
+
+| Combinación | El "clic" que tienen que hacer |
+|---|---|
+| Base64 → César | Sale texto con letras cambiadas: probar desplazamientos hasta leer español |
+| Hex → César | Igual, pero partiendo de hexadecimal |
+| Espejo → César | El `96-` al principio delata que está del revés |
+| Espejo → Base64 | El `=` aparece al **principio**: está dado la vuelta |
+| Base64 → Hex | Al quitar el Base64 aparece hexadecimal: otra capa más |
+| Hex → Espejo | Al quitar el Hex sale la frase al revés |
+| Base64 → Espejo | Igual, partiendo de Base64 |
+
+- **César con desplazamiento aleatorio** (de 1 a 25, sin el 13). La herramienta tiene un control para probar desplazamientos.
+- César siempre va en la capa interior, sobre texto legible, para que encaje con "parece español con letras cambiadas".
+- **Binario no se sortea:** solo tiene 0 y 1, Vigenère no lo cambia y la clave sobraría. Está en la herramienta y la chuleta como distractor.
+
+**Herramienta (mini-CyberChef, sin internet):** 6 operaciones (Vigenère, Hexadecimal, Base64, César, Binario y Espejo)
+encadenables como una receta, con la salida en directo. No indica si cada paso es correcto.
+- Vigenère igual que CyberChef: solo desplaza letras A-Z, **conserva mayúsculas y minúsculas** y la clave **solo avanza con letras**
+  (si no, el Base64 se rompe). Ignora caracteres no alfabéticos en la clave (así `APOLO 11` también funciona).
+- Si una operación falla (por ejemplo, Base64 inválido), muestra un aviso amable en lugar de romperse.
+
+**Chuleta del Espía:** misma tabla que la de referencia (Base64, Hex, César, Binario, Espejo). La fila "Magic" se sustituye por pistas.
+
+**Presión de juego:**
+- **Pistas con coste:** "¿Qué tipo de código es esto?" analiza el texto actual y dice qué parece. Cada pista resta puntos.
+- **Contraseña final:** 5 intentos; al agotarlos, bloqueo de 1 minuto.
+- Puntuación del reto visible al terminar (base menos pistas y fallos).

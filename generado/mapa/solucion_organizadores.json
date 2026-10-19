@@ -1,0 +1,40 @@
+{
+  "modo": "PD120",
+  "giro": "las piezas llegan giradas 90° antihorario; hay que girarlas 90° horario",
+  "orden_izquierda_a_derecha": [
+    "LYRA",
+    "ORIÓN",
+    "CYGNUS",
+    "ANDRÓMEDA"
+  ],
+  "fragmentos": [
+    {
+      "posicion": 1,
+      "nombre": "LYRA",
+      "png": "fragmento_1_lyra.png",
+      "wav": "fragmento_1_lyra.wav",
+      "duracion_s": 127.0
+    },
+    {
+      "posicion": 2,
+      "nombre": "ORIÓN",
+      "png": "fragmento_2_orion.png",
+      "wav": "fragmento_2_orion.wav",
+      "duracion_s": 127.0
+    },
+    {
+      "posicion": 3,
+      "nombre": "CYGNUS",
+      "png": "fragmento_3_cygnus.png",
+      "wav": "fragmento_3_cygnus.wav",
+      "duracion_s": 127.0
+    },
+    {
+      "posicion": 4,
+      "nombre": "ANDRÓMEDA",
+      "png": "fragmento_4_andromeda.png",
+      "wav": "fragmento_4_andromeda.wav",
+      "duracion_s": 127.0
+    }
+  ]
+}
