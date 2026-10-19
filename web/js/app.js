@@ -41,8 +41,24 @@
   App.puntosTotales = () => App.RETOS.filter((r) => Progreso.reto(r.id).completado).reduce((s, r) => s + App.puntosReto(r.id), 0);
   App.fragmentoConseguido = (frag) => App.RETOS.some((r) => r.fragmento === frag && Progreso.reto(r.id).completado);
 
+  // Marcador de puntos: cuando sube, cuenta hacia arriba con un destello
+  let puntosMostrados = null;
   App.actualizarCabecera = function () {
-    $("#chip-puntos").innerHTML = `${ICONO.estrella}<span>${App.puntosTotales()} PTS</span>`;
+    const chip = $("#chip-puntos"), total = App.puntosTotales();
+    if (puntosMostrados === null || total <= puntosMostrados || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      chip.innerHTML = `${ICONO.estrella}<span>${total} PTS</span>`;
+    } else {
+      const desde = puntosMostrados, t0 = performance.now();
+      chip.innerHTML = `${ICONO.estrella}<span>${desde} PTS</span>`;
+      chip.classList.remove("destello"); void chip.offsetWidth; chip.classList.add("destello");
+      const paso = (t) => {
+        const k = Math.min(1, (t - t0) / 1200), v = Math.round(desde + (total - desde) * (1 - (1 - k) ** 3));
+        $("span", chip).textContent = `${v} PTS`;
+        if (k < 1) requestAnimationFrame(paso);
+      };
+      requestAnimationFrame(paso);
+    }
+    puntosMostrados = total;
     const n = App.FRAGMENTOS.filter(App.fragmentoConseguido).length;
     $("#chip-fragmentos").textContent = `${n}/4 FRAGMENTOS`;
     $("#chip-fragmentos").classList.toggle("chip-verde", n === 4);
@@ -61,13 +77,18 @@
     const n = App.FRAGMENTOS.filter(App.fragmentoConseguido).length;
     const bitacora = Progreso.leer().bitacora;
     el.innerHTML = `
-      <div class="cabeza-vista">
+      <div class="portada">
         <div>
+          <p class="etiqueta-seccion">Estación terrena GranaSAT · Hackathon SSTV</p>
           <h1 class="titulo">Desbloquea el <em>Mapa</em></h1>
           <p class="subtitulo">Cada reto superado libera una transmisión SSTV con un fragmento del mapa del recinto.
             Recibid los cuatro, descodificadlos y montad el mapa para empezar la gymkhana. Podéis hacer los retos en el orden que queráis.</p>
+          <div class="botonera" style="margin-top:18px">
+            <a class="btn btn-ambar" href="#/${(App.RETOS.find((r) => !r.pronto && !Progreso.reto(r.id).completado) || { id: "montaje" }).id}">${ICONO.antena} ${n === 0 ? "Empezar la misión" : "Seguir la misión"}</a>
+            <a class="btn btn-borde" href="#/montaje">${ICONO.mapa} Montar el mapa</a>
+          </div>
         </div>
-        <a class="btn btn-borde" href="#/montaje">${ICONO.mapa} Montar el mapa</a>
+        <div class="portada-arte">${App.ANTENA}</div>
       </div>
 
       <section class="panel progreso" aria-label="Fragmentos del mapa">
@@ -97,7 +118,7 @@
           const est = estadoTarjeta(r);
           const pts = r.pronto ? r.base : App.puntosReto(r.id);
           return `<article class="panel tarjeta ${est.clase}">
-            <div class="tarjeta-sello">${est.icono}<span>${est.texto}</span></div>
+            <div class="tarjeta-sello">${App.portadaReto(r.id)}${est.icono}<span class="glitch" data-texto="${est.texto}">${est.texto}</span></div>
             <div class="tarjeta-cuerpo">
               <div class="insignias">
                 <span class="insignia insignia-frag">${ICONO.mapa.replace("<svg", '<svg width="12" height="12"')} ${r.fragmento}</span>
@@ -143,9 +164,21 @@
   // ---------- Navegación ----------
   App.VISTAS = { panel: vistaPanel };
 
+  // Al cambiar de sección, un barrido rápido tipo "cambiando de canal"
+  let primeraVista = true;
+  function barrido() {
+    if (primeraVista || matchMedia("(prefers-reduced-motion: reduce)").matches) { primeraVista = false; return; }
+    const b = document.createElement("div");
+    b.className = "barrido";
+    b.setAttribute("aria-hidden", "true");
+    b.addEventListener("animationend", () => b.remove());
+    document.body.appendChild(b);
+  }
+
   function navegar() {
     const ruta = (location.hash.replace(/^#\/?/, "") || "panel").split("?")[0];
     const vista = App.VISTAS[ruta] ? ruta : "panel";
+    barrido();
     liberarUrls();
     pararTemporizadores();
     const el = $("#vista");

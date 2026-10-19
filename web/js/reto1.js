@@ -52,7 +52,7 @@
         <section class="panel paso" id="r1-paso1" data-num="1">
           <div class="paso-cab"><h2>Recepción de la transmisión SSTV</h2></div>
           <div class="paso-cuerpo dos-col">
-            <div id="r1-pista"><span class="cargando">Cargando transmisión…</span></div>
+            <div id="r1-pista">${App.htmlCarga("Sintonizando la transmisión…")}</div>
             <ol class="lista-pasos">
               <li>Abrid el descodificador SSTV (Black Cat SSTV o YONIQ) con la entrada de audio <b>CABLE Output</b>.</li>
               <li>Comprobad que el sonido del PC sale por <b>CABLE Input (VB-Audio)</b>.</li>
@@ -208,7 +208,7 @@
     const paso = $("#r1-paso3"), zona = $("#r1-puzle");
     paso.classList.remove("bloqueado");
     App.lineaTiempo();
-    zona.innerHTML = `<span class="cargando">Descifrando la fotografía del archivo…</span>`;
+    zona.innerHTML = App.htmlCarga("Descifrando la fotografía del archivo (AES-256)…");
     try {
       const datos = await cargarDatos("reto1_foto");
       foto = urlDe(await Cripto.abrir(estado().llave, datos));
@@ -360,7 +360,7 @@
     paso.classList.remove("oculto");
     paso.classList.add("hecho");
     App.lineaTiempo();
-    caja.innerHTML = `<span class="cargando">Descifrando la transmisión del fragmento…</span>`;
+    caja.innerHTML = App.htmlCarga("Descifrando la transmisión del fragmento ORIÓN (AES-256)…");
     if (desplazar) paso.scrollIntoView({ behavior: "smooth", block: "start" });
     try {
       const datos = await cargarDatos("reto1_audio");

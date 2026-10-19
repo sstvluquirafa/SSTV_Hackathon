@@ -101,8 +101,10 @@
           </div>
         </section>
 
-        <section class="panel paso sin-nodo">
-          <div class="paso-cab"><span class="paso-num">${ICONO.espia.replace("<svg", '<svg width="15" height="15"')}</span><h2>Chuleta del Espía</h2></div>
+        <button class="chuleta-pestana" id="r2-chuleta-abrir" aria-controls="r2-chuleta" aria-expanded="false">${ICONO.espia}<span>Chuleta del Espía</span></button>
+        <aside class="chuleta-cajon" id="r2-chuleta" aria-label="Chuleta del Espía">
+          <div class="paso-cab"><span class="paso-num">${ICONO.espia.replace("<svg", '<svg width="15" height="15"')}</span><h2>Chuleta del Espía</h2>
+            <button class="mini estado" id="r2-chuleta-cerrar" title="Cerrar (Esc)" aria-label="Cerrar la chuleta">${ICONO.cerrar}</button></div>
           <div class="paso-cuerpo" style="padding-top:8px">
             <table class="chuleta">
               <thead><tr><th>Código</th><th>Cómo reconocerlo</th><th>Ejemplo: «Hola»</th></tr></thead>
@@ -115,8 +117,9 @@
                 <tr class="magia"><td>¿Atascados?</td><td colspan="2">Pulsad <b>«¿Qué tipo de código es esto?»</b> y analizaremos vuestra salida. Cuidado: cada pista bloquea el reto un rato (30 s, 60 s, 90 s…).</td></tr>
               </tbody>
             </table>
+            <p class="texto-3 pequeno" style="margin:14px 0 0">Truco: después de quitar cada capa, mirad la SALIDA y buscad aquí a qué se parece.</p>
           </div>
-        </section>
+        </aside>
 
         <section class="panel paso" id="r2-paso-caja" data-num="3">
           <div class="paso-cab"><h2>Caja fuerte</h2><span class="estado" id="r2-estado-caja"></span></div>
@@ -156,6 +159,21 @@
     $("#r2-analizar").addEventListener("click", analizar);
     $("#r2-rescate").addEventListener("click", rescate);
     $("#r2-form").addEventListener("submit", (ev) => { ev.preventDefault(); abrirCaja(); });
+    // Chuleta en un cajón lateral: se abre con la pestaña fija, se cierra con la X, Esc o clic fuera
+    const cajon = $("#r2-chuleta"), pestana = $("#r2-chuleta-abrir");
+    const chuleta = (abrir) => {
+      cajon.classList.toggle("abierto", abrir);
+      pestana.setAttribute("aria-expanded", String(abrir));
+      cajon.inert = !abrir;
+      if (abrir) $("#r2-chuleta-cerrar").focus();
+    };
+    cajon.inert = true;
+    pestana.addEventListener("click", () => chuleta(!cajon.classList.contains("abierto")));
+    $("#r2-chuleta-cerrar").addEventListener("click", () => { chuleta(false); pestana.focus(); });
+    const pasos = $(".pasos", el); // se recrea con cada visita: los eventos no se acumulan
+    pasos.addEventListener("keydown", (ev) => { if (ev.key === "Escape" && cajon.classList.contains("abierto")) { chuleta(false); pestana.focus(); } });
+    pasos.addEventListener("click", (ev) => { if (cajon.classList.contains("abierto") && !cajon.contains(ev.target) && !pestana.contains(ev.target)) chuleta(false); });
+
     App.escribir($("#r2-informe"));
     pintarReceta();
     pintarCaja();
@@ -392,7 +410,7 @@
     paso.classList.remove("oculto");
     paso.classList.add("hecho");
     pintarLinea();
-    caja.innerHTML = `<span class="cargando">Descifrando la transmisión del fragmento…</span>`;
+    caja.innerHTML = App.htmlCarga("Descifrando la transmisión del fragmento CYGNUS (AES-256)…");
     if (desplazar) paso.scrollIntoView({ behavior: "smooth", block: "start" });
     try {
       const datos = await cargarDatos("reto2_audio");

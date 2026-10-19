@@ -169,6 +169,13 @@
     requestAnimationFrame(bucle);
   }
 
+  // ---------- Carga con escáner (mientras se descifra o se carga una transmisión) ----------
+  App.htmlCarga = (texto) => `
+    <div class="escaner" role="status">
+      <div class="escaner-pantalla"><div class="escaner-barra"></div></div>
+      <div class="mono escaner-texto">&gt; ${escapar(texto)}<span class="cursor"></span></div>
+    </div>`;
+
   // ---------- Línea de tiempo: marca el primer paso pendiente ----------
   App.lineaTiempo = function () {
     const pasos = $$(".pasos > .paso:not(.oculto):not(.sin-nodo)");

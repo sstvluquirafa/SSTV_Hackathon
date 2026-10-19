@@ -8,6 +8,7 @@
   const CABECERA = 63 / 496;
   const piezas = [null, null, null, null]; // { img, nombre, giro }
   let recortar = false;
+  let reordenado = false, descargado = false; // para marcar los pasos del montaje
 
   function vista(el) {
     el.innerHTML = `
@@ -20,9 +21,12 @@
         </div>
         <div class="botonera">
           <button class="btn btn-oscuro" id="m-vaciar">${ICONO.papelera} Vaciar</button>
+          <button class="btn btn-borde" id="m-ver">${ICONO.ojo} Ver en grande</button>
           <button class="btn btn-ambar" id="m-descargar">${ICONO.descargar} Descargar mapa (PNG)</button>
         </div>
       </div>
+
+      <ol class="pasos-montaje" id="m-pasos" aria-label="Pasos del montaje"></ol>
 
       <label class="subida" id="m-subida">
         ${ICONO.subir}
@@ -46,9 +50,27 @@
     ["dragleave", "drop"].forEach((t) => zona.addEventListener(t, () => zona.classList.remove("encima")));
     zona.addEventListener("drop", (ev) => { if (tieneArchivos(ev)) { ev.preventDefault(); cargar(Array.from(ev.dataTransfer.files)); } });
     $("#m-recortar").addEventListener("change", (ev) => { recortar = ev.target.checked; pintar(); });
-    $("#m-vaciar").addEventListener("click", () => { if (piezas.some(Boolean) && confirm("¿Quitar todas las imágenes?")) { piezas.fill(null); pintar(); } });
+    $("#m-vaciar").addEventListener("click", () => {
+      if (piezas.some(Boolean) && confirm("¿Quitar todas las imágenes?")) { piezas.fill(null); reordenado = descargado = false; pintar(); }
+    });
     $("#m-descargar").addEventListener("click", descargarMapa);
+    $("#m-ver").addEventListener("click", verEnGrande);
     pintar();
+  }
+
+  /** Mini guía: 1 Subir · 2 Ordenar · 3 Girar · 4 Descargar. Se marca sola según lo que se va haciendo. */
+  function pintarPasos() {
+    const lista = $("#m-pasos");
+    if (!lista) return;
+    const n = piezas.filter(Boolean).length;
+    const girado = n > 0 && piezas.every((p) => !p || p.giro !== 0);
+    const hechos = [n === 4, n === 4 && (reordenado || girado), n === 4 && girado, descargado];
+    const textos = [`Subir las 4 imágenes (${n}/4)`, "Ordenarlas de izquierda a derecha", "Girarlas hasta que el mapa encaje", "Descargar el mapa"];
+    const activo = hechos.indexOf(false);
+    lista.innerHTML = textos.map((t, i) => `
+      <li class="${hechos[i] ? "hecho" : ""} ${i === activo ? "activo" : ""}">
+        <span class="pm-num">${hechos[i] ? ICONO.check : i + 1}</span><span>${t}</span>
+      </li>`).join("");
   }
 
   const tieneArchivos = (ev) => ev.dataTransfer && Array.from(ev.dataTransfer.types || []).includes("Files");
@@ -119,7 +141,9 @@
         lienzo.style.aspectRatio = "auto";
         lienzo.appendChild(c);
       } else {
-        lienzo.innerHTML = `<div class="vacio">${ICONO.imagen.replace("<svg", '<svg width="26" height="26"')}<br>Hueco ${i + 1}<br>vacío</div>`;
+        const lado = ["la izquierda", "el centro-izquierda", "el centro-derecha", "la derecha"][i];
+        lienzo.innerHTML = `<div class="vacio"><div class="silueta"><b>${i + 1}</b>${ICONO.imagen}</div>
+          <div>Pieza ${i + 1}</div><small>va a ${lado} del mapa</small></div>`;
       }
       hueco.appendChild(lienzo);
       const ctrl = document.createElement("div");
@@ -145,11 +169,13 @@
         hueco.classList.remove("encima");
         if (tieneArchivos(ev)) { cargar(Array.from(ev.dataTransfer.files), i); return; }
         const origen = parseInt(ev.dataTransfer.getData("text/plain"), 10);
-        if (!isNaN(origen) && origen !== i) { [piezas[origen], piezas[i]] = [piezas[i], piezas[origen]]; Sonido.tic(); pintar(); }
+        if (!isNaN(origen) && origen !== i) { [piezas[origen], piezas[i]] = [piezas[i], piezas[origen]]; reordenado = true; Sonido.tic(); pintar(); }
       });
       mesa.appendChild(hueco);
     });
     $("#m-descargar").disabled = !piezas.some(Boolean);
+    $("#m-ver").disabled = !piezas.some(Boolean);
+    pintarPasos();
   }
 
   function accion(i, a) {
@@ -157,17 +183,16 @@
     if (a === "girarIzq" && p) p.giro = (p.giro + 270) % 360;
     if (a === "girarDer" && p) p.giro = (p.giro + 90) % 360;
     if (a === "quitar") piezas[i] = null;
-    if (a === "izq" && i > 0) [piezas[i - 1], piezas[i]] = [piezas[i], piezas[i - 1]];
-    if (a === "der" && i < 3) [piezas[i + 1], piezas[i]] = [piezas[i], piezas[i + 1]];
+    if (a === "izq" && i > 0) { [piezas[i - 1], piezas[i]] = [piezas[i], piezas[i - 1]]; reordenado = true; }
+    if (a === "der" && i < 3) { [piezas[i + 1], piezas[i]] = [piezas[i], piezas[i + 1]]; reordenado = true; }
     Sonido.tic();
     pintar();
   }
 
-  function descargarMapa() {
+  /** Une las piezas en un canvas: todas a la misma altura, una junto a otra. */
+  function componerMapa() {
     const lienzos = piezas.filter(Boolean).map(dibujarPieza);
-    if (!lienzos.length) return;
-    if (lienzos.length < 4 && !confirm(`Solo hay ${lienzos.length} de 4 piezas. ¿Descargar el mapa incompleto?`)) return;
-    // Todas las piezas a la misma altura, una junto a otra
+    if (!lienzos.length) return null;
     const alto = Math.max(...lienzos.map((c) => c.height));
     const anchos = lienzos.map((c) => Math.round((c.width * alto) / c.height));
     const final = document.createElement("canvas");
@@ -178,9 +203,42 @@
     g.fillRect(0, 0, final.width, final.height);
     let x = 0;
     lienzos.forEach((c, i) => { g.drawImage(c, x, 0, anchos[i], alto); x += anchos[i]; });
-    final.toBlob((blob) => {
+    return final;
+  }
+
+  /** Vista grande del mapa montado, con su botón de descarga. */
+  function verEnGrande() {
+    const final = componerMapa();
+    if (!final) return;
+    const m = document.createElement("div");
+    m.className = "modal";
+    m.setAttribute("role", "dialog");
+    m.setAttribute("aria-label", "Mapa montado");
+    final.className = "mapa-grande";
+    m.appendChild(final);
+    m.insertAdjacentHTML("beforeend", `<div class="botonera">
+      <button class="btn btn-oscuro" data-a="cerrar">${ICONO.cerrar} Cerrar (Esc)</button>
+      <button class="btn btn-ambar" data-a="descargar">${ICONO.descargar} Descargar mapa (PNG)</button></div>`);
+    const cerrar = () => { m.remove(); document.removeEventListener("keydown", tecla); };
+    const tecla = (ev) => { if (ev.key === "Escape") cerrar(); };
+    m.addEventListener("click", (ev) => {
+      const a = ev.target.closest("button") && ev.target.closest("button").dataset.a;
+      if (a === "descargar") { cerrar(); descargarMapa(); }
+      else if (a === "cerrar" || ev.target === m) cerrar();
+    });
+    document.addEventListener("keydown", tecla);
+    document.body.appendChild(m);
+  }
+
+  function descargarMapa() {
+    const n = piezas.filter(Boolean).length;
+    if (!n) return;
+    if (n < 4 && !confirm(`Solo hay ${n} de 4 piezas. ¿Descargar el mapa incompleto?`)) return;
+    componerMapa().toBlob((blob) => {
       if (!blob) { App.aviso($("#m-aviso"), "error", "No se ha podido crear el PNG."); return; }
       App.descargar(blob, "mapa_granasat.png");
+      descargado = true;
+      pintarPasos();
       Sonido.exito();
       App.Progreso.anotar("Mapa montado y descargado", true);
       App.aviso($("#m-aviso"), "ok", "<b>¡Mapa descargado!</b> Si las piezas encajan, ya tenéis el recinto completo. Enseñádselo a la organización.");
