@@ -1,12 +1,12 @@
 // Reto 2 · Telemetría interceptada: Vigenère (clave de la pregunta) + 2 capas sorteadas → caja fuerte → fragmento CYGNUS.
 // La cadena sale de un banco generado por herramientas/reto2_generador.py: la frase no está en la web.
 // Las pistas comparan huellas SHA-256 de la salida con las de cada etapa (tampoco hay textos en claro).
+// Penalización de las pistas: bloquean el reto 30 s, 60 s, 90 s… (efectos.js → App.usarPista).
 (function () {
   "use strict";
   const { $, $$, escapar, Progreso, Cripto, cargarDatos, urlDe, Sonido, aviso } = App;
   const Op = window.Operaciones;
   const ID = "reto2";
-  const COSTE_ANALISIS = 10, COSTE_RESCATE = 25;
   const NOMBRE_CAPA = { vigenere: "Vigenère", base64: "Base64", hex: "Hexadecimal", espejo: "Espejo", cesar: "César" };
 
   const estado = () => Progreso.reto(ID);
@@ -49,7 +49,7 @@
           </div>
           <div>
             <p class="etiqueta-seccion">Informe de misión interceptado</p>
-            <div class="ventana informe"><div class="ventana-cuerpo">
+            <div class="ventana informe"><div class="ventana-cuerpo" id="r2-informe">
               <p class="linea-cmd">&gt; DESCIFRANDO INFORME DEL ESPÍA…</p>
               <p>Hemos interceptado un mensaje protegido con <b>tres capas</b> de cifrado. Lo que sabemos:</p>
               <p>1 · La capa de fuera es siempre <b>Vigenère</b>. Su clave es la respuesta a:
@@ -62,16 +62,16 @@
       </section>
 
       <div class="pasos">
-        <section class="panel paso">
-          <div class="paso-cab"><span class="paso-num">1</span><h2>Transmisión interceptada</h2></div>
+        <section class="panel paso" id="r2-paso1" data-num="1">
+          <div class="paso-cab"><h2>Transmisión interceptada</h2></div>
           <div class="paso-cuerpo">
             <div class="transmision"><span id="r2-cadena">${escapar(cadena)}</span>
               <button class="btn btn-oscuro btn-peq" id="r2-copiar">${ICONO.copiar} Copiar</button></div>
           </div>
         </section>
 
-        <section class="panel paso">
-          <div class="paso-cab"><span class="paso-num">2</span><h2>Descodificador GranaChef</h2>
+        <section class="panel paso" id="r2-paso2" data-num="2">
+          <div class="paso-cab"><h2>Descodificador GranaChef</h2>
             <span class="estado texto-3 pequeno">Añadid operaciones a la receta: se aplican de arriba abajo.</span></div>
           <div class="paso-cuerpo cocina">
             <div class="cocina-col">
@@ -92,15 +92,16 @@
                 <div class="salida" id="r2-salida" aria-live="polite"></div>
               </div>
               <div class="botonera">
-                <button class="btn btn-borde btn-peq" id="r2-analizar">${ICONO.lupa} ¿Qué tipo de código es esto? (−${COSTE_ANALISIS})</button>
-                <button class="btn btn-oscuro btn-peq" id="r2-rescate">${ICONO.bombilla} Pista de rescate (−${COSTE_RESCATE})</button>
+                <button class="btn btn-borde btn-peq" id="r2-analizar">${ICONO.lupa} ¿Qué tipo de código es esto?</button>
+                <button class="btn btn-oscuro btn-peq" id="r2-rescate">${ICONO.bombilla} Pista de rescate</button>
+                <span class="texto-3 pequeno" id="r2-coste"></span>
               </div>
               <div id="r2-pista" class="aviso oculto"></div>
             </div>
           </div>
         </section>
 
-        <section class="panel paso">
+        <section class="panel paso sin-nodo">
           <div class="paso-cab"><span class="paso-num">${ICONO.espia.replace("<svg", '<svg width="15" height="15"')}</span><h2>Chuleta del Espía</h2></div>
           <div class="paso-cuerpo" style="padding-top:8px">
             <table class="chuleta">
@@ -111,14 +112,14 @@
                 <tr><td>César</td><td>Parece una frase (con espacios y palabras), pero las letras están cambiadas por otras. Hay que desplazarlas.</td><td><code>Krod</code> (+3)</td></tr>
                 <tr><td>Binario</td><td>Solo ceros y unos, normalmente en grupos de 8.</td><td><code>01001000 01101111 …</code></td></tr>
                 <tr><td>Espejo</td><td>El texto está al revés: lo que debería ir al final aparece al principio (un <code>=</code> o unos números delante).</td><td><code>aloH</code></td></tr>
-                <tr class="magia"><td>¿Atascados?</td><td colspan="2">Pulsad <b>«¿Qué tipo de código es esto?»</b> y analizaremos vuestra salida. Cada pista cuesta puntos.</td></tr>
+                <tr class="magia"><td>¿Atascados?</td><td colspan="2">Pulsad <b>«¿Qué tipo de código es esto?»</b> y analizaremos vuestra salida. Cuidado: cada pista bloquea el reto un rato (30 s, 60 s, 90 s…).</td></tr>
               </tbody>
             </table>
           </div>
         </section>
 
-        <section class="panel paso" id="r2-paso-caja">
-          <div class="paso-cab"><span class="paso-num">3</span><h2>Caja fuerte</h2><span class="estado" id="r2-estado-caja"></span></div>
+        <section class="panel paso" id="r2-paso-caja" data-num="3">
+          <div class="paso-cab"><h2>Caja fuerte</h2><span class="estado" id="r2-estado-caja"></span></div>
           <div class="paso-cuerpo dos-col">
             <div>
               <p class="texto-2" style="margin-top:0">Escribid la <b>contraseña</b> que aparece en el mensaje descifrado (solo la contraseña, no la frase entera).</p>
@@ -140,8 +141,8 @@
           </div>
         </section>
 
-        <section class="panel paso oculto recompensa" id="r2-paso-premio">
-          <div class="paso-cab"><span class="paso-num">4</span><h2>Fragmento ${def.fragmento} desbloqueado</h2><span class="estado chip chip-verde">COMPLETADO</span></div>
+        <section class="panel paso oculto recompensa" id="r2-paso-premio" data-num="4">
+          <div class="paso-cab"><h2>Fragmento ${def.fragmento} desbloqueado</h2><span class="estado chip chip-verde">COMPLETADO</span></div>
           <div class="paso-cuerpo" id="r2-premio"></div>
         </section>
       </div>`;
@@ -155,10 +156,27 @@
     $("#r2-analizar").addEventListener("click", analizar);
     $("#r2-rescate").addEventListener("click", rescate);
     $("#r2-form").addEventListener("submit", (ev) => { ev.preventDefault(); abrirCaja(); });
+    App.escribir($("#r2-informe"));
     pintarReceta();
     pintarCaja();
-    App.cadaSegundo(pintarCaja);
+    pintarCoste();
+    App.cadaSegundo(() => { pintarCaja(); App.comprobarBloqueo(ID); });
+    App.comprobarBloqueo(ID);
     if (estado().completado) mostrarPremio(false);
+    pintarLinea();
+  }
+
+  function pintarCoste() {
+    const c = $("#r2-coste");
+    if (c) c.innerHTML = estado().completado ? "" : `${ICONO.reloj.replace("<svg", '<svg width="13" height="13" style="vertical-align:-2px"')} La próxima pista bloquea el reto ${App.proximoBloqueo(ID)} s`;
+  }
+
+  /** Línea de tiempo: 1 hecho al empezar la receta; 2 y 3 al abrir la caja. */
+  function pintarLinea() {
+    const e = estado();
+    $("#r2-paso1") && $("#r2-paso1").classList.toggle("hecho", e.receta.length > 0 || e.completado);
+    $("#r2-paso2") && $("#r2-paso2").classList.toggle("hecho", !!e.completado);
+    App.lineaTiempo();
   }
 
   function copiar() {
@@ -177,6 +195,7 @@
     guardar((r) => r.receta.push(paso));
     Sonido.tic();
     pintarReceta();
+    pintarLinea();
   }
 
   function selectorModo(i, modo, quitar, poner) {
@@ -262,32 +281,30 @@
     }
   }
 
-  // ---------- Pistas ----------
-  function cobrar(id, coste, mensaje) {
-    if (estado().completado) return true;
-    if (!confirm(`${mensaje}\n\nCuesta ${coste} puntos. ¿Seguimos?`)) return false;
-    guardar((r) => r.pistas.push({ id, coste }));
-    Progreso.anotar(`Reto 2: pista usada (−${coste} pts)`);
-    $("#r2-puntos").textContent = `${App.puntosReto(ID)} PTS`;
-    return true;
+  // ---------- Pistas (cada una bloquea el reto: 30 s, 60 s, 90 s…) ----------
+  /** Enseña la pista. Si el reto no está superado, primero pide confirmación y bloquea el reto. */
+  function darPista(id, explicacion, tipo, html) {
+    const caja = $("#r2-pista");
+    if (!estado().completado && !App.usarPista(ID, id, explicacion, html)) return;
+    aviso(caja, tipo, html);
+    pintarCoste();
   }
 
   function analizar() {
-    const caja = $("#r2-pista");
-    if (ultimo.error) { aviso(caja, "info", "La receta tiene un error (mirad la salida en rojo). Arregladlo antes de pedir un análisis: este aviso es gratis."); return; }
-    if (!cobrar("analisis", COSTE_ANALISIS, "Analizaremos la SALIDA actual y os diremos qué tipo de código parece.")) return;
+    if (ultimo.error) { aviso($("#r2-pista"), "info", "La receta tiene un error (mirad la salida en rojo). Arregladlo antes de pedir un análisis: este aviso es gratis."); return; }
     const salida = ultimo.salida;
-    if (salida.trim() === reto().cadena) {
-      aviso(caja, "info", `<b>Análisis:</b> esto es la transmisión tal cual la hemos interceptado. Según el informe, la capa de fuera es siempre <b>Vigenère</b>: empezad por ahí, con la clave de la pregunta.`);
-      return;
-    }
-    const r = Op.analizar(salida);
-    aviso(caja, r.tipo === "claro" ? "ok" : "info", `<b>Análisis:</b> ${r.mensaje}`);
+    const r = salida.trim() === reto().cadena
+      ? { tipo: "bruto", mensaje: "esto es la transmisión tal cual la hemos interceptado. Según el informe, la capa de fuera es siempre <b>Vigenère</b>: empezad por ahí, con la clave de la pregunta." }
+      : Op.analizar(salida);
+    darPista("analisis", "Analizaremos la SALIDA actual y os diremos qué tipo de código parece.", r.tipo === "claro" ? "ok" : "info", `<b>Análisis:</b> ${r.mensaje}`);
   }
 
   async function rescate() {
-    const caja = $("#r2-pista");
-    if (!cobrar("rescate", COSTE_RESCATE, "La pista de rescate os dice cuál es la siguiente operación que tenéis que aplicar.")) return;
+    const html = await textoRescate();
+    darPista("rescate", "La pista de rescate os dice cuál es la siguiente operación que tenéis que aplicar.", html.includes("en claro") ? "ok" : "info", html);
+  }
+
+  async function textoRescate() {
     const r = reto();
     const orden = ["vigenere", ...r.capas];
     // ¿Hasta qué paso de la receta vamos bien? Comparamos huellas de cada salida con las de cada etapa.
@@ -297,10 +314,8 @@
       if (k > etapa) { etapa = k; pasoBueno = i; }
     }
     const receta = estado().receta;
-    if (etapa === r.etapas.length - 1) {
-      aviso(caja, "ok", "<b>Rescate:</b> ¡ya tenéis el mensaje en claro! Buscad la contraseña dentro de la frase y llevadla a la caja fuerte.");
-      return;
-    }
+    if (etapa === r.etapas.length - 1)
+      return "<b>Rescate:</b> ¡ya tenéis el mensaje en claro! Buscad la contraseña dentro de la frase y llevadla a la caja fuerte.";
     const siguiente = NOMBRE_CAPA[orden[etapa + 1]];
     let texto;
     if (etapa === -1) {
@@ -313,7 +328,7 @@
       texto += ".";
       if (receta.slice(pasoBueno + 1).some((p) => !p.apagado)) texto += " Los pasos que hay después del " + (pasoBueno + 1) + " sobran o tienen mal el ajuste.";
     }
-    aviso(caja, "info", `<b>Rescate:</b> ${texto}`);
+    return `<b>Rescate:</b> ${texto}`;
   }
 
   // ---------- Caja fuerte ----------
@@ -355,7 +370,10 @@
       App.actualizarCabecera();
       $("#r2-puntos").textContent = `${puntos} PTS`;
       pintarCaja();
-      mostrarPremio(true);
+      pintarCoste();
+      App.comprobarBloqueo(ID);
+      mostrarPremio(false);
+      App.celebrar("CYGNUS", puntos, () => { const p = $("#r2-paso-premio"); if (p) p.scrollIntoView({ behavior: "smooth", block: "start" }); });
     } else {
       Sonido.error();
       App.registrarFallo(ID);
@@ -372,6 +390,8 @@
   async function mostrarPremio(desplazar) {
     const paso = $("#r2-paso-premio"), caja = $("#r2-premio");
     paso.classList.remove("oculto");
+    paso.classList.add("hecho");
+    pintarLinea();
     caja.innerHTML = `<span class="cargando">Descifrando la transmisión del fragmento…</span>`;
     if (desplazar) paso.scrollIntoView({ behavior: "smooth", block: "start" });
     try {
@@ -382,19 +402,14 @@
       caja.innerHTML = `
         <p style="margin-top:0;color:#d1fae5">¡Telemetría descifrada! Reproducid la transmisión del fragmento <b>CYGNUS</b> por el cable virtual,
           descodificadla y <b>guardad la imagen</b> para el montaje del mapa.</p>
-        <div class="ventana">
-          <div class="ventana-barra"><i></i><i></i><i></i><b>RX_MONITOR · fragmento_cygnus.wav</b><span class="der">● DESCIFRADO</span></div>
-          <div class="ventana-cuerpo reproductor">
-            <audio controls preload="metadata" src="${url}"></audio>
-            <a class="btn btn-verde" href="${url}" download="fragmento_cygnus.wav">${ICONO.descargar} Descargar fragmento</a>
-          </div>
-        </div>
+        <div id="r2-reproductor"></div>
         <div class="marcador">
-          <span class="chip chip-ambar">${ICONO.estrella.replace("<svg", '<svg width="12" height="12"')} ${e.puntos} PTS</span>
+          <span class="chip chip-ambar">${ICONO.estrella} ${e.puntos} PTS</span>
           <span class="chip">PISTAS: ${e.pistas.length}</span>
           <span class="chip">FALLOS: ${e.fallos}</span>
           <a class="btn btn-borde btn-peq" href="#/panel">${ICONO.volver} Volver a los retos</a>
         </div>`;
+      App.reproductor($("#r2-reproductor"), url, "fragmento_cygnus.wav");
     } catch (err) {
       caja.innerHTML = `<div class="aviso aviso-error">No se ha podido descifrar el audio. Avisad a la organización.</div>`;
     }

@@ -30,13 +30,13 @@
   App.PUNTOS_MINIMOS = 10;
   App.PENALIZACION_FALLO = 5;
 
-  /** Puntos que vale ahora mismo el reto: base menos pistas y fallos (nunca por debajo del mínimo). */
+  /** Puntos que vale ahora mismo el reto: base menos los fallos (nunca por debajo del mínimo).
+   *  Las pistas no quitan puntos: su penalización es bloquear el reto un tiempo (efectos.js). */
   App.puntosReto = function (id) {
     const def = App.RETOS.find((r) => r.id === id);
     const e = Progreso.reto(id);
     if (e.completado && e.puntos != null) return e.puntos;
-    const coste = (e.pistas || []).reduce((s, p) => s + (p.coste || 0), 0);
-    return Math.max(App.PUNTOS_MINIMOS, def.base - coste - App.PENALIZACION_FALLO * e.fallos);
+    return Math.max(App.PUNTOS_MINIMOS, def.base - App.PENALIZACION_FALLO * e.fallos);
   };
   App.puntosTotales = () => App.RETOS.filter((r) => Progreso.reto(r.id).completado).reduce((s, r) => s + App.puntosReto(r.id), 0);
   App.fragmentoConseguido = (frag) => App.RETOS.some((r) => r.fragmento === frag && Progreso.reto(r.id).completado);
@@ -79,7 +79,11 @@
         <div class="fragmentos">
           ${App.FRAGMENTOS.map((f) => {
             const ok = App.fragmentoConseguido(f);
-            return `<div class="fragmento ${ok ? "ok" : ""}">
+            // Recién conseguido: se ilumina una vez al volver al panel
+            const reto = App.RETOS.find((r) => r.fragmento === f);
+            const recien = ok && !Progreso.reto(reto.id).anunciado;
+            if (recien) Progreso.cambiar(reto.id, (e) => { e.anunciado = true; });
+            return `<div class="fragmento ${ok ? "ok" : ""} ${recien ? "recien" : ""}">
               <div class="icono">${ok ? ICONO.check : ICONO.candado}</div>
               <div><div class="fragmento-nombre">${f}</div>
               <div class="fragmento-estado">${ok ? "Transmisión desbloqueada" : "Sin recibir"}</div></div>
@@ -157,6 +161,8 @@
 
   window.addEventListener("hashchange", navegar);
   window.addEventListener("DOMContentLoaded", () => {
+    const iconosMenu = { panel: ICONO.expediente, montaje: ICONO.mapa };
+    $$(".nav a").forEach((a) => a.insertAdjacentHTML("afterbegin", iconosMenu[a.dataset.ruta] || ""));
     $("#reiniciar").addEventListener("click", () => {
       if (!confirm("¿Reiniciar todo el progreso de este equipo?\n\nSe borran los retos superados, los puntos y los audios desbloqueados.")) return;
       if (!confirm("¿Seguro? Esta acción no se puede deshacer.")) return;

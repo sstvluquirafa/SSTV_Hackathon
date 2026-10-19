@@ -52,17 +52,24 @@ y después `python herramientas/construir_web.py` para volver a cifrar las recom
 - **Respuestas:** se normalizan (sin tildes, sin mayúsculas, solo letras y números) y nunca aparecen en la web.
   Las respuestas aceptadas están en `herramientas/construir_web.py`: cada una "envuelve" la llave AES del reto
   (PBKDF2 + AES-GCM con WebCrypto). Reto 1 acepta también solo el apellido y alguna falta de ortografía típica.
-- **Puntuación:** 100 por reto, −5 por fallo, menos el coste de las pistas (mínimo 10). Se ve en la cabecera.
+- **Puntuación:** 100 por reto y −5 por cada respuesta fallada (mínimo 10). Se ve en la cabecera.
+- **Pistas:** no quitan puntos; su penalización es **tiempo**. Cada pista bloquea todo el reto (capa
+  «Transmisión en pausa» con cuenta atrás): 30 s la primera, 60 s la segunda, 90 s la tercera… El bloqueo
+  sigue aunque se recargue la página; mientras, el grupo puede volver al panel y avanzar en otro reto.
 - **Intentos:** 5 fallos → bloqueo de 1 minuto (también si se recarga la página).
 - **Progreso** en `localStorage`. "Reiniciar progreso" (abajo a la derecha, discreto) lo borra todo tras dos confirmaciones.
 - **Montaje:** las imágenes subidas no salen del PC; se pueden ordenar, girar, quitar la cabecera y descargar en PNG.
+- **Reproductor SSTV** propio (`js/reproductor.js`): cascada con el espectro en directo y marcas en 1200, 1500,
+  1900 y 2300 Hz. El sonido sale por la salida predeterminada de Windows (CABLE Input en el aula).
+- **Efectos** (`js/efectos.js`): línea de tiempo de los pasos, expediente que se escribe como en un terminal,
+  estrellas que titilan y celebración al desbloquear un fragmento. Se desactivan si Windows pide reducir animaciones.
 - Para regenerar los datos: `python herramientas/reto2_generador.py --exportar` y `python herramientas/construir_web.py`.
   Para probar el reto 2 en JS: `node herramientas/probar_reto2_js.mjs`.
 
 ## Reto 1 · "Mensaje desde 1969" → ORIÓN
 
 1. La pista SSTV (foto de Aldrin en la Luna) pregunta «¿Quién hizo esta fotografía?».
-2. Respuesta: el comandante que sostenía la cámara (en `construir_web.py`). Dos pistas: −10 y −20.
+2. Respuesta: el comandante que sostenía la cámara (en `construir_web.py`). Dos pistas (bloquean 30 s y 60 s).
 3. Puzle 3×3 con la foto del prototipo (se descifra con la respuesta).
 4. Recompensa: audio del fragmento ORIÓN.
 
@@ -127,6 +134,7 @@ encadenables como una receta, con la salida en directo. No indica si cada paso e
 - **Contraseña final:** 5 intentos; al agotarlos, bloqueo de 1 minuto.
 - Puntuación del reto visible al terminar (base menos pistas y fallos).
 
-**En la web:** «¿Qué tipo de código es esto?» cuesta 10 puntos; la «Pista de rescate» (dice la siguiente operación) cuesta 25.
+**En la web:** «¿Qué tipo de código es esto?» y la «Pista de rescate» (dice la siguiente operación) son pistas:
+cada uso bloquea el reto 30 s más que el anterior (ver «Web local»).
 La web no lleva la frase: elige una de las 76 cadenas posibles del banco que genera `reto2_generador.py --exportar`,
 que incluye huellas SHA-256 de cada etapa para que las pistas sepan por dónde va el grupo.

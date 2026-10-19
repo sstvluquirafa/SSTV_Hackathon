@@ -6,10 +6,11 @@
   const { $, $$, Progreso, Cripto, cargarDatos, blobDesdeB64, urlDe, Sonido, aviso } = App;
   const ID = "reto1";
 
+  // Cada pista bloquea el reto un tiempo creciente (efectos.js → App.usarPista)
   const PISTAS = [
-    { id: "p1", coste: 10, titulo: "Pista 1 · ¿Dónde y cuándo?",
+    { id: "p1", titulo: "Pista 1 · ¿Dónde y cuándo?",
       texto: "La foto se tomó en la Luna en julio de 1969, durante la primera misión que llegó a la Luna. En ella solo dos astronautas pisaron la superficie." },
-    { id: "p2", coste: 20, titulo: "Pista 2 · Mirad el reflejo",
+    { id: "p2", titulo: "Pista 2 · Mirad el reflejo",
       texto: "El astronauta de la foto es Buzz Aldrin. En el visor de su casco se refleja quien sostiene la cámara: su comandante, el primer ser humano que pisó la Luna." },
   ];
 
@@ -37,7 +38,7 @@
           </div>
           <div>
             <p class="etiqueta-seccion">Informe de misión interceptado</p>
-            <div class="ventana informe"><div class="ventana-cuerpo">
+            <div class="ventana informe"><div class="ventana-cuerpo" id="r1-informe">
               <p class="linea-cmd">&gt; INICIANDO LECTURA DE DATOS…</p>
               <p>Operadores: nuestra antena ha captado una transmisión SSTV muy antigua. Dentro viaja una fotografía
                 histórica y una pregunta. Descodificad la imagen, contestad la pregunta y reconstruid la foto del
@@ -48,26 +49,22 @@
       </section>
 
       <div class="pasos">
-        <section class="panel paso" id="r1-paso1">
-          <div class="paso-cab"><span class="paso-num">1</span><h2>Recepción de la transmisión SSTV</h2></div>
+        <section class="panel paso" id="r1-paso1" data-num="1">
+          <div class="paso-cab"><h2>Recepción de la transmisión SSTV</h2></div>
           <div class="paso-cuerpo dos-col">
-            <div class="ventana">
-              <div class="ventana-barra"><i></i><i></i><i></i><b>RX_MONITOR · pista_reto1.wav</b><span class="der">● SEÑAL</span></div>
-              <div class="ventana-cuerpo">
-                <div class="reproductor" id="r1-pista"><span class="cargando">Cargando transmisión…</span></div>
-              </div>
-            </div>
+            <div id="r1-pista"><span class="cargando">Cargando transmisión…</span></div>
             <ol class="lista-pasos">
               <li>Abrid el descodificador SSTV (Black Cat SSTV o YONIQ) con la entrada de audio <b>CABLE Output</b>.</li>
               <li>Comprobad que el sonido del PC sale por <b>CABLE Input (VB-Audio)</b>.</li>
-              <li>Pulsad ▶ y esperad unos 2 minutos sin tocar nada: la imagen aparece línea a línea.</li>
+              <li>Pulsad ▶ y esperad unos 2 minutos sin tocar nada: la imagen aparece línea a línea.
+                En la cascada veréis la señal saltar entre 1500 Hz (negro) y 2300 Hz (blanco).</li>
               <li>Leed con atención la pregunta que viene en la imagen.</li>
             </ol>
           </div>
         </section>
 
-        <section class="panel paso" id="r1-paso2">
-          <div class="paso-cab"><span class="paso-num">2</span><h2>Respuesta a la pregunta de la imagen</h2><span class="estado" id="r1-estado2"></span></div>
+        <section class="panel paso" id="r1-paso2" data-num="2">
+          <div class="paso-cab"><h2>Respuesta a la pregunta de la imagen</h2><span class="estado" id="r1-estado2"></span></div>
           <div class="paso-cuerpo dos-col">
             <div>
               <p class="texto-2" style="margin-top:0">Escribid el <b>nombre y apellido</b> de la persona que responde a la pregunta de la imagen.
@@ -80,29 +77,32 @@
               <div id="r1-aviso" class="aviso oculto"></div>
             </div>
             <div>
-              <p class="etiqueta-seccion">Pistas (restan puntos)</p>
+              <p class="etiqueta-seccion">Pistas · cada una bloquea el reto un rato</p>
               <div class="pistas" id="r1-pistas"></div>
             </div>
           </div>
         </section>
 
-        <section class="panel paso bloqueado" id="r1-paso3">
-          <div class="paso-cab"><span class="paso-num">3</span><h2>Reconstrucción de la fotografía (puzle 3×3)</h2></div>
+        <section class="panel paso bloqueado" id="r1-paso3" data-num="3">
+          <div class="paso-cab"><h2>Reconstrucción de la fotografía (puzle 3×3)</h2></div>
           <div class="paso-cuerpo" id="r1-puzle"><p class="texto-3" style="margin:0">${ICONO.candado.replace("<svg", '<svg width="14" height="14"')} Se desbloquea al acertar la pregunta.</p></div>
         </section>
 
-        <section class="panel paso oculto recompensa" id="r1-paso4">
-          <div class="paso-cab"><span class="paso-num">4</span><h2>Fragmento ${def.fragmento} desbloqueado</h2><span class="estado chip chip-verde">COMPLETADO</span></div>
+        <section class="panel paso oculto recompensa" id="r1-paso4" data-num="4">
+          <div class="paso-cab"><h2>Fragmento ${def.fragmento} desbloqueado</h2><span class="estado chip chip-verde">COMPLETADO</span></div>
           <div class="paso-cuerpo" id="r1-premio"></div>
         </section>
       </div>`;
 
+    App.escribir($("#r1-informe"));
     cargarPista();
     pintarPistas();
     pintarRespuesta();
     $("#r1-form").addEventListener("submit", (ev) => { ev.preventDefault(); comprobar(); });
-    App.cadaSegundo(pintarRespuesta);
+    App.cadaSegundo(() => { pintarRespuesta(); App.comprobarBloqueo(ID); });
+    App.comprobarBloqueo(ID);
     if (estado().llave) abrirPuzle(false);
+    App.lineaTiempo();
   }
 
   // ---------- Paso 1 ----------
@@ -111,9 +111,7 @@
     try {
       const b64 = await cargarDatos("reto1_pista");
       if (!caja.isConnected) return;
-      const url = urlDe(blobDesdeB64(b64, "audio/wav"));
-      caja.innerHTML = `<audio controls preload="metadata" src="${url}"></audio>
-        <a class="btn btn-oscuro btn-peq" href="${url}" download="pista_reto1.wav">${ICONO.descargar} Descargar</a>`;
+      App.reproductor(caja, urlDe(blobDesdeB64(b64, "audio/wav")), "pista_reto1.wav");
     } catch (e) {
       caja.innerHTML = `<span class="cargando">No se ha podido cargar la pista. Avisad a la organización.</span>`;
     }
@@ -132,16 +130,13 @@
       const anteriorAbierta = i === 0 || e.pistas.some((x) => x.id === PISTAS[i - 1].id);
       return `<div class="pista ${abierta ? "abierta" : ""}">
         <div class="pista-texto">${abierta ? `<b>${p.titulo}:</b> ${p.texto}` : `<b>${p.titulo}</b>`}</div>
-        ${abierta ? "" : `<button class="btn btn-oscuro btn-peq" data-pista="${p.id}" ${anteriorAbierta && !e.llave ? "" : "disabled"}>${ICONO.bombilla} Ver (−${p.coste})</button>`}
+        ${abierta ? "" : `<button class="btn btn-oscuro btn-peq" data-pista="${p.id}" ${anteriorAbierta && !e.llave ? "" : "disabled"}>${ICONO.reloj} Ver (${App.proximoBloqueo(ID)} s)</button>`}
       </div>`;
     }).join("");
     $$("[data-pista]").forEach((b) => b.addEventListener("click", () => {
       const p = PISTAS.find((x) => x.id === b.dataset.pista);
-      if (!confirm(`Esta pista resta ${p.coste} puntos al reto. ¿La abrimos?`)) return;
-      Progreso.cambiar(ID, (r) => r.pistas.push({ id: p.id, coste: p.coste }));
-      Progreso.anotar(`Reto 1: pista abierta (−${p.coste} pts)`);
+      if (!App.usarPista(ID, p.id, `Vais a abrir «${p.titulo}».`, `<b>${p.titulo}:</b> ${p.texto}`)) return;
       pintarPistas();
-      actualizarPuntos();
     }));
   }
 
@@ -153,8 +148,9 @@
     if (e.llave) {
       input.disabled = true; boton.disabled = true;
       $("#r1-intentos").innerHTML = "";
+      $("#r1-paso1").classList.add("hecho");
       $("#r1-paso2").classList.add("hecho");
-      $("#r1-estado2").innerHTML = `<span class="chip chip-verde">${ICONO.check.replace("<svg", '<svg width="12" height="12"')} VALIDADO</span>`;
+      $("#r1-estado2").innerHTML = `<span class="chip chip-verde">${ICONO.check} VALIDADO</span>`;
       return;
     }
     input.disabled = espera > 0; boton.disabled = espera > 0;
@@ -193,6 +189,7 @@
       pintarRespuesta();
       actualizarPuntos();
     }
+    App.lineaTiempo();
   }
 
   // ---------- Paso 3: puzle 3×3 ----------
@@ -210,6 +207,7 @@
   async function abrirPuzle(desplazar) {
     const paso = $("#r1-paso3"), zona = $("#r1-puzle");
     paso.classList.remove("bloqueado");
+    App.lineaTiempo();
     zona.innerHTML = `<span class="cargando">Descifrando la fotografía del archivo…</span>`;
     try {
       const datos = await cargarDatos("reto1_foto");
@@ -320,10 +318,10 @@
     pintarTablero();
   }
 
-  // Flechas: mueven la pieza que está al lado del hueco hacia él
+  // Flechas: mueven la pieza que está al lado del hueco hacia él (no durante un bloqueo por pista)
   window.addEventListener("keydown", (ev) => {
     if (ev.key === "Escape") { const m = $(".modal"); if (m) m.remove(); return; }
-    if (resuelto || !$("#r1-tablero") || /input|textarea|select/i.test(document.activeElement.tagName)) return;
+    if (resuelto || !$("#r1-tablero") || $("#bloqueo-pista") || $(".celebracion") || /input|textarea|select/i.test(document.activeElement.tagName)) return;
     const h = fichas.indexOf(HUECO), f = Math.floor(h / 3), c = h % 3;
     const destino = { ArrowUp: f < 2 ? h + 3 : -1, ArrowDown: f > 0 ? h - 3 : -1, ArrowLeft: c < 2 ? h + 1 : -1, ArrowRight: c > 0 ? h - 1 : -1 }[ev.key];
     if (destino === undefined) return;
@@ -343,7 +341,6 @@
 
   function terminar() {
     resuelto = true;
-    Sonido.exito();
     const segundos = Math.floor((Date.now() - t0) / 1000);
     const puntos = App.puntosReto(ID);
     Progreso.cambiar(ID, (r) => { r.completado = true; r.puntos = puntos; r.movimientos = movimientos; r.tiempo = segundos; });
@@ -352,13 +349,17 @@
     $("#r1-paso3").classList.add("hecho");
     App.actualizarCabecera();
     actualizarPuntos();
-    mostrarPremio(true);
+    Sonido.exito();
+    mostrarPremio(false);
+    App.celebrar("ORIÓN", puntos, () => { const p = $("#r1-paso4"); if (p) p.scrollIntoView({ behavior: "smooth", block: "start" }); });
   }
 
   // ---------- Paso 4: recompensa ----------
   async function mostrarPremio(desplazar) {
     const paso = $("#r1-paso4"), caja = $("#r1-premio");
     paso.classList.remove("oculto");
+    paso.classList.add("hecho");
+    App.lineaTiempo();
     caja.innerHTML = `<span class="cargando">Descifrando la transmisión del fragmento…</span>`;
     if (desplazar) paso.scrollIntoView({ behavior: "smooth", block: "start" });
     try {
@@ -369,19 +370,14 @@
       caja.innerHTML = `
         <p style="margin-top:0;color:#d1fae5">¡Fotografía reconstruida! Habéis liberado la transmisión del fragmento <b>ORIÓN</b>.
           Reproducidla por el cable virtual, descodificadla y <b>guardad la imagen</b>: la necesitaréis en el montaje del mapa.</p>
-        <div class="ventana">
-          <div class="ventana-barra"><i></i><i></i><i></i><b>RX_MONITOR · fragmento_orion.wav</b><span class="der">● DESCIFRADO</span></div>
-          <div class="ventana-cuerpo reproductor">
-            <audio controls preload="metadata" src="${url}"></audio>
-            <a class="btn btn-verde" href="${url}" download="fragmento_orion.wav">${ICONO.descargar} Descargar fragmento</a>
-          </div>
-        </div>
+        <div id="r1-reproductor"></div>
         <div class="marcador">
-          <span class="chip chip-ambar">${ICONO.estrella.replace("<svg", '<svg width="12" height="12"')} ${e.puntos} PTS</span>
+          <span class="chip chip-ambar">${ICONO.estrella} ${e.puntos} PTS</span>
           <span class="chip">PISTAS: ${e.pistas.length}</span>
           <span class="chip">FALLOS: ${e.fallos}</span>
           <a class="btn btn-borde btn-peq" href="#/panel">${ICONO.volver} Volver a los retos</a>
         </div>`;
+      App.reproductor($("#r1-reproductor"), url, "fragmento_orion.wav");
     } catch (err) {
       caja.innerHTML = `<div class="aviso aviso-error">No se ha podido descifrar el audio. Avisad a la organización.</div>`;
     }

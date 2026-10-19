@@ -36,6 +36,8 @@
     copiar: t('<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>'),
     mas: t('<path d="M12 5v14"/><path d="M5 12h14"/>'),
     caja: t('<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="12" cy="12" r="3.5"/><path d="M12 8.5V7"/><path d="M15.5 12H17"/><path d="M7 20v1"/><path d="M17 20v1"/>'),
+    play: t('<path d="M7 4.5v15l12-7.5z" fill="currentColor"/>'),
+    pausa: t('<rect x="6" y="4.5" width="4" height="15" rx="1" fill="currentColor"/><rect x="14" y="4.5" width="4" height="15" rx="1" fill="currentColor"/>'),
     imagen: t('<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>'),
   };
 })();
