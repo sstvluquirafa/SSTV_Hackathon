@@ -1,0 +1,3331 @@
+{
+ "frase": "LA CLAVE ES MACROSCOPIO-69",
+ "clave": "APOLO",
+ "vectores": [
+  {
+   "op": "base64",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "salida": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk="
+  },
+  {
+   "op": "hex",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "salida": "4C4120434C415645204553204D4143524F53434F50494F2D3639"
+  },
+  {
+   "op": "espejo",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "salida": "96-OIPOCSORCAM SE EVALC AL"
+  },
+  {
+   "op": "cesar",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "n": 1,
+   "salida": "MB DMBWF FT NBDSPTDPQJP-69"
+  },
+  {
+   "op": "cesar",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "n": 7,
+   "salida": "SH JSHCL LZ THJYVZJVWPV-69"
+  },
+  {
+   "op": "cesar",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "n": 13,
+   "salida": "YN PYNIR RF ZNPEBFPBCVB-69"
+  },
+  {
+   "op": "cesar",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "n": 25,
+   "salida": "KZ BKZUD DR LZBQNRBNOHN-69"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "LP QWOVT SD AARFZGCDDTC-69"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "LL OAMVP QH YANDDECZBXA-69"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "LP QWOVT SD AARFZGCDDTC-69"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "LL OAMVP QH YANDDECZBXA-69"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "WU PLLPR ED GNCCIFCZJVO-69"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "AG PLPBR EH SNCGUFCDVVO-69"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "VK MVKFO OC WKMBYCMYZSY-69"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "BQ SBQLU UI CQSHEISEFYE-69"
+  },
+  {
+   "op": "base64",
+   "entrada": "Hola, Mundo 123!",
+   "salida": "SG9sYSwgTXVuZG8gMTIzIQ=="
+  },
+  {
+   "op": "hex",
+   "entrada": "Hola, Mundo 123!",
+   "salida": "486F6C612C204D756E646F2031323321"
+  },
+  {
+   "op": "espejo",
+   "entrada": "Hola, Mundo 123!",
+   "salida": "!321 odnuM ,aloH"
+  },
+  {
+   "op": "cesar",
+   "entrada": "Hola, Mundo 123!",
+   "n": 1,
+   "salida": "Ipmb, Nvoep 123!"
+  },
+  {
+   "op": "cesar",
+   "entrada": "Hola, Mundo 123!",
+   "n": 7,
+   "salida": "Ovsh, Tbukv 123!"
+  },
+  {
+   "op": "cesar",
+   "entrada": "Hola, Mundo 123!",
+   "n": 13,
+   "salida": "Ubyn, Zhaqb 123!"
+  },
+  {
+   "op": "cesar",
+   "entrada": "Hola, Mundo 123!",
+   "n": 25,
+   "salida": "Gnkz, Ltmcn 123!"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Hola, Mundo 123!",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "Hdzl, Aucrz 123!"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Hola, Mundo 123!",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "Hzxp, Yuypd 123!"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Hola, Mundo 123!",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "Hdzl, Aucrz 123!"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Hola, Mundo 123!",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "Hzxp, Yuypd 123!"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Hola, Mundo 123!",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "Siya, Xoadz 123!"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Hola, Mundo 123!",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "Wuya, Baadd 123!"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Hola, Mundo 123!",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "Ryvk, Wexny 123!"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Hola, Mundo 123!",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "Xebq, Ckdte 123!"
+  },
+  {
+   "op": "base64",
+   "entrada": "aBcXyZ-09 +/=",
+   "salida": "YUJjWHlaLTA5ICsvPQ=="
+  },
+  {
+   "op": "hex",
+   "entrada": "aBcXyZ-09 +/=",
+   "salida": "61426358795A2D3039202B2F3D"
+  },
+  {
+   "op": "espejo",
+   "entrada": "aBcXyZ-09 +/=",
+   "salida": "=/+ 90-ZyXcBa"
+  },
+  {
+   "op": "cesar",
+   "entrada": "aBcXyZ-09 +/=",
+   "n": 1,
+   "salida": "bCdYzA-09 +/="
+  },
+  {
+   "op": "cesar",
+   "entrada": "aBcXyZ-09 +/=",
+   "n": 7,
+   "salida": "hIjEfG-09 +/="
+  },
+  {
+   "op": "cesar",
+   "entrada": "aBcXyZ-09 +/=",
+   "n": 13,
+   "salida": "nOpKlM-09 +/="
+  },
+  {
+   "op": "cesar",
+   "entrada": "aBcXyZ-09 +/=",
+   "n": 25,
+   "salida": "zAbWxY-09 +/="
+  },
+  {
+   "op": "vigenere",
+   "entrada": "aBcXyZ-09 +/=",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "aQqImZ-09 +/="
+  },
+  {
+   "op": "vigenere",
+   "entrada": "aBcXyZ-09 +/=",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "aMoMkZ-09 +/="
+  },
+  {
+   "op": "vigenere",
+   "entrada": "aBcXyZ-09 +/=",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "aQqImZ-09 +/="
+  },
+  {
+   "op": "vigenere",
+   "entrada": "aBcXyZ-09 +/=",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "aMoMkZ-09 +/="
+  },
+  {
+   "op": "vigenere",
+   "entrada": "aBcXyZ-09 +/=",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "lVpXjT-09 +/="
+  },
+  {
+   "op": "vigenere",
+   "entrada": "aBcXyZ-09 +/=",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "pHpXnF-09 +/="
+  },
+  {
+   "op": "vigenere",
+   "entrada": "aBcXyZ-09 +/=",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "kLmHiJ-09 +/="
+  },
+  {
+   "op": "vigenere",
+   "entrada": "aBcXyZ-09 +/=",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "qRsNoP-09 +/="
+  },
+  {
+   "op": "base64",
+   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
+   "salida": "VEVFZ1EweEJWa1VnUlZNZ1RVRkRVazlUUTA5UVNVOHROams9"
+  },
+  {
+   "op": "hex",
+   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
+   "salida": "5445456751307842566B556752564D6754554644556B395451303951535538744E6A6B3D"
+  },
+  {
+   "op": "espejo",
+   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
+   "salida": "=kjNt8USQ90QT9kUDFUTgMVRgUkVBx0QgEET"
+  },
+  {
+   "op": "cesar",
+   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
+   "n": 1,
+   "salida": "UFFhR0yCWlVhSWNhUVGEVl9UR09RTV8uOkl="
+  },
+  {
+   "op": "cesar",
+   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
+   "n": 7,
+   "salida": "ALLnX0eICrBnYCTnABMKBr9AX09XZB8aUqr="
+  },
+  {
+   "op": "cesar",
+   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
+   "n": 13,
+   "salida": "GRRtD0kOIxHtEIZtGHSQHx9GD09DFH8gAwx="
+  },
+  {
+   "op": "cesar",
+   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
+   "n": 25,
+   "salida": "SDDfP0wAUjTfQULfSTECTj9SP09PRT8sMij="
+  },
+  {
+   "op": "vigenere",
+   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "TTSrE0xQJvIgGJXuTJTOIk9IE09BGU8iBuy="
+  },
+  {
+   "op": "vigenere",
+   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "TPQvC0xMHzGgCHBsTFRSGk9EC09FEU8eZyw="
+  },
+  {
+   "op": "vigenere",
+   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "TTSrE0xQJvIgGJXuTJTOIk9IE09BGU8iBuy="
+  },
+  {
+   "op": "vigenere",
+   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "TPQvC0xMHzGgCHBsTFRSGk9EC09FEU8eZyw="
+  },
+  {
+   "op": "vigenere",
+   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "EYRgB0rOVvOtRGGtTFZQUv9ND09QDO8gNue="
+  },
+  {
+   "op": "vigenere",
+   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "IKRgF0dOVzAtRKStTJLQUz9ZD09QHA8gNyq="
+  },
+  {
+   "op": "vigenere",
+   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "DOOqA0hLFuEqBFWqDEPNEu9DA09ACE8dXtu="
+  },
+  {
+   "op": "vigenere",
+   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "JUUwG0nRLaKwHLCwJKVTKa9JG09GIK8jDza="
+  },
+  {
+   "op": "base64",
+   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "salida": "NEM0MTIwNDM0QzQxNTY0NTIwNDU1MzIwNEQ0MTQzNTI0RjUzNDM0RjUwNDk0RjJEMzYzOQ=="
+  },
+  {
+   "op": "hex",
+   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "salida": "34433431323034333443343135363435323034353533323034443431343335323446353334333446353034393446324433363339"
+  },
+  {
+   "op": "espejo",
+   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "salida": "9363D2F49405F43435F4253414D402355402546514C4340214C4"
+  },
+  {
+   "op": "cesar",
+   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "n": 1,
+   "salida": "4D4120434D415645204553204E4143524G53434G50494G2E3639"
+  },
+  {
+   "op": "cesar",
+   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "n": 7,
+   "salida": "4J4120434J415645204553204K4143524M53434M50494M2K3639"
+  },
+  {
+   "op": "cesar",
+   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "n": 13,
+   "salida": "4P4120434P415645204553204Q4143524S53434S50494S2Q3639"
+  },
+  {
+   "op": "cesar",
+   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "n": 25,
+   "salida": "4B4120434B415645204553204C4143524E53434E50494E2C3639"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "4C4120434R415645204553204R4143524Q53434T50494F2S3639"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "4C4120434N415645204553204P4143524U53434R50494F2O3639"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "4C4120434R415645204553204R4143524Q53434T50494F2S3639"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "4C4120434N415645204553204P4143524U53434R50494F2O3639"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "4N4120434W415645204553204Q4143524F53434Q50494Z2Q3639"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "4R4120434I415645204553204Q4143524F53434U50494L2Q3639"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "4M4120434M415645204553204N4143524P53434P50494P2N3639"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "4S4120434S415645204553204T4143524V53434V50494V2T3639"
+  },
+  {
+   "op": "base64",
+   "entrada": "MVIsp17",
+   "salida": "TVZJc3AxNw=="
+  },
+  {
+   "op": "hex",
+   "entrada": "MVIsp17",
+   "salida": "4D564973703137"
+  },
+  {
+   "op": "espejo",
+   "entrada": "MVIsp17",
+   "salida": "71psIVM"
+  },
+  {
+   "op": "cesar",
+   "entrada": "MVIsp17",
+   "n": 1,
+   "salida": "NWJtq17"
+  },
+  {
+   "op": "cesar",
+   "entrada": "MVIsp17",
+   "n": 7,
+   "salida": "TCPzw17"
+  },
+  {
+   "op": "cesar",
+   "entrada": "MVIsp17",
+   "n": 13,
+   "salida": "ZIVfc17"
+  },
+  {
+   "op": "cesar",
+   "entrada": "MVIsp17",
+   "n": 25,
+   "salida": "LUHro17"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MVIsp17",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "MKWdd17"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MVIsp17",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "MGUhb17"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MVIsp17",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "MKWdd17"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MVIsp17",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "MGUhb17"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MVIsp17",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "XPVsa17"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MVIsp17",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "BBVse17"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MVIsp17",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "WFScz17"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MVIsp17",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "CLYif17"
+  },
+  {
+   "op": "base64",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "salida": "NC1wNFMweUkxa1NaU25iL2FOTXhJaHZGSU1iRFNmZmo="
+  },
+  {
+   "op": "hex",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "salida": "342D703453307949316B535A536E622F614E4D7849687646494D62445366666A"
+  },
+  {
+   "op": "espejo",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "salida": "jffSDbMIFvhIxMNa/bnSZSk1Iy0S4p-4"
+  },
+  {
+   "op": "cesar",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "n": 1,
+   "salida": "4-q4T0zJ1lTAToc/bONyJiwGJNcETggk"
+  },
+  {
+   "op": "cesar",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "n": 7,
+   "salida": "4-w4Z0fP1rZGZui/hUTePocMPTiKZmmq"
+  },
+  {
+   "op": "cesar",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "n": 13,
+   "salida": "4-c4F0lV1xFMFao/nAZkVuiSVZoQFssw"
+  },
+  {
+   "op": "cesar",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "n": 25,
+   "salida": "4-o4R0xH1jRYRma/zMLwHguEHLaCReei"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "4-p4H0mT1ySOGyp/aCAiWhkTTAbSGqtj"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "4-p4D0kX1wSKEcn/aYYmUhgRXYbOEurj"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "4-p4H0mT1ySOGyp/aCAiWhkTTAbSGqtj"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "4-p4D0kX1wSKEcn/aYYmUhgRXYbOEurj"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "4-a4M0lI1vMMSyv/nNXrVhgZVMmXFfqd"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "4-e4Y0lI1zYMSch/nNBdVhkLVMqJFfup"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "4-z4C0iS1uCJCxl/kXWhSrfPSWlNCppt"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "4-f4I0oY1aIPIdr/qDCnYxlVYCrTIvvz"
+  },
+  {
+   "op": "base64",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "salida": "OUtxaC0xRWdLUG55aVQ="
+  },
+  {
+   "op": "hex",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "salida": "394B71682D3145674B506E796954"
+  },
+  {
+   "op": "espejo",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "salida": "TiynPKgE1-hqK9"
+  },
+  {
+   "op": "cesar",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "n": 1,
+   "salida": "9Lri-1FhLQozjU"
+  },
+  {
+   "op": "cesar",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "n": 7,
+   "salida": "9Rxo-1LnRWufpA"
+  },
+  {
+   "op": "cesar",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "n": 13,
+   "salida": "9Xdu-1RtXCalvG"
+  },
+  {
+   "op": "cesar",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "n": 25,
+   "salida": "9Jpg-1DfJOmxhS"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "9Kfv-1PuKEbjwT"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "9Kbt-1TsKAznuT"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "9Kfv-1PuKEbjwT"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "9Kbt-1TsKAznuT"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "9Vku-1ErECnjcG"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "9Zwu-1EvQCnnoG"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "9Uar-1OqUZxisD"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "9Agx-1UwAFdoyJ"
+  },
+  {
+   "op": "base64",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "salida": "OFlqWHpiaTAgMWhJdC93SEs0M1FQdSthRHl3Zmg0VEhrTy9I"
+  },
+  {
+   "op": "hex",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "salida": "38596A587A62693020316849742F77484B34335150752B6144797766683454486B4F2F48"
+  },
+  {
+   "op": "espejo",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "salida": "H/OkHT4hfwyDa+uPQ34KHw/tIh1 0ibzXjY8"
+  },
+  {
+   "op": "cesar",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "n": 1,
+   "salida": "8ZkYacj0 1iJu/xIL43RQv+bEzxgi4UIlP/I"
+  },
+  {
+   "op": "cesar",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "n": 7,
+   "salida": "8FqEgip0 1oPa/dOR43XWb+hKfdmo4AOrV/O"
+  },
+  {
+   "op": "cesar",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "n": 13,
+   "salida": "8LwKmov0 1uVg/jUX43DCh+nQljsu4GUxB/U"
+  },
+  {
+   "op": "cesar",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "n": 25,
+   "salida": "8XiWyah0 1gHs/vGJ43POt+zCxveg4SGjN/G"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "8YyLkpi0 1wWe/kHZ43EAi+aSmhth4IVvC/H"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "8YuJoni0 1sUi/iHV43CEg+aOklrh4ETzA/H"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "8YyLkpi0 1wWe/kHZ43EAi+aSmhth4IVvC/H"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "8YuJoni0 1sUi/iHV43CEg+aOklrh4ETzA/H"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "8JdKzmc0 1uIe/qUK43BJh+aOsjfs4NUkZ/B"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "8NpKzqo0 1uIi/cUK43FVh+aSejfw4ZUkD/N"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "8ItHjls0 1rSd/gRU43AZe+kNigpr4DRuY/R"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "8OzNpry0 1xYj/mXA43GFk+qTomvx4JXaE/X"
+  },
+  {
+   "op": "base64",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "salida": "NVpyS1B5VklKN1IgclB3eC9nIGVHVUxrQUpSallPbGF1QSBO"
+  },
+  {
+   "op": "hex",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "salida": "355A724B507956494A375220725077782F67206547554C6B414A526A594F6C617541204E"
+  },
+  {
+   "op": "espejo",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "salida": "N AualOYjRJAkLUGe g/xwPr R7JIVyPKrZ5"
+  },
+  {
+   "op": "cesar",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "n": 1,
+   "salida": "5AsLQzWJK7S sQxy/h fHVMlBKSkZPmbvB O"
+  },
+  {
+   "op": "cesar",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "n": 7,
+   "salida": "5GyRWfCPQ7Y yWde/n lNBSrHQYqFVshbH U"
+  },
+  {
+   "op": "cesar",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "n": 13,
+   "salida": "5MeXClIVW7E eCjk/t rTHYxNWEwLBynhN A"
+  },
+  {
+   "op": "cesar",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "n": 25,
+   "salida": "5YqJOxUHI7Q qOvw/f dFTKjZIQiXNkztZ M"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "5ZgYAmVXX7C fPll/r sGJZvOJGxJClpiL B"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "5ZcWEkVTV7G dPhj/v qGFXzMJCvNAllgP Z"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "5ZgYAmVXX7C fPll/r sGJZvOJGxJClpiL B"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "5ZcWEkVTV7G dPhj/v qGFXzMJCvNAllgP Z"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "5KlXPjPVJ7C lCwi/a rGFFxAULwYZfnuL H"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "5OxXPnBVJ7G xCwm/m rGJRxAYXwYDrnuP T"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "5JbUZiFST7B bZgh/q oQEVuKTBtIYvkeK X"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "5PhAFoLYZ7H hFmn/w uWKBaQZHzOEbqkQ D"
+  },
+  {
+   "op": "base64",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "salida": "bnZCUHpsbnhoOXlCK1VGVHFhNnN4cG5KekdScVpzdVYgNGxyUzFpZA=="
+  },
+  {
+   "op": "hex",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "salida": "6E7642507A6C6E78683979422B5546547161367378706E4A7A4752715A73755620346C7253316964"
+  },
+  {
+   "op": "espejo",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "salida": "di1Srl4 VusZqRGzJnpxs6aqTFU+By9hxnlzPBvn"
+  },
+  {
+   "op": "cesar",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "n": 1,
+   "salida": "owCQamoyi9zC+VGUrb6tyqoKaHSrAtvW 4msT1je"
+  },
+  {
+   "op": "cesar",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "n": 7,
+   "salida": "ucIWgsueo9fI+BMAxh6zewuQgNYxGzbC 4syZ1pk"
+  },
+  {
+   "op": "cesar",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "n": 13,
+   "salida": "aiOCmyaku9lO+HSGdn6fkcaWmTEdMfhI 4yeF1vq"
+  },
+  {
+   "op": "cesar",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "n": 25,
+   "salida": "muAOykmwg9xA+TESpz6rwomIyFQpYrtU 4kqR1hc"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "nkPAnlcls9mB+JTEea6hlabJoUCeZhiG 4zrH1wo"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "ngNEllyjw9kB+FRIca6djezJkSGcZdgK 4xrD1us"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "nkPAnlcls9mB+JTEea6hlabJoUCeZhiG 4zrH1wo"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "ngNEllyjw9kB+FRIca6djezJkSGcZdgK 4xrD1us"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "ypOPkfaxs9sO+UQNda6drcnUtTRbTfuG 4feS1tx"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "cbOPoraxw9eO+UUZda6hdcnYfTRfFfuK 4reS1xj"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "xfLZjvxhr9iL+EPDak6chzxTjQBaJceF 4vbC1sn"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "dlRFpbdnx9oR+KVJgq6infdZpWHgPikL 4bhI1yt"
+  },
+  {
+   "op": "base64",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "salida": "U011N3YgQ1ZnRE1MWVcgbE9TM01NNnQtY2Q="
+  },
+  {
+   "op": "hex",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "salida": "534D75377620435667444D4C5957206C4F53334D4D36742D6364"
+  },
+  {
+   "op": "espejo",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "salida": "dc-t6MM3SOl WYLMDgVC v7uMS"
+  },
+  {
+   "op": "cesar",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "n": 1,
+   "salida": "TNv7w DWhENMZX mPT3NN6u-de"
+  },
+  {
+   "op": "cesar",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "n": 7,
+   "salida": "ZTb7c JCnKTSFD sVZ3TT6a-jk"
+  },
+  {
+   "op": "cesar",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "n": 13,
+   "salida": "FZh7i PItQZYLJ yBF3ZZ6g-pq"
+  },
+  {
+   "op": "cesar",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "n": 25,
+   "salida": "RLt7u BUfCLKXV kNR3LL6s-bc"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "SBi7g QVvRXZYL zZG3MB6h-nr"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "SXg7k OVrPBXYH xDE3MX6f-rp"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "SBi7g QVvRXZYL zZG3MB6h-nr"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "SXg7k OVrPBXYH xDE3MX6f-rp"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "DGh7v NPtDXFLW wIF3MX6n-pd"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "HSh7v RBtDBRLW aUF3MB6z-pd"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "CWe7f MFqNWVIG vYC3WW6d-mn"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "ICk7l SLwTCBOM bEI3CC6j-st"
+  },
+  {
+   "op": "base64",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "salida": "bG5WdUg0VWZtNCtoL01xZDViTmlRM01pUHZtN0V1RWdOOU5naw=="
+  },
+  {
+   "op": "hex",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "salida": "6C6E5675483455666D342B682F4D716435624E6951334D6950766D37457545674E394E676B"
+  },
+  {
+   "op": "espejo",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "salida": "kgN9NgEuE7mvPiM3QiNb5dqM/h+4mfU4HuVnl"
+  },
+  {
+   "op": "cesar",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "n": 1,
+   "salida": "moWvI4Vgn4+i/Nre5cOjR3NjQwn7FvFhO9Ohl"
+  },
+  {
+   "op": "cesar",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "n": 7,
+   "salida": "suCbO4Bmt4+o/Txk5iUpX3TpWct7LbLnU9Unr"
+  },
+  {
+   "op": "cesar",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "n": 13,
+   "salida": "yaIhU4Hsz4+u/Zdq5oAvD3ZvCiz7RhRtA9Atx"
+  },
+  {
+   "op": "cesar",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "n": 25,
+   "salida": "kmUtG4Tel4+g/Lpc5aMhP3LhOul7DtDfM9Mfj"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "lcJfV4Uua4+s/Aqs5pYwQ3BwAjm7TiPuN9Cuv"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "lyHjT4Uqy4+w/Yqo5nCuQ3XuEhm7PgTsN9Ysz"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "lcJfV4Uua4+s/Aqs5pYwQ3BwAjm7TiPuN9Cuv"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "lyHjT4Uqy4+w/Yqo5nCuQ3XuEhm7PgTsN9Ysz"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "whIuS4Osm4+s/Gdd5mHvQ3XcCvx7YhErH9Agv"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "atIuW4Asm4+w/Sdd5qTvQ3BoCvb7KhEvT9Agz"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "vxFeR4Epw4+r/Wan5lXsA3WsZfw7OeOqX9Xqu"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "bdLkX4Kvc4+x/Cgt5rDyG3CyFlc7UkUwD9Dwa"
+  },
+  {
+   "op": "base64",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "salida": "TWF3aEJCMmg1YmhKWk9Vaks9MHZ6SVhrSnQ="
+  },
+  {
+   "op": "hex",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "salida": "4D617768424232683562684A5A4F556A4B3D30767A49586B4A74"
+  },
+  {
+   "op": "espejo",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "salida": "tJkXIzv0=KjUOZJhb5h2BBhwaM"
+  },
+  {
+   "op": "cesar",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "n": 1,
+   "salida": "NbxiCC2i5ciKAPVkL=0waJYlKu"
+  },
+  {
+   "op": "cesar",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "n": 7,
+   "salida": "ThdoII2o5ioQGVBqR=0cgPErQa"
+  },
+  {
+   "op": "cesar",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "n": 13,
+   "salida": "ZnjuOO2u5ouWMBHwX=0imVKxWg"
+  },
+  {
+   "op": "cesar",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "n": 25,
+   "salida": "LzvgAA2g5agIYNTiJ=0uyHWjIs"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "MpksPB2w5psXZDIuY=0voWIyJi"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "MliwNB2s5nwVZZGyW=0vkUMwJe"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "MpksPB2w5psXZDIuY=0voWIyJi"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "MliwNB2s5nwVZZGyW=0vkUMwJe"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "XujhMV2u5bsDMOFdX=0vkCKkUn"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "BgjhQH2u5bwPMOJpX=0voOKkYz"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "WkgrLL2r5lrTJYEtU=0fjSHuTd"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "CqmxRR2x5rxZPEKzA=0lpYNaZj"
+  },
+  {
+   "op": "base64",
+   "entrada": "C/rBK1YsUz",
+   "salida": "Qy9yQksxWXNVeg=="
+  },
+  {
+   "op": "hex",
+   "entrada": "C/rBK1YsUz",
+   "salida": "432F72424B315973557A"
+  },
+  {
+   "op": "espejo",
+   "entrada": "C/rBK1YsUz",
+   "salida": "zUsY1KBr/C"
+  },
+  {
+   "op": "cesar",
+   "entrada": "C/rBK1YsUz",
+   "n": 1,
+   "salida": "D/sCL1ZtVa"
+  },
+  {
+   "op": "cesar",
+   "entrada": "C/rBK1YsUz",
+   "n": 7,
+   "salida": "J/yIR1FzBg"
+  },
+  {
+   "op": "cesar",
+   "entrada": "C/rBK1YsUz",
+   "n": 13,
+   "salida": "P/eOX1LfHm"
+  },
+  {
+   "op": "cesar",
+   "entrada": "C/rBK1YsUz",
+   "n": 25,
+   "salida": "B/qAJ1XrTy"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "C/rBK1YsUz",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "C/gPV1MsJn"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "C/rBK1YsUz",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "C/cNZ1KsFl"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "C/rBK1YsUz",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "C/gPV1MsJn"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "C/rBK1YsUz",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "C/cNZ1KsFl"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "C/rBK1YsUz",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "N/lOK1JmHz"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "C/rBK1YsUz",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "R/xOK1NyHz"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "C/rBK1YsUz",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "M/bLU1IcEj"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "C/rBK1YsUz",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "S/hRA1OiKp"
+  },
+  {
+   "op": "base64",
+   "entrada": "gKlsgLHdm1YU",
+   "salida": "Z0tsc2dMSGRtMVlV"
+  },
+  {
+   "op": "hex",
+   "entrada": "gKlsgLHdm1YU",
+   "salida": "674B6C73674C48646D315955"
+  },
+  {
+   "op": "espejo",
+   "entrada": "gKlsgLHdm1YU",
+   "salida": "UY1mdHLgslKg"
+  },
+  {
+   "op": "cesar",
+   "entrada": "gKlsgLHdm1YU",
+   "n": 1,
+   "salida": "hLmthMIen1ZV"
+  },
+  {
+   "op": "cesar",
+   "entrada": "gKlsgLHdm1YU",
+   "n": 7,
+   "salida": "nRsznSOkt1FB"
+  },
+  {
+   "op": "cesar",
+   "entrada": "gKlsgLHdm1YU",
+   "n": 13,
+   "salida": "tXyftYUqz1LH"
+  },
+  {
+   "op": "cesar",
+   "entrada": "gKlsgLHdm1YU",
+   "n": 25,
+   "salida": "fJkrfKGcl1XT"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "gKlsgLHdm1YU",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "gZzduLWrx1MU"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "gKlsgLHdm1YU",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "gVxhsLSpb1KU"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "gKlsgLHdm1YU",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "gZzduLWrx1MU"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "gKlsgLHdm1YU",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "gVxhsLSpb1KU"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "gKlsgLHdm1YU",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "rEysrFUdx1SH"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "gKlsgLHdm1YU",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "vQysvRUdb1EH"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "gKlsgLHdm1YU",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "qUvcqVRnw1IE"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "gKlsgLHdm1YU",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "wAbiwBXtc1OK"
+  },
+  {
+   "op": "base64",
+   "entrada": "jO95n3",
+   "salida": "ak85NW4z"
+  },
+  {
+   "op": "hex",
+   "entrada": "jO95n3",
+   "salida": "6A4F39356E33"
+  },
+  {
+   "op": "espejo",
+   "entrada": "jO95n3",
+   "salida": "3n59Oj"
+  },
+  {
+   "op": "cesar",
+   "entrada": "jO95n3",
+   "n": 1,
+   "salida": "kP95o3"
+  },
+  {
+   "op": "cesar",
+   "entrada": "jO95n3",
+   "n": 7,
+   "salida": "qV95u3"
+  },
+  {
+   "op": "cesar",
+   "entrada": "jO95n3",
+   "n": 13,
+   "salida": "wB95a3"
+  },
+  {
+   "op": "cesar",
+   "entrada": "jO95n3",
+   "n": 25,
+   "salida": "iN95m3"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "jO95n3",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "jD95b3"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "jO95n3",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "jZ95z3"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "jO95n3",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "jD95b3"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "jO95n3",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "jZ95z3"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "jO95n3",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "uI95a3"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "jO95n3",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "yU95a3"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "jO95n3",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "tY95x3"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "jO95n3",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "zE95d3"
+  },
+  {
+   "op": "base64",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "salida": "bGVkeVR3dm8zdUM2MnBKOEVtc0llLzB0YUlNWUFYb2xCWXplQk0="
+  },
+  {
+   "op": "hex",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "salida": "6C6564795477766F3375433632704A38456D7349652F307461494D5941586F6C42597A65424D"
+  },
+  {
+   "op": "espejo",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "salida": "MBezYBloXAYMIat0/eIsmE8Jp26Cu3ovwTydel"
+  },
+  {
+   "op": "cesar",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "n": 1,
+   "salida": "mfezUxwp3vD62qK8FntJf/0ubJNZBYpmCZafCN"
+  },
+  {
+   "op": "cesar",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "n": 7,
+   "salida": "slkfAdcv3bJ62wQ8LtzPl/0ahPTFHEvsIFglIT"
+  },
+  {
+   "op": "cesar",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "n": 13,
+   "salida": "yrqlGjib3hP62cW8RzfVr/0gnVZLNKbyOLmrOZ"
+  },
+  {
+   "op": "cesar",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "n": 25,
+   "salida": "kdcxSvun3tB62oI8DlrHd/0szHLXZWnkAXydAL"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "ltrjHwkc3fQ62pY8SxgIt/0hlWMNOIclQMksBB"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "lppnFwga3jO62pU8QbeIp/0fpUMJMMalMKoqBX"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "ltrjHwkc3fQ62pY8SxgIt/0hlWMNOIclQMksBB"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "lppnFwga3jO62pU8QbeIp/0fpUMJMMalMKoqBX"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "wyqyEqio3fW62cJ8PgfIp/0nnIXSNXzfOYkyOM"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "akqyIcio3jI62cJ8TsfIt/0znIBENXdrOYokOM"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "voniDgfy3eM62zT8OwcSo/0dkSWIKHyvLIjoLW"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "butoJmle3kS62fZ8UciYu/0jqYCOQNebROpuRC"
+  },
+  {
+   "op": "base64",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "salida": "TVhyU2VTdnhQVWcvZlNxOD1Y"
+  },
+  {
+   "op": "hex",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "salida": "4D587253655376785055672F665371383D58"
+  },
+  {
+   "op": "espejo",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "salida": "X=8qSf/gUPxvSeSrXM"
+  },
+  {
+   "op": "cesar",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "n": 1,
+   "salida": "NYsTfTwyQVh/gTr8=Y"
+  },
+  {
+   "op": "cesar",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "n": 7,
+   "salida": "TEyZlZceWBn/mZx8=E"
+  },
+  {
+   "op": "cesar",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "n": 13,
+   "salida": "ZKeFrFikCHt/sFd8=K"
+  },
+  {
+   "op": "cesar",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "n": 25,
+   "salida": "LWqRdRuwOTf/eRp8=W"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "MMfDsSklAIg/uGb8=L"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "MIdHqSgjEGg/qEf8=J"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "MMfDsSklAIg/uGb8=L"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "MIdHqSgjEGg/qEf8=J"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "XReSpMixAOt/fDk8=K"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "BDeStYixEAt/fHw8=K"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "WHbCoCfhZEq/pCa8=H"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "CNhIuIlnFKw/vIg8=N"
+  },
+  {
+   "op": "base64",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "salida": "SDRpYS1sR1pwbzNEelp5WTk9Mg=="
+  },
+  {
+   "op": "hex",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "salida": "483469612D6C475A706F33447A5A7959393D32"
+  },
+  {
+   "op": "espejo",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "salida": "2=9YyZzD3opZGl-ai4H"
+  },
+  {
+   "op": "cesar",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "n": 1,
+   "salida": "I4jb-mHAqp3EaAzZ9=2"
+  },
+  {
+   "op": "cesar",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "n": 7,
+   "salida": "O4ph-sNGwv3KgGfF9=2"
+  },
+  {
+   "op": "cesar",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "n": 13,
+   "salida": "U4vn-yTMcb3QmMlL9=2"
+  },
+  {
+   "op": "cesar",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "n": 25,
+   "salida": "G4hz-kFYon3CyYxX9=2"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "H4xo-wUZec3OnZnM9=2"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "H4tm-aSZaa3SlZjK9=2"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "H4xo-wUZec3OnZnM9=2"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "H4tm-aSZaa3SlZjK9=2"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "S4cn-lRTco3OtMyJ9=2"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "W4on-lVFco3SfMyN9=2"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "R4sk-vQJzy3NjJiI9=2"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "X4yq-bWPfe3TpPoO9=2"
+  },
+  {
+   "op": "base64",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "salida": "MHpyZTBvR0x3Nlk3UXZOUS0="
+  },
+  {
+   "op": "hex",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "salida": "307A7265306F474C7736593751764E512D"
+  },
+  {
+   "op": "espejo",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "salida": "-QNvQ7Y6wLGo0erz0"
+  },
+  {
+   "op": "cesar",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "n": 1,
+   "salida": "0asf0pHMx6Z7RwOR-"
+  },
+  {
+   "op": "cesar",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "n": 7,
+   "salida": "0gyl0vNSd6F7XcUX-"
+  },
+  {
+   "op": "cesar",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "n": 13,
+   "salida": "0mer0bTYj6L7DiAD-"
+  },
+  {
+   "op": "cesar",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "n": 25,
+   "salida": "0yqd0nFKv6X7PuMP-"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "0zgs0zULl6M7BjNF-"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "0zcq0dSLh6K7FhNB-"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "0zgs0zULl6M7BjNF-"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "0zcq0dSLh6K7FhNB-"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "0klr0oRFj6Y7BpAQ-"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "0oxr0oVRj6Y7FbAQ-"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "0jbo0yQVg6I7AfXA-"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "0phu0eWBm6O7GlDG-"
+  },
+  {
+   "op": "base64",
+   "entrada": "1Iz6mokeat BiFY",
+   "salida": "MUl6Nm1va2VhdCBCaUZZ"
+  },
+  {
+   "op": "hex",
+   "entrada": "1Iz6mokeat BiFY",
+   "salida": "31497A366D6F6B6561742042694659"
+  },
+  {
+   "op": "espejo",
+   "entrada": "1Iz6mokeat BiFY",
+   "salida": "YFiB taekom6zI1"
+  },
+  {
+   "op": "cesar",
+   "entrada": "1Iz6mokeat BiFY",
+   "n": 1,
+   "salida": "1Ja6nplfbu CjGZ"
+  },
+  {
+   "op": "cesar",
+   "entrada": "1Iz6mokeat BiFY",
+   "n": 7,
+   "salida": "1Pg6tvrlha IpMF"
+  },
+  {
+   "op": "cesar",
+   "entrada": "1Iz6mokeat BiFY",
+   "n": 13,
+   "salida": "1Vm6zbxrng OvSL"
+  },
+  {
+   "op": "cesar",
+   "entrada": "1Iz6mokeat BiFY",
+   "n": 25,
+   "salida": "1Hy6lnjdzs AhEX"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Iz6mokeat BiFY",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "1Io6azyeph MwFN"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Iz6mokeat BiFY",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "1Ik6ydwelf QuFJ"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Iz6mokeat BiFY",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "1Io6azyeph MwFN"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Iz6mokeat BiFY",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "1Ik6ydwelf QuFJ"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Iz6mokeat BiFY",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "1Tt6zovynt McSY"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Iz6mokeat BiFY",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "1Xf6zozknt QoSY"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Iz6mokeat BiFY",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "1Sj6wyuokd LsPI"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Iz6mokeat BiFY",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "1Yp6ceauqj RyVO"
+  },
+  {
+   "op": "base64",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "salida": "cTBqK2RESjB4TmF4RFZXcUl2M3daNlQ="
+  },
+  {
+   "op": "hex",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "salida": "71306A2B64444A30784E617844565771497633775A3654"
+  },
+  {
+   "op": "espejo",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "salida": "T6Zw3vIqWVDxaNx0JDd+j0q"
+  },
+  {
+   "op": "cesar",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "n": 1,
+   "salida": "r0k+eEK0yObyEWXrJw3xA6U"
+  },
+  {
+   "op": "cesar",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "n": 7,
+   "salida": "x0q+kKQ0eUheKCDxPc3dG6A"
+  },
+  {
+   "op": "cesar",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "n": 13,
+   "salida": "d0w+qQW0kAnkQIJdVi3jM6G"
+  },
+  {
+   "op": "cesar",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "n": 25,
+   "salida": "p0i+cCI0wMzwCUVpHu3vY6S"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "q0y+rOX0xCoiRVLeTj3wO6H"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "q0u+pSV0xYmmPVHcXh3wK6F"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "q0y+rOX0xCoiRVLeTj3wO6H"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "q0u+pSV0xYmmPVHcXh3wK6F"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "b0d+qDU0rAaiXIWbCi3wK6N"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "f0p+qDY0dAamJIWfOi3wO6Z"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "a0t+nNT0hXkhNFGaSf3gJ6D"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "g0z+tTZ0nDqnTLMgYl3mP6J"
+  },
+  {
+   "op": "base64",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "salida": "VCtrc0tDIEVoSS1EaGJOdk1xYW16ajk4aEpnUXRDbGggWA=="
+  },
+  {
+   "op": "hex",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "salida": "542B6B734B43204568492D4468624E764D71616D7A6A3938684A675174436C682058"
+  },
+  {
+   "op": "espejo",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "salida": "X hlCtQgJh89jzmaqMvNbhD-IhE CKsk+T"
+  },
+  {
+   "op": "cesar",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "n": 1,
+   "salida": "U+ltLD FiJ-EicOwNrbnak98iKhRuDmi Y"
+  },
+  {
+   "op": "cesar",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "n": 7,
+   "salida": "A+rzRJ LoP-KoiUcTxhtgq98oQnXaJso E"
+  },
+  {
+   "op": "cesar",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "n": 13,
+   "salida": "G+xfXP RuV-QuoAiZdnzmw98uWtDgPyu K"
+  },
+  {
+   "op": "cesar",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "n": 25,
+   "salida": "S+jrJB DgH-CgaMuLpzlyi98gIfPsBkg W"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "T+zgVQ EwW-OvbCjXeabnu98vJvEeQlw L"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "T+veZO EsU-StbYhBcaxly98tJrCiOls J"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "T+zgVQ EwW-OvbCjXeabnu98vJvEeQlw L"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "T+veZO EsU-StbYhBcaxly98tJrCiOls J"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "E+efKN YuI-OboNgGdaxtw98hUaDtNfu X"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "I+qfKR KuI-SnoNkSdabfw98hYmDtRru X"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "D+ucUM OrS-NrlXfWakwjt98rTqAdMvr H"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "J+aiAS UxY-TxrDlCgqcpz98xZwGjSbx N"
+  },
+  {
+   "op": "base64",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "salida": "SFEybkExMzEgLUd0NysxeWpVYy8razArc0ZTbjhm"
+  },
+  {
+   "op": "hex",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "salida": "4851326E41313331202D4774372B31796A55632F2B6B302B7346536E3866"
+  },
+  {
+   "op": "espejo",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "salida": "f8nSFs+0k+/cUjy1+7tG- 131An2QH"
+  },
+  {
+   "op": "cesar",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "n": 1,
+   "salida": "IR2oB131 -Hu7+1zkVd/+l0+tGTo8g"
+  },
+  {
+   "op": "cesar",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "n": 7,
+   "salida": "OX2uH131 -Na7+1fqBj/+r0+zMZu8m"
+  },
+  {
+   "op": "cesar",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "n": 13,
+   "salida": "UD2aN131 -Tg7+1lwHp/+x0+fSFa8s"
+  },
+  {
+   "op": "cesar",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "n": 25,
+   "salida": "GP2mZ131 -Fs7+1xiTb/+j0+rERm8e"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "HF2bL131 -Ut7+1nxFq/+k0+hTDb8f"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "HB2zP131 -St7+1jvJo/+k0+dRHz8f"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "HF2bL131 -Ut7+1nxFq/+k0+hTDb8f"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "HB2zP131 -St7+1jvJo/+k0+dRHz8f"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "SK2aA131 -Rn7+1ljFw/+x0+sQMa8f"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "WW2aA131 -Vz7+1ljJi/+x0+sUYa8f"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "RA2xK131 -Qd7+1itEm/+u0+cPCx8p"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "XG2dQ131 -Wj7+1ozKs/+a0+iVId8v"
+  },
+  {
+   "op": "base64",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "salida": "PWxGRExLSWI1UXRDMkkycFlIbDBrZDRn"
+  },
+  {
+   "op": "hex",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "salida": "3D6C46444C4B4962355174433249327059486C306B643467"
+  },
+  {
+   "op": "espejo",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "salida": "g4dk0lHYp2I2CtQ5bIKLDFl="
+  },
+  {
+   "op": "cesar",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "n": 1,
+   "salida": "=mGEMLJc5RuD2J2qZIm0le4h"
+  },
+  {
+   "op": "cesar",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "n": 7,
+   "salida": "=sMKSRPi5XaJ2P2wFOs0rk4n"
+  },
+  {
+   "op": "cesar",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "n": 13,
+   "salida": "=ySQYXVo5DgP2V2cLUy0xq4t"
+  },
+  {
+   "op": "cesar",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "n": 25,
+   "salida": "=kECKJHa5PsB2H2oXGk0jc4f"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "=lURWYIq5EeQ2I2eMSz0ks4u"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "=lQPAWIm5CiO2I2aKWx0ko4s"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "=lURWYIq5EeQ2I2eMSz0ks4u"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "=lQPAWIm5CiO2I2aKWx0ko4s"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "=wZQLVCo5QeW2V2pJBy0ko4a"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "=aLQLZOo5QiI2V2pNNy0ks4m"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "=vPNVUSl5AdM2S2zIRv0un4q"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "=bVTBAYr5GjS2Y2fOXb0at4w"
+  },
+  {
+   "op": "base64",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "salida": "OUVqbWw3aVl3SkYwYWQrdQ=="
+  },
+  {
+   "op": "hex",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "salida": "39456A6D6C376959774A463061642B75"
+  },
+  {
+   "op": "espejo",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "salida": "u+da0FJwYi7lmjE9"
+  },
+  {
+   "op": "cesar",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "n": 1,
+   "salida": "9Fknm7jZxKG0be+v"
+  },
+  {
+   "op": "cesar",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "n": 7,
+   "salida": "9Lqts7pFdQM0hk+b"
+  },
+  {
+   "op": "cesar",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "n": 13,
+   "salida": "9Rwzy7vLjWS0nq+h"
+  },
+  {
+   "op": "cesar",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "n": 25,
+   "salida": "9Dilk7hXvIE0zc+t"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "9Eyaw7wYlXQ0od+j"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "9Euya7uYhVU0md+f"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "9Eyaw7wYlXQ0od+j"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "9Euya7uYhVU0md+f"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "9Pdzl7tSjJQ0uq+u"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "9Tpzl7xEjJU0gq+u"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "9Otwv7sIgTP0kn+e"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "9Uzcb7yOmZV0qt+k"
+  },
+  {
+   "op": "base64",
+   "entrada": "1btb45SdUXBLHnY+",
+   "salida": "MWJ0YjQ1U2RVWEJMSG5ZKw=="
+  },
+  {
+   "op": "hex",
+   "entrada": "1btb45SdUXBLHnY+",
+   "salida": "31627462343553645558424C486E592B"
+  },
+  {
+   "op": "espejo",
+   "entrada": "1btb45SdUXBLHnY+",
+   "salida": "+YnHLBXUdS54btb1"
+  },
+  {
+   "op": "cesar",
+   "entrada": "1btb45SdUXBLHnY+",
+   "n": 1,
+   "salida": "1cuc45TeVYCMIoZ+"
+  },
+  {
+   "op": "cesar",
+   "entrada": "1btb45SdUXBLHnY+",
+   "n": 7,
+   "salida": "1iai45ZkBEISOuF+"
+  },
+  {
+   "op": "cesar",
+   "entrada": "1btb45SdUXBLHnY+",
+   "n": 13,
+   "salida": "1ogo45FqHKOYUaL+"
+  },
+  {
+   "op": "cesar",
+   "entrada": "1btb45SdUXBLHnY+",
+   "n": 25,
+   "salida": "1asa45RcTWAKGmX+"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1btb45SdUXBLHnY+",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "1bip45DrUMPWVnN+"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1btb45SdUXBLHnY+",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "1ben45HpUINATnJ+"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1btb45SdUXBLHnY+",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "1bip45DrUMPWVnN+"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1btb45SdUXBLHnY+",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "1ben45HpUINATnJ+"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1btb45SdUXBLHnY+",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "1mno45SoOKBWBaY+"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1btb45SdUXBLHnY+",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "1qzo45SsAKBANaY+"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1btb45SdUXBLHnY+",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "1ldl45CnEHLVRxI+"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1btb45SdUXBLHnY+",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "1rjr45ItKNRBXdO+"
+  },
+  {
+   "op": "base64",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "salida": "L2c3cjhlelZwNXNBNGRYamo="
+  },
+  {
+   "op": "hex",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "salida": "2F67377238657A56703573413464586A6A"
+  },
+  {
+   "op": "espejo",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "salida": "jjXd4As5pVze8r7g/"
+  },
+  {
+   "op": "cesar",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "n": 1,
+   "salida": "/h7s8faWq5tB4eYkk"
+  },
+  {
+   "op": "cesar",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "n": 7,
+   "salida": "/n7y8lgCw5zH4kEqq"
+  },
+  {
+   "op": "cesar",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "n": 13,
+   "salida": "/t7e8rmIc5fN4qKww"
+  },
+  {
+   "op": "cesar",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "n": 25,
+   "salida": "/f7q8dyUo5rZ4cWii"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "/g7g8skJp5hO4oLjy"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "/g7c8qoHp5dM4sJju"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "/g7g8skJp5hO4oLjy"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "/g7c8qoHp5dM4sJju"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "/r7l8rzGj5fA4oRwj"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "/v7x8rzKv5fA4sDwj"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "/q7b8ojFz5cK4nHtt"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "/w7h8upLf5iQ4tNzz"
+  },
+  {
+   "op": "base64",
+   "entrada": "1Q4/L5tfZiy",
+   "salida": "MVE0L0w1dGZaaXk="
+  },
+  {
+   "op": "hex",
+   "entrada": "1Q4/L5tfZiy",
+   "salida": "3151342F4C3574665A6979"
+  },
+  {
+   "op": "espejo",
+   "entrada": "1Q4/L5tfZiy",
+   "salida": "yiZft5L/4Q1"
+  },
+  {
+   "op": "cesar",
+   "entrada": "1Q4/L5tfZiy",
+   "n": 1,
+   "salida": "1R4/M5ugAjz"
+  },
+  {
+   "op": "cesar",
+   "entrada": "1Q4/L5tfZiy",
+   "n": 7,
+   "salida": "1X4/S5amGpf"
+  },
+  {
+   "op": "cesar",
+   "entrada": "1Q4/L5tfZiy",
+   "n": 13,
+   "salida": "1D4/Y5gsMvl"
+  },
+  {
+   "op": "cesar",
+   "entrada": "1Q4/L5tfZiy",
+   "n": 25,
+   "salida": "1P4/K5seYhx"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Q4/L5tfZiy",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "1Q4/A5hqNin"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Q4/L5tfZiy",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "1Q4/W5fuLij"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Q4/L5tfZiy",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "1Q4/A5hqNin"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Q4/L5tfZiy",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "1Q4/W5fuLij"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Q4/L5tfZiy",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "1B4/F5gfKcl"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Q4/L5tfZiy",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "1F4/R5gfOol"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Q4/L5tfZiy",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "1A4/V5dpJsi"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Q4/L5tfZiy",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "1G4/B5jvPyo"
+  },
+  {
+   "op": "base64",
+   "entrada": "Wb4BW",
+   "salida": "V2I0Qlc="
+  },
+  {
+   "op": "hex",
+   "entrada": "Wb4BW",
+   "salida": "5762344257"
+  },
+  {
+   "op": "espejo",
+   "entrada": "Wb4BW",
+   "salida": "WB4bW"
+  },
+  {
+   "op": "cesar",
+   "entrada": "Wb4BW",
+   "n": 1,
+   "salida": "Xc4CX"
+  },
+  {
+   "op": "cesar",
+   "entrada": "Wb4BW",
+   "n": 7,
+   "salida": "Di4ID"
+  },
+  {
+   "op": "cesar",
+   "entrada": "Wb4BW",
+   "n": 13,
+   "salida": "Jo4OJ"
+  },
+  {
+   "op": "cesar",
+   "entrada": "Wb4BW",
+   "n": 25,
+   "salida": "Va4AV"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Wb4BW",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "Wq4PH"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Wb4BW",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "Wm4NL"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Wb4BW",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "Wq4PH"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Wb4BW",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "Wm4NL"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Wb4BW",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "Hv4OW"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Wb4BW",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "Lh4OW"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Wb4BW",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "Gl4LG"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Wb4BW",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "Mr4RM"
+  },
+  {
+   "op": "base64",
+   "entrada": "d+Zp59p/y/DUnS",
+   "salida": "ZCtacDU5cC95L0RVblM="
+  },
+  {
+   "op": "hex",
+   "entrada": "d+Zp59p/y/DUnS",
+   "salida": "642B5A703539702F792F44556E53"
+  },
+  {
+   "op": "espejo",
+   "entrada": "d+Zp59p/y/DUnS",
+   "salida": "SnUD/y/p95pZ+d"
+  },
+  {
+   "op": "cesar",
+   "entrada": "d+Zp59p/y/DUnS",
+   "n": 1,
+   "salida": "e+Aq59q/z/EVoT"
+  },
+  {
+   "op": "cesar",
+   "entrada": "d+Zp59p/y/DUnS",
+   "n": 7,
+   "salida": "k+Gw59w/f/KBuZ"
+  },
+  {
+   "op": "cesar",
+   "entrada": "d+Zp59p/y/DUnS",
+   "n": 13,
+   "salida": "q+Mc59c/l/QHaF"
+  },
+  {
+   "op": "cesar",
+   "entrada": "d+Zp59p/y/DUnS",
+   "n": 25,
+   "salida": "c+Yo59o/x/CTmR"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "d+Zp59p/y/DUnS",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "d+Od59a/m/DJbD"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "d+Zp59p/y/DUnS",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "d+Kb59e/k/DFzH"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "d+Zp59p/y/DUnS",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "d+Od59a/m/DJbD"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "d+Zp59p/y/DUnS",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "d+Kb59e/k/DFzH"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "d+Zp59p/y/DUnS",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "o+Tc59p/j/XHnD"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "d+Zp59p/y/DUnS",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "s+Fc59p/n/JHnH"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "d+Zp59p/y/DUnS",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "n+Jz59z/i/NExC"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "d+Zp59p/y/DUnS",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "t+Pf59f/o/TKdI"
+  },
+  {
+   "op": "base64",
+   "entrada": "3-LMi-YDN",
+   "salida": "My1MTWktWURO"
+  },
+  {
+   "op": "hex",
+   "entrada": "3-LMi-YDN",
+   "salida": "332D4C4D692D59444E"
+  },
+  {
+   "op": "espejo",
+   "entrada": "3-LMi-YDN",
+   "salida": "NDY-iML-3"
+  },
+  {
+   "op": "cesar",
+   "entrada": "3-LMi-YDN",
+   "n": 1,
+   "salida": "3-MNj-ZEO"
+  },
+  {
+   "op": "cesar",
+   "entrada": "3-LMi-YDN",
+   "n": 7,
+   "salida": "3-STp-FKU"
+  },
+  {
+   "op": "cesar",
+   "entrada": "3-LMi-YDN",
+   "n": 13,
+   "salida": "3-YZv-LQA"
+  },
+  {
+   "op": "cesar",
+   "entrada": "3-LMi-YDN",
+   "n": 25,
+   "salida": "3-KLh-XCM"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "3-LMi-YDN",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "3-LBw-JRN"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "3-LMi-YDN",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "3-LXu-NPN"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "3-LMi-YDN",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "3-LBw-JRN"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "3-LMi-YDN",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "3-LXu-NPN"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "3-LMi-YDN",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "3-WGv-YOH"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "3-LMi-YDN",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "3-ASv-YST"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "3-LMi-YDN",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "3-VWs-INX"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "3-LMi-YDN",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "3-BCy-OTD"
+  },
+  {
+   "op": "base64",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "salida": "MW9uLURLNjc9aVUvWmpxYnU1"
+  },
+  {
+   "op": "hex",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "salida": "316F6E2D444B36373D69552F5A6A71627535"
+  },
+  {
+   "op": "espejo",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "salida": "5ubqjZ/Ui=76KD-no1"
+  },
+  {
+   "op": "cesar",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "n": 1,
+   "salida": "1po-EL67=jV/Akrcv5"
+  },
+  {
+   "op": "cesar",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "n": 7,
+   "salida": "1vu-KR67=pB/Gqxib5"
+  },
+  {
+   "op": "cesar",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "n": 13,
+   "salida": "1ba-QX67=vH/Mwdoh5"
+  },
+  {
+   "op": "cesar",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "n": 25,
+   "salida": "1nm-CJ67=hT/Yipat5"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "1oc-RV67=wU/Oxbpu5"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "1oy-PZ67=uU/Kvfnu5"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "1oc-RV67=wU/Oxbpu5"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "1oy-PZ67=uU/Kvfnu5"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "1zh-QK67=tO/Mjbvh5"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "1dt-QK67=xA/Mjfhh5"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "1yx-NU67=sE/Jtale5"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "1ed-TA67=yK/Pzgrk5"
+  },
+  {
+   "op": "base64",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "salida": "SUJsb2xycGZqej1vMGlLLVdkNHVzRzN3dVdiV050"
+  },
+  {
+   "op": "hex",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "salida": "49426C6F6C7270666A7A3D6F30694B2D5764347573473377755762574E74"
+  },
+  {
+   "op": "espejo",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "salida": "tNWbWuw3Gsu4dW-Ki0o=zjfprlolBI"
+  },
+  {
+   "op": "cesar",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "n": 1,
+   "salida": "JCmpmsqgka=p0jL-Xe4vtH3xvXcXOu"
+  },
+  {
+   "op": "cesar",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "n": 7,
+   "salida": "PIsvsywmqg=v0pR-Dk4bzN3dbDiDUa"
+  },
+  {
+   "op": "cesar",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "n": 13,
+   "salida": "VOybyecswm=b0vX-Jq4hfT3jhJoJAg"
+  },
+  {
+   "op": "cesar",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "n": 25,
+   "salida": "HAknkqoeiy=n0hJ-Vc4trF3vtVaVMs"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "IQzzzretun=o0xY-Hr4uhU3hiWqKYh"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "IMxdxraryl=o0tW-Lp4udS3lgWmICf"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "IQzzzretun=o0xY-Hr4uhU3hiWqKYh"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "IMxdxraryl=o0tW-Lp4udS3lgWmICf"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "TVyowlcfut=b0iV-Qq4udA3juHvJNe"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "XHyoaxcfyf=b0iZ-Cq4uhM3juLhJNi"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "SLvyvbzptj=y0sU-Gn4ecQ3geGlGXd"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "YRbebhfvzp=e0yA-Mt4kiW3mkMrMDj"
+  }
+ ]
+}

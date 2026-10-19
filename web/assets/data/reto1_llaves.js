@@ -1,0 +1,3 @@
+// Generado por herramientas/construir_web.py — no editar a mano.
+window.DATOS = window.DATOS || {};
+window.DATOS["reto1_llaves"] = {"sal": "hOXU7r6pJspvgqlOXzNnmw==", "iteraciones": 150000, "llaves": [{"iv": "aTt4eHRjqtpNtX8C", "ct": "tx/H+rGAVBB+924n4VfRBrfCw76kS4PDb01AWZWKEQLRX3uXzqJlI5azCZe2yaTy"}, {"iv": "MJqH2gSSJV+S1bJk", "ct": "0budazx25XJzow4A1a+8cYeSh2v9WeT8oB4YmZKhUXQR074GIiGaVwlZKd5PX54j"}, {"iv": "nHntqMJMtMipxsf5", "ct": "liVMy6bMA+3C9Vp7LOevIij05v4iEW/0Zx3J5loOwFy0BGA5x1va/XH+K6oD/U+H"}, {"iv": "q9hAFDJh1pemC+F1", "ct": "AIYJFQJqyF0f2jhR+GZB1O17pJSNHJrGhIFnTBjAh26PSSr4/k4kZKF6hOH7cLhy"}, {"iv": "q1pPBKUbVoPA3x7M", "ct": "01VcSJffVBPd9opX8tywq8YgmNNI4Xf1qBFcwi3M9TejW6AMjwQw89GK0DCP0J8+"}], "archivos": {"foto": "reto1_foto", "audio": "reto1_audio"}};

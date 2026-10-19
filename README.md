@@ -23,17 +23,47 @@ Web_Hackathon/
 ├── herramientas/         ← scripts de Python (se pueden volver a ejecutar)
 │   ├── sstv_pd120.py               codificador y decodificador SSTV PD120, comentado
 │   ├── generar_fragmentos_mapa.py  corta mapa.png en 4 fragmentos y crea sus WAV
-│   └── reto2_generador.py          genera y verifica las cadenas del reto 2 (referencia para la web)
-├── generado/mapa/        ← salida del script (no editar: se regenera)
-│   ├── fragmento_N_nombre.png / .wav   los 4 fragmentos (PD120, 127 s, 2,8 MB)
-│   ├── comprobacion_mapa_decodificado.png  mapa reconstruido a partir de los audios
-│   └── solucion_organizadores.json     orden correcto de los fragmentos
+│   ├── reto2_generador.py          genera y verifica las cadenas del reto 2 (--exportar: banco para la web)
+│   ├── probar_reto2_js.mjs         comprueba que web/js/operaciones.js da lo mismo que el script de Python
+│   └── construir_web.py            copia imágenes, prepara la pista y cifra las recompensas en web/assets/data/
+├── generado/
+│   ├── mapa/             ← salida de generar_fragmentos_mapa.py (no editar: se regenera)
+│   │   ├── fragmento_N_nombre.png / .wav   los 4 fragmentos (PD120, 127 s, 2,8 MB)
+│   │   ├── comprobacion_mapa_decodificado.png  mapa reconstruido a partir de los audios
+│   │   └── solucion_organizadores.json     orden correcto de los fragmentos
+│   ├── reto1/            ← pista del reto 1 a 11 025 Hz (y su imagen descodificada)
+│   └── reto2/            ← vectores de prueba para probar_reto2_js.mjs
 ├── referencia/
 │   └── reto1_prototipo.html  ← prototipo del reto 1 (pista → nombre → puzle 3×3 → audio)
-└── web/                  ← la web local (por crear)
+└── web/                  ← la web local: doble clic en web/index.html
+    ├── index.html        una sola página; rutas #/panel, #/reto1, #/reto2, #/montaje
+    ├── css/estilo.css    estilo "Explorador Enigma"
+    ├── js/               base (progreso, cifrado), app (panel), reto1, reto2, operaciones, montaje
+    └── assets/           fuentes, imágenes y datos (.js con base64; las recompensas van cifradas)
 ```
 
-**Si cambias `mapa.png`** (por ejemplo, al añadir las estaciones), vuelve a ejecutar `python herramientas/generar_fragmentos_mapa.py`.
+**Si cambias `mapa.png`** (por ejemplo, al añadir las estaciones), vuelve a ejecutar `python herramientas/generar_fragmentos_mapa.py`
+y después `python herramientas/construir_web.py` para volver a cifrar las recompensas de la web.
+
+## Web local
+
+- Se abre con doble clic en `web/index.html` (Chrome o Edge). No necesita servidor ni internet.
+- **Respuestas:** se normalizan (sin tildes, sin mayúsculas, solo letras y números) y nunca aparecen en la web.
+  Las respuestas aceptadas están en `herramientas/construir_web.py`: cada una "envuelve" la llave AES del reto
+  (PBKDF2 + AES-GCM con WebCrypto). Reto 1 acepta también solo el apellido y alguna falta de ortografía típica.
+- **Puntuación:** 100 por reto, −5 por fallo, menos el coste de las pistas (mínimo 10). Se ve en la cabecera.
+- **Intentos:** 5 fallos → bloqueo de 1 minuto (también si se recarga la página).
+- **Progreso** en `localStorage`. "Reiniciar progreso" (abajo a la derecha, discreto) lo borra todo tras dos confirmaciones.
+- **Montaje:** las imágenes subidas no salen del PC; se pueden ordenar, girar, quitar la cabecera y descargar en PNG.
+- Para regenerar los datos: `python herramientas/reto2_generador.py --exportar` y `python herramientas/construir_web.py`.
+  Para probar el reto 2 en JS: `node herramientas/probar_reto2_js.mjs`.
+
+## Reto 1 · "Mensaje desde 1969" → ORIÓN
+
+1. La pista SSTV (foto de Aldrin en la Luna) pregunta «¿Quién hizo esta fotografía?».
+2. Respuesta: el comandante que sostenía la cámara (en `construir_web.py`). Dos pistas: −10 y −20.
+3. Puzle 3×3 con la foto del prototipo (se descifra con la respuesta).
+4. Recompensa: audio del fragmento ORIÓN.
 
 ## Decisiones tomadas
 
@@ -47,7 +77,7 @@ Web_Hackathon/
 - **Fragmentos del mapa:** 4 tiras verticales enviadas giradas 90° (el mapa es 2,7:1 y PD120 es casi cuadrado;
   así se conserva un 35 % más de detalle). Cabecera con nombre de constelación (LYRA, ORIÓN, CYGNUS, ANDRÓMEDA)
   que no revela el orden. Al montar el mapa hay que girar y ordenar las piezas.
-- **Retos:** el reto 1 existe (prototipo). Los retos 2–4 se definen más adelante.
+- **Retos:** los retos 1 y 2 están en la web. Los retos 3 y 4 aparecen como "PRÓXIMAMENTE" y se definen más adelante.
 - **Jupyter:** solo para la clase guiada y para generar los WAV.
 - **Asignación de fragmentos:** Reto 1 → ORIÓN · Reto 2 → CYGNUS · Reto 3 → LYRA · Reto 4 → ANDRÓMEDA.
 - **Estilo:** el oscuro de "Explorador Enigma" (https://sstv.groundcontrol.granasat.space/retos): fondo espacial,
@@ -95,3 +125,7 @@ encadenables como una receta, con la salida en directo. No indica si cada paso e
 - **Pistas con coste:** "¿Qué tipo de código es esto?" analiza el texto actual y dice qué parece. Cada pista resta puntos.
 - **Contraseña final:** 5 intentos; al agotarlos, bloqueo de 1 minuto.
 - Puntuación del reto visible al terminar (base menos pistas y fallos).
+
+**En la web:** «¿Qué tipo de código es esto?» cuesta 10 puntos; la «Pista de rescate» (dice la siguiente operación) cuesta 25.
+La web no lleva la frase: elige una de las 76 cadenas posibles del banco que genera `reto2_generador.py --exportar`,
+que incluye huellas SHA-256 de cada etapa para que las pistas sepan por dónde va el grupo.

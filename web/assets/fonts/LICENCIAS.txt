@@ -1,0 +1,9 @@
+Fuentes incluidas para que la web funcione sin internet (subconjunto latino, formato WOFF2,
+descargadas de Google Fonts):
+
+- Inter (variable, 400-800) .............. inter-latin.woff2
+- JetBrains Mono (variable, 400-700) ..... jetbrains-mono-latin.woff2
+- Merriweather (variable, 400-900) ....... merriweather-latin.woff2
+
+Las tres se distribuyen bajo la licencia SIL Open Font License 1.1 (https://openfontlicense.org),
+que permite usarlas, incluirlas y redistribuirlas libremente con este proyecto.

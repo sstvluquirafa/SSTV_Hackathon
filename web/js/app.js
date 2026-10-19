@@ -1,0 +1,172 @@
+// Panel principal "Desbloquea el Mapa", navegación por #hash y puntuación.
+(function () {
+  "use strict";
+  const { $, $$, escapar, Progreso, liberarUrls, pararTemporizadores } = App;
+
+  // ---------- Retos (orden libre) ----------
+  App.RETOS = [
+    {
+      id: "reto1", num: 1, fragmento: "ORIÓN", base: 100, duracion: "~15 min",
+      titulo: "Mensaje desde 1969",
+      resumen: "Una transmisión SSTV trae una foto histórica y una pregunta. Descodifícala, responde y reconstruye la imagen.",
+    },
+    {
+      id: "reto2", num: 2, fragmento: "CYGNUS", base: 100, duracion: "~15 min",
+      titulo: "Telemetría interceptada",
+      resumen: "Un mensaje cifrado en varias capas. Pela la cebolla con el descodificador y abre la caja fuerte.",
+    },
+    {
+      id: "reto3", num: 3, fragmento: "LYRA", base: 100, duracion: "~15 min", pronto: true,
+      titulo: "Expediente clasificado",
+      resumen: "Este expediente todavía no se ha desclasificado. Vuelve más tarde, operador.",
+    },
+    {
+      id: "reto4", num: 4, fragmento: "ANDRÓMEDA", base: 100, duracion: "~15 min", pronto: true,
+      titulo: "Expediente clasificado",
+      resumen: "Este expediente todavía no se ha desclasificado. Vuelve más tarde, operador.",
+    },
+  ];
+  App.FRAGMENTOS = ["ORIÓN", "CYGNUS", "LYRA", "ANDRÓMEDA"];
+  App.PUNTOS_MINIMOS = 10;
+  App.PENALIZACION_FALLO = 5;
+
+  /** Puntos que vale ahora mismo el reto: base menos pistas y fallos (nunca por debajo del mínimo). */
+  App.puntosReto = function (id) {
+    const def = App.RETOS.find((r) => r.id === id);
+    const e = Progreso.reto(id);
+    if (e.completado && e.puntos != null) return e.puntos;
+    const coste = (e.pistas || []).reduce((s, p) => s + (p.coste || 0), 0);
+    return Math.max(App.PUNTOS_MINIMOS, def.base - coste - App.PENALIZACION_FALLO * e.fallos);
+  };
+  App.puntosTotales = () => App.RETOS.filter((r) => Progreso.reto(r.id).completado).reduce((s, r) => s + App.puntosReto(r.id), 0);
+  App.fragmentoConseguido = (frag) => App.RETOS.some((r) => r.fragmento === frag && Progreso.reto(r.id).completado);
+
+  App.actualizarCabecera = function () {
+    $("#chip-puntos").innerHTML = `${ICONO.estrella}<span>${App.puntosTotales()} PTS</span>`;
+    const n = App.FRAGMENTOS.filter(App.fragmentoConseguido).length;
+    $("#chip-fragmentos").textContent = `${n}/4 FRAGMENTOS`;
+    $("#chip-fragmentos").classList.toggle("chip-verde", n === 4);
+  };
+
+  // ---------- Vista: panel principal ----------
+  function estadoTarjeta(r) {
+    if (r.pronto) return { clase: "pronto", icono: ICONO.candado, texto: "PRÓXIMAMENTE" };
+    const e = Progreso.reto(r.id);
+    if (e.completado) return { clase: "hecho", icono: ICONO.check, texto: "DESCIFRADO" };
+    if (e.empezado) return { clase: "curso", icono: ICONO.abierto, texto: "EN CURSO" };
+    return { clase: "", icono: ICONO.candado, texto: "ENCRIPTADO" };
+  }
+
+  function vistaPanel(el) {
+    const n = App.FRAGMENTOS.filter(App.fragmentoConseguido).length;
+    const bitacora = Progreso.leer().bitacora;
+    el.innerHTML = `
+      <div class="cabeza-vista">
+        <div>
+          <h1 class="titulo">Desbloquea el <em>Mapa</em></h1>
+          <p class="subtitulo">Cada reto superado libera una transmisión SSTV con un fragmento del mapa del recinto.
+            Recibid los cuatro, descodificadlos y montad el mapa para empezar la gymkhana. Podéis hacer los retos en el orden que queráis.</p>
+        </div>
+        <a class="btn btn-borde" href="#/montaje">${ICONO.mapa} Montar el mapa</a>
+      </div>
+
+      <section class="panel progreso" aria-label="Fragmentos del mapa">
+        <div class="progreso-cab">
+          <p class="etiqueta-seccion">Fragmentos del mapa recuperados</p>
+          <span class="chip ${n === 4 ? "chip-verde" : "chip-ambar"}">${n} / 4</span>
+        </div>
+        <div class="barra"><div style="width:${n * 25}%"></div></div>
+        <div class="fragmentos">
+          ${App.FRAGMENTOS.map((f) => {
+            const ok = App.fragmentoConseguido(f);
+            return `<div class="fragmento ${ok ? "ok" : ""}">
+              <div class="icono">${ok ? ICONO.check : ICONO.candado}</div>
+              <div><div class="fragmento-nombre">${f}</div>
+              <div class="fragmento-estado">${ok ? "Transmisión desbloqueada" : "Sin recibir"}</div></div>
+            </div>`;
+          }).join("")}
+        </div>
+      </section>
+
+      <section class="retos" aria-label="Retos">
+        ${App.RETOS.map((r) => {
+          const est = estadoTarjeta(r);
+          const pts = r.pronto ? r.base : App.puntosReto(r.id);
+          return `<article class="panel tarjeta ${est.clase}">
+            <div class="tarjeta-sello">${est.icono}<span>${est.texto}</span></div>
+            <div class="tarjeta-cuerpo">
+              <div class="insignias">
+                <span class="insignia insignia-frag">${ICONO.mapa.replace("<svg", '<svg width="12" height="12"')} ${r.fragmento}</span>
+                <span class="insignia insignia-pts">${ICONO.estrella.replace("<svg", '<svg width="12" height="12"')} ${est.clase === "hecho" ? "" : "+"}${pts} Pts</span>
+              </div>
+              <h3>Reto ${r.num} · ${escapar(r.titulo)}</h3>
+              <p>${escapar(r.resumen)}</p>
+              ${r.pronto
+                ? `<button class="btn btn-oscuro" disabled>${ICONO.candado} Expediente bloqueado</button>`
+                : `<a class="btn ${est.clase === "hecho" ? "btn-oscuro" : "btn-borde"}" href="#/${r.id}">${ICONO.expediente} ${est.clase === "hecho" ? "Ver expediente" : "Abrir expediente"}</a>`}
+              <div class="tarjeta-pie">
+                <span>${ICONO.reloj} Duración ${r.duracion}</span>
+                <span>${ICONO.base} GranaSAT HQ</span>
+              </div>
+            </div>
+          </article>`;
+        }).join("")}
+      </section>
+
+      <div class="fila-inferior">
+        <section class="panel panel-cuerpo cta-montaje">
+          <div class="mini-mapa">${App.FRAGMENTOS.map((f) => `<div class="${App.fragmentoConseguido(f) ? "ok" : ""}"></div>`).join("")}</div>
+          <div style="flex:1">
+            <p class="etiqueta-seccion">Fase final</p>
+            <h2 class="h-seccion">Montaje del mapa</h2>
+            <p class="texto-2 pequeno" style="margin:0 0 12px">Subid las 4 imágenes que hayáis descodificado, colocadlas y giradlas hasta que el mapa cuadre, y descargadlo.</p>
+            <a class="btn btn-ambar" href="#/montaje">${ICONO.puzle} Ir al montaje</a>
+          </div>
+        </section>
+        <section class="ventana" aria-label="Bitácora">
+          <div class="ventana-barra"><i></i><i></i><i></i><b>RX_MONITOR · BITÁCORA</b><span class="der">● EN ESCUCHA</span></div>
+          <div class="ventana-cuerpo">
+            <ul class="log">
+              ${bitacora.length
+                ? bitacora.map((l) => `<li class="${l.ok ? "ok" : ""}">[${escapar(l.hora)}] ${escapar(l.texto)}</li>`).join("")
+                : `<li>Estación terrena lista. Esperando la primera transmisión…</li><li>Abrid un expediente para empezar.</li>`}
+            </ul>
+          </div>
+        </section>
+      </div>`;
+  }
+
+  // ---------- Navegación ----------
+  App.VISTAS = { panel: vistaPanel };
+
+  function navegar() {
+    const ruta = (location.hash.replace(/^#\/?/, "") || "panel").split("?")[0];
+    const vista = App.VISTAS[ruta] ? ruta : "panel";
+    liberarUrls();
+    pararTemporizadores();
+    const el = $("#vista");
+    el.innerHTML = "";
+    el.className = "vista";
+    void el.offsetWidth; // reinicia la animación de entrada
+    App.VISTAS[vista](el);
+    $$(".nav a").forEach((a) => a.classList.toggle("activo", a.dataset.ruta === vista || (vista.startsWith("reto") && a.dataset.ruta === "panel")));
+    App.actualizarCabecera();
+    window.scrollTo(0, 0);
+    document.title = vista === "panel" ? "Desbloquea el Mapa · GranaSAT" : `${$("h1", el) ? $("h1", el).textContent : ""} · GranaSAT`;
+  }
+
+  window.addEventListener("hashchange", navegar);
+  window.addEventListener("DOMContentLoaded", () => {
+    $("#reiniciar").addEventListener("click", () => {
+      if (!confirm("¿Reiniciar todo el progreso de este equipo?\n\nSe borran los retos superados, los puntos y los audios desbloqueados.")) return;
+      if (!confirm("¿Seguro? Esta acción no se puede deshacer.")) return;
+      Progreso.reiniciar();
+      location.hash = "#/panel";
+      navegar();
+    });
+    if (!App.Cripto.disponible) {
+      $("#aviso-global").classList.remove("oculto");
+    }
+    navegar();
+  });
+})();
