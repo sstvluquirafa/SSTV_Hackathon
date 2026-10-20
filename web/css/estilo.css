@@ -655,48 +655,128 @@ a { color: var(--ambar); }
 .silueta svg { width: 22px; height: 22px; }
 .mapa-grande { max-width: 94vw; max-height: 80vh; border-radius: 10px; border: 2px solid var(--ambar); box-shadow: 0 0 40px rgba(217, 119, 6, 0.35); background: #0f172a; }
 
-/* ---------- Reto 4: SSTV a mano ---------- */
-.leyenda-tonos { display: grid; gap: 6px; margin-top: 16px; padding: 12px 14px; border-radius: 10px; background: rgba(3, 7, 18, 0.55); border: 1px solid rgba(251, 191, 36, 0.35); }
-.leyenda-tonos div { display: flex; gap: 12px; align-items: center; font-size: 13.5px; color: var(--texto-2); }
-.leyenda-tonos b { color: var(--ambar); min-width: 72px; }
-.leyenda-tonos span { display: inline-flex; align-items: center; gap: 8px; }
-.muestra { width: 16px; height: 16px; border-radius: 3px; display: inline-block; border: 1px solid var(--borde-fuerte); }
-.muestra.negro { background: #000; }
-.muestra.blanco { background: #f8fafc; }
-.r4-trabajo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 22px; align-items: start; }
-.r4-espectro { position: relative; height: 190px; }
-.r4-espectro canvas { width: 100%; height: 100%; display: block; }
-.r4-lectura { position: absolute; top: 8px; right: 10px; padding: 3px 10px; border-radius: 6px; background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.5); color: var(--ambar); font-weight: 700; font-size: 15px; }
-.r4-controles { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 12px; border-top: 1px solid var(--borde); }
-.r4-repetir, .r4-revelar { display: inline-flex; gap: 6px; align-items: center; }
-.r4-controles select, .r4-revelar select {
-  padding: 6px 8px; border-radius: 8px; background: rgba(3, 7, 18, 0.85); border: 1px solid var(--borde-fuerte); font-family: var(--mono); font-size: 13px;
+/* ---------- Reto 4: Contacto con la ISS ---------- */
+.iss-barra {
+  position: sticky; top: var(--alto-cabecera, 66px); z-index: 20; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 18px; padding: 8px 16px; border-radius: 12px;
+  background: rgba(3, 7, 18, 0.92); border: 1px solid var(--borde-fuerte); backdrop-filter: blur(10px);
 }
-.r4-rejilla { display: grid; grid-template-columns: 26px repeat(13, minmax(0, 1fr)); gap: 4px; user-select: none; }
-.r4-col-num, .r4-fila-num { display: grid; place-items: center; font-size: 11px; color: var(--texto-3); border-radius: 5px; }
-.r4-fila-num.sonando { color: #1c1203; background: var(--ambar); box-shadow: 0 0 12px rgba(251, 191, 36, 0.6); }
-.r4-celda {
-  aspect-ratio: 1; border-radius: 6px; cursor: pointer; padding: 0; position: relative;
-  background: #475569; border: 1px solid rgba(148, 163, 184, 0.45); transition: background 0.12s, transform 0.12s;
+.iss-barra small { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; color: var(--texto-3); }
+.iss-reloj b { font-size: 28px; color: var(--ambar); line-height: 1; letter-spacing: 0.04em; }
+.iss-barra.en-tx .iss-reloj b { color: #6ee7b7; }
+.iss-fase b { display: block; font-size: 15px; }
+.iss-fase span { font-size: 12px; color: var(--texto-2); }
+.iss-alarma {
+  display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 8px; font-weight: 600; font-size: 14px;
+  background: rgba(220, 38, 38, 0.22); border: 1px solid rgba(248, 113, 113, 0.7); color: #fecaca; animation: parpadeo 1.2s steps(2) infinite;
 }
-.r4-celda:hover { transform: scale(1.06); border-color: var(--ambar); }
-.r4-celda.blanco { background: #f8fafc; border-color: #f8fafc; }
-.r4-celda.negro { background: #000; border-color: #1e293b; }
-.r4-celda.sonando { outline: 3px solid var(--ambar); outline-offset: 1px; box-shadow: 0 0 16px rgba(251, 191, 36, 0.8); z-index: 1; }
-.r4-celda.revelada::after { content: ""; position: absolute; right: 3px; bottom: 3px; width: 6px; height: 6px; border-radius: 50%; background: var(--ambar); }
-.r4-pie-rejilla { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
-.r4-codigo summary { list-style: none; cursor: pointer; }
-.r4-codigo summary::-webkit-details-marker { display: none; }
-.r4-codigo[open] summary { margin-bottom: 12px; }
-.codigo { margin: 6px 0 14px; padding: 14px 16px; border-radius: 10px; background: var(--terminal); border: 1px solid var(--borde-fuerte); overflow-x: auto; font-size: 13px; line-height: 1.6; color: #e2e8f0; font-variant-ligatures: none; }
-.c-com { color: #64748b; font-style: italic; }
-.c-txt { color: #86efac; }
-.c-pal { color: #f472b6; font-weight: 600; }
-.c-num { color: var(--ambar); }
-.dato-curioso { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; margin-bottom: 14px; border-radius: 10px; background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.35); color: #fde68a; }
-.dato-curioso svg { width: 22px; height: 22px; flex: none; }
-.dato-curioso p { margin: 0; }
-@media (max-width: 1100px) { .r4-trabajo { grid-template-columns: 1fr; } }
+.iss-alarma svg { width: 18px; height: 18px; }
+.iss-alarma b { font-family: var(--mono); color: #fff; }
+.iss-mensaje { margin-left: auto; max-width: 46%; font-size: 13px; color: var(--texto-2); text-align: right; }
+.iss-mensaje.error, .iss-mensaje.alarma { color: #fecaca; }
+.iss-mensaje.ok { color: #6ee7b7; }
+.iss-pestanas { display: flex; gap: 6px; margin-bottom: 0; }
+.iss-pestanas button {
+  display: inline-flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 10px 10px 0 0; cursor: pointer;
+  background: rgba(3, 7, 18, 0.6); border: 1px solid var(--borde); border-bottom: 0; color: var(--texto-2); font-weight: 600; font-size: 14px;
+}
+.iss-pestanas button svg { width: 16px; height: 16px; }
+.iss-pestanas button.activa { background: var(--tarjeta-solida); color: var(--ambar); border-color: rgba(251, 191, 36, 0.5); }
+.iss-panel { border-top-left-radius: 0; padding: 14px; }
+.iss-estacion { display: grid; grid-template-columns: 1fr 1fr 1.15fr; gap: 14px; }
+.iss-caja { background: rgba(3, 7, 18, 0.55); border: 1px solid var(--borde); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.iss-caja h3 { margin: 0; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--texto-3); display: flex; align-items: center; gap: 8px; font-family: var(--mono); }
+.iss-caja h3 svg { width: 16px; height: 16px; color: var(--naranja); }
+.iss-dial { display: flex; align-items: baseline; justify-content: center; gap: 8px; padding: 6px; border-radius: 10px; background: #050a14; border: 1px solid rgba(251, 191, 36, 0.35); }
+.iss-dial span { font-size: 34px; color: var(--ambar); letter-spacing: 0.06em; text-shadow: 0 0 14px rgba(251, 191, 36, 0.35); }
+.iss-dial small { color: var(--texto-3); }
+.iss-pasos { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+.iss-pasos .btn { padding: 6px 2px; font-size: 12px; }
+.iss-fila { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--texto-2); }
+.iss-fila .entrada { min-width: 0; padding: 6px 10px; flex: 1; }
+.iss-fila input[type="range"] { flex: 1; accent-color: var(--ambar); }
+.iss-fila select { flex: 1; padding: 6px 8px; border-radius: 8px; background: rgba(3, 7, 18, 0.85); border: 1px solid var(--borde-fuerte); }
+.iss-seg { display: flex; flex: 1; border: 1px solid var(--borde-fuerte); border-radius: 8px; overflow: hidden; }
+.iss-seg button { flex: 1; padding: 6px 0; background: transparent; border: 0; border-right: 1px solid var(--borde); color: var(--texto-2); cursor: pointer; font-family: var(--mono); font-weight: 700; }
+.iss-seg button:last-child { border-right: 0; }
+.iss-seg button.activo { background: var(--ambar); color: #1c1203; }
+.iss-eje-cab { display: flex; justify-content: space-between; font-size: 13px; color: var(--texto-2); }
+.iss-eje-cab b { color: var(--ambar); font-size: 16px; }
+.iss-brujula { width: 128px; align-self: center; }
+.iss-brujula .b-aro { fill: rgba(3, 7, 18, 0.8); stroke: var(--borde-fuerte); }
+.iss-brujula .b-aro2 { fill: none; stroke: rgba(148, 163, 184, 0.15); }
+.iss-brujula text { fill: var(--texto-3); font-family: var(--mono); font-size: 9px; text-anchor: middle; }
+.iss-brujula line { stroke: var(--ambar); stroke-width: 2; }
+.iss-brujula #iss-brujula-punta { fill: var(--ambar); }
+.iss-interruptores { display: grid; gap: 6px; }
+.iss-int {
+  display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px; cursor: pointer; text-align: left;
+  background: rgba(3, 7, 18, 0.7); border: 1px solid var(--borde-fuerte); color: var(--texto-2); font-weight: 600; font-size: 13px;
+}
+.iss-int i { width: 30px; height: 16px; border-radius: 99px; background: #334155; position: relative; flex: none; transition: background 0.15s; }
+.iss-int i::after { content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; transition: left 0.15s; }
+.iss-int.on { color: var(--texto); border-color: rgba(16, 185, 129, 0.5); }
+.iss-int.on i { background: var(--exito); }
+.iss-int.on i::after { left: 16px; background: #fff; }
+.iss-luces { display: flex; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 11px; color: var(--texto-3); }
+.iss-luces span { display: inline-flex; align-items: center; gap: 5px; }
+.iss-luces i { width: 10px; height: 10px; border-radius: 50%; background: #1e293b; border: 1px solid #334155; }
+.iss-luces i.verde { background: var(--exito); box-shadow: 0 0 8px var(--exito); }
+.iss-luces i.ambar { background: var(--ambar); box-shadow: 0 0 8px var(--ambar); }
+.iss-luces i.roja { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+.iss-luces i.parpadeo { animation: parpadeo 0.9s steps(2) infinite; }
+.iss-codigo { display: flex; align-items: center; justify-content: space-between; padding: 6px 12px; border-radius: 8px; background: #050a14; border: 1px solid var(--borde-fuerte); }
+.iss-codigo small { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; color: var(--texto-3); }
+.iss-codigo b { font-size: 20px; color: var(--ambar); }
+.iss-codigo b.ok { color: #6ee7b7; }
+.iss-codigo b.error { color: #f87171; }
+.iss-medidor { display: flex; align-items: center; gap: 10px; }
+.iss-medidor small { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; color: var(--texto-3); }
+.iss-medidor div { display: flex; gap: 3px; align-items: flex-end; height: 22px; }
+.iss-medidor i { width: 12px; height: 22px; border-radius: 2px; background: #1e293b; }
+.iss-medidor i.on { background: var(--exito); }
+.iss-medidor i.on.medio { background: var(--ambar); }
+.iss-medidor i.on.alto { background: #f97316; }
+.iss-cascada { position: relative; }
+.iss-cascada canvas { width: 100%; height: 92px; display: block; border-radius: 8px; background: #050a14; border: 1px solid var(--borde-fuerte); }
+.iss-cascada-eje { display: flex; justify-content: space-between; font-size: 10px; color: var(--texto-3); margin-top: 2px; }
+.iss-orbita { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.iss-polar { width: 100%; max-width: 400px; display: block; margin: 0 auto; }
+.iss-polar .p-aro { fill: rgba(3, 7, 18, 0.75); stroke: var(--borde-fuerte); stroke-width: 1.5; }
+.iss-polar .p-aro2 { fill: none; stroke: rgba(148, 163, 184, 0.16); }
+.iss-polar text { fill: var(--texto-2); font-family: var(--mono); font-size: 12px; text-anchor: middle; }
+.iss-polar .p-el { fill: var(--texto-3); font-size: 9px; text-anchor: start; }
+.iss-polar .p-ruta { fill: none; stroke: var(--ambar); stroke-width: 2; stroke-dasharray: 6 5; opacity: 0.85; }
+.iss-polar .p-aos { fill: var(--exito); }
+.iss-polar .p-los { fill: #ef4444; }
+.iss-polar .p-etq { font-size: 10px; fill: var(--texto); font-weight: 700; }
+.iss-polar .p-halo { fill: rgba(251, 191, 36, 0.25); animation: parpadeo-suave 1.4s ease-in-out infinite; }
+.iss-polar .p-iss { fill: #fff; stroke: var(--ambar); stroke-width: 2; }
+.iss-tabla td, .iss-tabla th { padding: 5px 10px; }
+.iss-tabla tr.actual td { background: rgba(251, 191, 36, 0.16); color: var(--ambar); }
+.iss-manual { display: grid; grid-template-columns: 220px 1fr; gap: 18px; align-items: start; }
+.iss-indice { position: sticky; top: calc(var(--alto-cabecera, 66px) + 80px); display: grid; gap: 4px; }
+.iss-indice button { text-align: left; padding: 7px 10px; border-radius: 8px; background: rgba(3, 7, 18, 0.55); border: 1px solid var(--borde); color: var(--texto-2); cursor: pointer; font-size: 13px; }
+.iss-indice button:hover { color: var(--ambar); border-color: rgba(251, 191, 36, 0.4); }
+.iss-manual-texto { max-height: 520px; overflow-y: auto; padding-right: 8px; }
+.iss-manual-texto h3 { font-family: var(--serif); font-weight: 900; font-size: 18px; margin: 18px 0 8px; scroll-margin-top: 8px; }
+.iss-manual-texto h3:first-child { margin-top: 0; }
+.iss-manual-texto p { color: var(--texto-2); font-size: 14px; margin: 0 0 8px; }
+.iss-manual-texto .chuleta { margin-bottom: 8px; }
+.iss-reanudar { margin-bottom: 14px; }
+.iss-resultado { margin-bottom: 14px; }
+.iss-resultado.exito { border-color: rgba(16, 185, 129, 0.45); }
+.iss-resultado.perdido { border-color: rgba(248, 113, 113, 0.45); }
+.iss-resultado-cuerpo { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.iss-curva { width: 100%; height: 120px; display: block; border-radius: 8px; border: 1px solid var(--borde-fuerte); margin-bottom: 10px; }
+.iss-informe { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.iss-informe li { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; padding: 7px 10px; border-radius: 8px; }
+.iss-informe li svg { width: 16px; height: 16px; flex: none; margin-top: 2px; }
+.iss-informe li.bien { background: rgba(16, 185, 129, 0.08); color: #a7f3d0; }
+.iss-informe li.mal { background: rgba(248, 113, 113, 0.08); color: #fecaca; }
+.iss-org { position: fixed; left: 16px; bottom: 16px; z-index: 60; padding: 10px 12px; max-width: 560px; border-color: rgba(251, 191, 36, 0.6); }
+.iss-org-cab { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; font-size: 12px; color: var(--ambar); }
+@media (max-width: 1100px) { .iss-estacion, .iss-orbita, .iss-resultado-cuerpo, .iss-manual { grid-template-columns: 1fr; } }
 
 /* ---------- Pie ---------- */
 .pie { max-width: 1440px; margin: 0 auto; padding: 0 28px 28px; display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--texto-3); font-size: 12px; }

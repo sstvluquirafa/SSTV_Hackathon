@@ -35,7 +35,6 @@ from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from medir_fotos_puzle import recortar_3x2, medir      # noqa: E402
 from reto2_generador import VARIANTES, frase            # noqa: E402
-import reto4_generador                                  # noqa: E402
 
 Image.MAX_IMAGE_PIXELS = None
 RAIZ = Path(__file__).resolve().parent.parent
@@ -61,12 +60,15 @@ RETOS = {
             "audio": (RAIZ / "generado" / "mapa" / "fragmento_3_cygnus.wav", "audio/wav"),
         },
     },
+    # Reto 4 (Contacto con la ISS): no hay contraseña, la recompensa es la propia recepción. El audio va
+    # cifrado con una llave que viaja con él ("llave_abierta"): no es secreta, pero así el WAV no se puede
+    # sacar con F12 sin hacer el paso (descifrarlo a mano costaría más que el propio reto).
     "reto4": {
-        "grupos": [[codigo] for codigo in reto4_generador.VARIANTES],
+        "grupos": [],
+        "llave_abierta": True,
         "archivos": {
             "audio": (RAIZ / "generado" / "mapa" / "fragmento_4_andromeda.wav", "audio/wav"),
         },
-        "imagenes_senal": True,
     },
 }
 
@@ -157,20 +159,8 @@ def main():
                 tam = escribir_js(clave_js, clave_js, datos)
                 indice["fotos"].append({"archivo": clave_js, "titulo": f["titulo"], "credito": f["credito"]})
                 print(f"{clave_js + '.js':<25} {tam / 1e6:5.2f} MB  (cifrado, índice {dificultad:.1f})")
-        # Reto 4: la imagen 13×7 de cada variante. La web la necesita ANTES de saber el código (tiene que
-        # sonar), así que no puede ir cifrada con el código. Va cifrada con una "llave de señal" aparte que
-        # viaja con ella: no es secreta, pero así ni los códigos ni los dibujos se leen a simple vista con F12
-        # (sacarlos exigiría descifrar a mano, que es más trabajo que el propio reto).
-        if cfg.get("imagenes_senal"):
-            llave_senal = AESGCM.generate_key(bit_length=256)
-            imagenes = [cifrar(llave_senal, reto4_generador.a_texto(reto4_generador.imagen(c)).encode())
-                        for c in reto4_generador.VARIANTES]
-            for img in imagenes:
-                img["tipo"] = "text/plain"
-            tam = escribir_js(f"{reto}_senal", f"{reto}_senal", {"llave": b64(llave_senal), "imagenes": imagenes,
-                                                               "columnas": reto4_generador.COLUMNAS,
-                                                               "filas": reto4_generador.FILAS})
-            print(f"{reto + '_senal.js':<25} {tam / 1e6:5.2f} MB  (imágenes 13×7 de {len(imagenes)} variantes)")
+        if cfg.get("llave_abierta"):
+            indice["llave"] = b64(k)
         escribir_js(f"{reto}_llaves", f"{reto}_llaves", indice)
 
         # Comprobación: cada respuesta abre la llave SOLO en su grupo, y una incorrecta no abre nada

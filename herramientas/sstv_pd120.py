@@ -128,11 +128,25 @@ def frecuencia_instantanea(x, fs):
     return np.append(f, f[-1])
 
 
-def decodificar(ruta_wav):
-    """Lee un WAV PD120 y devuelve la imagen recuperada."""
+def buscar_inicio(ruta_wav):
+    """Instante (s) en que empieza el primer sincronismo de la imagen, tras la cabecera VIS."""
+    x, fs = _leer_wav(ruta_wav)
+    return _buscar_inicio(frecuencia_instantanea(x, fs), fs)
+
+
+def decodificar(ruta_wav, inicio=None):
+    """Lee un WAV PD120 y devuelve la imagen recuperada.
+
+    inicio: si se conoce (por ejemplo, el mismo audio con ruido añadido), el instante del primer
+    sincronismo en segundos; así no hace falta buscar la cabecera, que el ruido puede tapar.
+    """
     x, fs = _leer_wav(ruta_wav)
     f = frecuencia_instantanea(x, fs)
+    inicio_sync = _buscar_inicio(f, fs) if inicio is None else inicio
+    return _decodificar_desde(f, fs, inicio_sync)
 
+
+def _buscar_inicio(f, fs):
     # Buscamos el final de la cabecera: el bit de parada (30 ms) va pegado al primer
     # sincronismo (20 ms), así que es el primer tramo de ~1200 Hz que dura 45 ms o más.
     es_1200 = np.abs(f - 1200) < 60
@@ -148,7 +162,10 @@ def decodificar(ruta_wav):
             break
     if inicio_sync is None:
         raise RuntimeError("No encuentro la cabecera SSTV")
+    return inicio_sync
 
+
+def _decodificar_desde(f, fs, inicio_sync):
     c = np.concatenate([[0], np.cumsum(f)])  # suma acumulada: medias rápidas
 
     def media(t0, n):
