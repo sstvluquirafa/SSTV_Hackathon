@@ -62,15 +62,16 @@
       return String(texto).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
     },
 
-    /** Prueba una respuesta. Si es correcta devuelve la llave del reto (base64); si no, null. */
-    async probar(llaves, respuesta) {
+    /** Prueba una respuesta contra las llaves de UN grupo (en el reto 2, la variante del equipo).
+     *  Si es correcta devuelve la llave del reto (base64); si no, null. */
+    async probar(llaves, respuesta, grupo = 0) {
       const norm = this.normalizar(respuesta);
       if (!norm) return null;
       const material = await crypto.subtle.importKey("raw", new TextEncoder().encode(norm), "PBKDF2", false, ["deriveKey"]);
       const kek = await crypto.subtle.deriveKey(
         { name: "PBKDF2", salt: deB64(llaves.sal), iterations: llaves.iteraciones, hash: "SHA-256" },
         material, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
-      for (const envuelta of llaves.llaves) {
+      for (const envuelta of llaves.grupos[grupo] || []) {
         try {
           const k = await crypto.subtle.decrypt({ name: "AES-GCM", iv: deB64(envuelta.iv) }, kek, deB64(envuelta.ct));
           return aB64(new Uint8Array(k));

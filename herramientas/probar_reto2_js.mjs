@@ -5,7 +5,7 @@
 //   node herramientas/probar_reto2_js.mjs
 //
 // 1) Cada operación JS da exactamente lo mismo que la de Python (vectores generados por Python).
-// 2) Las 76 cadenas del banco de la web se resuelven con la receta del alumno hasta la frase final.
+// 2) Todas las cadenas del banco de la web se resuelven con la receta del alumno hasta la frase final.
 // 3) El analizador de pistas reconoce cada etapa intermedia y la clave es imprescindible.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -20,7 +20,7 @@ vm.runInContext("var window = globalThis;", contexto);
 vm.runInContext(readFileSync(join(raiz, "web/assets/data/reto2_cadenas.js"), "utf8"), contexto);
 const Op = contexto.Operaciones;
 const { banco } = contexto.DATOS.reto2;
-const { frase, clave, vectores } = JSON.parse(readFileSync(join(raiz, "generado/reto2/vectores_prueba.json"), "utf8"));
+const { variantes, vectores } = JSON.parse(readFileSync(join(raiz, "generado/reto2/vectores_prueba.json"), "utf8"));
 
 let fallos = 0;
 const falla = (msg) => { fallos++; if (fallos <= 15) console.error("  ✗ " + msg); };
@@ -42,19 +42,21 @@ for (const v of vectores.filter((x) => x.op !== "vigenere" && x.op !== "cesar"))
   const vuelta = { base64: Op.deBase64, hex: Op.deHex, espejo: Op.espejo }[v.op](v.salida);
   if (vuelta !== v.entrada) falla(`de-${v.op} no recupera ${JSON.stringify(v.entrada)}`);
 }
-for (const t of [frase, "Hola 123"]) if (Op.deBinario(Op.aBinario(t)) !== t) falla("binario ida y vuelta");
+for (const t of [variantes[0].frase, "Hola 123"]) if (Op.deBinario(Op.aBinario(t)) !== t) falla("binario ida y vuelta");
 console.log(`1) ${vectores.length} vectores de Python comprobados.`);
 
 // 2) Banco: el alumno descifra con la receta (Vigenère APOLO → capas)
 const RECETA = { base64: { op: "base64" }, hex: { op: "hex" }, espejo: { op: "espejo" } };
 for (const r of banco) {
+  const { clave, frase } = variantes[r.variante];
   const receta = [{ op: "vigenere", clave, modo: "descifrar" },
     ...r.capas.map((c) => (c === "cesar" ? { op: "cesar", n: 26 - r.desplazamiento_cesar } : RECETA[c]))];
   const res = Op.cocinar(r.cadena, receta);
   if (res.salida !== frase) falla(`banco ${r.cadena}: sale ${res.salida ?? res.error}`);
-  // "APOLO 11" también vale como clave
-  const res2 = Op.cocinar(r.cadena, [{ ...receta[0], clave: "Apolo 11" }, ...receta.slice(1)]);
-  if (res2.salida !== frase) falla(`banco ${r.cadena}: falla con la clave "Apolo 11"`);
+  // La clave en minúsculas, sin tildes y con números o espacios ("Apolo 11") también vale
+  const otraClave = clave.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "") + " 11";
+  const res2 = Op.cocinar(r.cadena, [{ ...receta[0], clave: otraClave }, ...receta.slice(1)]);
+  if (res2.salida !== frase) falla(`banco ${r.cadena}: falla con la clave "${otraClave}"`);
   // Sin Vigenère no se llega a la frase
   const sinClave = Op.cocinar(r.cadena, receta.slice(1));
   if (sinClave.salida === frase) falla(`banco ${r.cadena}: se resuelve sin Vigenère`);

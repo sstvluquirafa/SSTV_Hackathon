@@ -1,0 +1,13 @@
+{
+  "_nota": "Fotos del puzle del reto 1. Elegidas con herramientas/medir_fotos_puzle.py (índice entre 8,9 y 13,2). construir_web.py las recorta a 3:2, las reduce a 900x600 y las cifra.",
+  "fotos": [
+    {"archivo": "webb_pilares_creacion.jpg", "titulo": "Pilares de la Creación (telescopio James Webb, 2022)", "credito": "NASA, ESA, CSA, STScI · CC BY 4.0", "fuente": "https://esawebb.org/images/weic2216a/"},
+    {"archivo": "webb_acantilados_carina.jpg", "titulo": "Acantilados cósmicos de la nebulosa de Carina (James Webb, 2022)", "credito": "NASA, ESA, CSA, STScI · CC BY 4.0", "fuente": "https://esawebb.org/images/weic2205a/"},
+    {"archivo": "apolo17_canica_azul.jpg", "titulo": "La Canica Azul: la Tierra desde el Apolo 17 (1972)", "credito": "NASA · dominio público", "fuente": "https://images.nasa.gov/details/as17-148-22727"},
+    {"archivo": "hubble_montana_mistica.jpg", "titulo": "Montaña mística en la nebulosa de Carina (telescopio Hubble, 2010)", "credito": "NASA, ESA, M. Livio y el equipo del 20 aniversario del Hubble (STScI) · CC BY 4.0", "fuente": "https://esahubble.org/images/heic1007a/"},
+    {"archivo": "apolo15_bandera_rover.jpg", "titulo": "Apolo 15: James Irwin junto al módulo lunar y el rover (1971)", "credito": "NASA · dominio público", "fuente": "https://images.nasa.gov/details/as15-88-11866"},
+    {"archivo": "perseverance_marte.jpg", "titulo": "El rover Perseverance en el cráter Jezero de Marte (2021)", "credito": "NASA/JPL-Caltech/ASU/MSSS · dominio público", "fuente": "https://images.nasa.gov/details/PIA24264"},
+    {"archivo": "traje_espacial_emu.jpg", "titulo": "Bruce McCandless prueba el traje espacial EMU (1982)", "credito": "NASA · dominio público", "fuente": "https://images.nasa.gov/details/s82-27594"},
+    {"archivo": "webb_tarantula.jpg", "titulo": "Nebulosa de la Tarántula (James Webb, 2022)", "credito": "NASA, ESA, CSA, STScI, equipo ERO de Webb · CC BY 4.0", "fuente": "https://esawebb.org/images/weic2212a/"}
+  ]
+}

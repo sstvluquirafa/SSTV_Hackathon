@@ -32,23 +32,30 @@ from cryptography.hazmat.primitives.hashes import SHA256
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from PIL import Image
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from medir_fotos_puzle import recortar_3x2, medir      # noqa: E402
+from reto2_generador import VARIANTES, frase            # noqa: E402
+
+Image.MAX_IMAGE_PIXELS = None
 RAIZ = Path(__file__).resolve().parent.parent
 WEB = RAIZ / "web"
 DATOS = WEB / "assets" / "data"
 IMG = WEB / "assets" / "img"
 ITERACIONES = 150_000          # PBKDF2: lento para probar respuestas a lo bruto, rápido para una sola
 
-# Respuestas aceptadas de cada reto (este archivo NO se copia a la web)
+# Respuestas aceptadas de cada reto (este archivo NO se copia a la web), por GRUPOS:
+# la web solo prueba las respuestas del grupo que le toca. El reto 1 tiene un solo grupo; en el reto 2
+# cada variante (pregunta) tiene su propia contraseña, y la de otra variante no abre la caja.
 RETOS = {
     "reto1": {
-        "respuestas": ["neil armstrong", "armstrong", "neil alden armstrong", "neil amstrong", "amstrong"],
+        "grupos": [["neil armstrong", "armstrong", "neil alden armstrong", "neil amstrong", "amstrong"]],
         "archivos": {
-            "foto": ("referencia:ARMSTRONG_B64", "image/jpeg"),
             "audio": (RAIZ / "generado" / "mapa" / "fragmento_2_orion.wav", "audio/wav"),
         },
+        "fotos_puzle": RAIZ / "recursos" / "imagenes" / "puzle" / "fotos.json",
     },
     "reto2": {
-        "respuestas": ["macroscopio-69", "la clave es macroscopio-69"],
+        "grupos": [[contrasena, frase(contrasena)] for _, _, contrasena in VARIANTES],
         "archivos": {
             "audio": (RAIZ / "generado" / "mapa" / "fragmento_3_cygnus.wav", "audio/wav"),
         },
@@ -86,14 +93,13 @@ def escribir_js(nombre, ruta_variable, valor):
     return (DATOS / f"{nombre}.js").stat().st_size
 
 
-def leer_origen(origen):
-    if isinstance(origen, str) and origen.startswith("referencia:"):
-        # La foto del puzle está incrustada en el prototipo del reto 1
-        variable = origen.split(":", 1)[1]
-        html = (RAIZ / "referencia" / "reto1_prototipo.html").read_text(encoding="utf-8")
-        m = re.search(variable + r' = "data:image/\w+;base64,([^"]+)"', html)
-        return base64.b64decode(m.group(1))
-    return Path(origen).read_bytes()
+def foto_puzle(ruta):
+    """Recorta a 3:2 (centrada), reduce a 900×600 y devuelve (JPEG, índice de dificultad)."""
+    img = recortar_3x2(Image.open(ruta).convert("RGB")).resize((900, 600), Image.LANCZOS)
+    import io
+    buf = io.BytesIO()
+    img.save(buf, "JPEG", quality=85, optimize=True, progressive=True)
+    return buf.getvalue(), medir(img)["indice"]
 
 
 def main():
@@ -120,22 +126,39 @@ def main():
         k = AESGCM.generate_key(bit_length=256)
         sal = os.urandom(16)
         indice = {"sal": b64(sal), "iteraciones": ITERACIONES,
-                  "llaves": [cifrar(derivar(r, sal), k) for r in cfg["respuestas"]],
+                  "grupos": [[cifrar(derivar(r, sal), k) for r in grupo] for grupo in cfg["grupos"]],
                   "archivos": {}}
         for nombre, (origen, tipo) in cfg["archivos"].items():
-            datos = cifrar(k, leer_origen(origen))
+            datos = cifrar(k, Path(origen).read_bytes())
             datos["tipo"] = tipo
             clave_js = f"{reto}_{nombre}"
             tam = escribir_js(clave_js, clave_js, datos)
             indice["archivos"][nombre] = clave_js
             print(f"{clave_js + '.js':<25} {tam / 1e6:5.2f} MB  (cifrado)")
+        # Fotos del puzle (reto 1): una por archivo; la web solo carga la que le toca al grupo
+        if "fotos_puzle" in cfg:
+            for viejo in DATOS.glob(f"{reto}_foto*.js"):
+                viejo.unlink()
+            meta = json.loads(cfg["fotos_puzle"].read_text(encoding="utf-8"))["fotos"]
+            indice["fotos"] = []
+            for i, f in enumerate(meta):
+                jpeg, dificultad = foto_puzle(cfg["fotos_puzle"].parent / f["archivo"])
+                datos = cifrar(k, jpeg)
+                datos["tipo"] = "image/jpeg"
+                clave_js = f"{reto}_foto_{i}"
+                tam = escribir_js(clave_js, clave_js, datos)
+                indice["fotos"].append({"archivo": clave_js, "titulo": f["titulo"], "credito": f["credito"]})
+                print(f"{clave_js + '.js':<25} {tam / 1e6:5.2f} MB  (cifrado, índice {dificultad:.1f})")
         escribir_js(f"{reto}_llaves", f"{reto}_llaves", indice)
 
-        # Comprobación: cada respuesta abre la llave y una incorrecta no
-        for r in cfg["respuestas"]:
-            ll = indice["llaves"]
-            assert any(_abre(derivar(r, sal), x) == k for x in ll)
-        assert all(_abre(derivar("respuesta falsa", sal), x) is None for x in indice["llaves"])
+        # Comprobación: cada respuesta abre la llave SOLO en su grupo, y una incorrecta no abre nada
+        for g, grupo in enumerate(cfg["grupos"]):
+            for r in grupo:
+                kek = derivar(r, sal)
+                for g2, envueltas in enumerate(indice["grupos"]):
+                    abre = any(_abre(kek, x) == k for x in envueltas)
+                    assert abre == (g2 == g), (reto, r, g, g2)
+        assert all(_abre(derivar("respuesta falsa", sal), x) is None for grupo in indice["grupos"] for x in grupo)
     print("Recompensas cifradas y comprobadas.")
 
 

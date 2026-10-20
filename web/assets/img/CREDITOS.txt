@@ -7,3 +7,14 @@ fondo.jpg
 
 logo.jpg
   Logo de GranaSAT (Universidad de Granada).
+
+Fotos del puzle del reto 1 (van cifradas en assets/data/reto1_foto_N.js; originales y enlaces
+en recursos/imagenes/puzle/fotos.json). Cada una muestra su título y crédito en la web:
+  - Pilares de la Creación (James Webb) — NASA, ESA, CSA, STScI · CC BY 4.0
+  - Acantilados cósmicos de Carina (James Webb) — NASA, ESA, CSA, STScI · CC BY 4.0
+  - La Canica Azul (Apolo 17) — NASA · dominio público
+  - Montaña mística (Hubble) — NASA, ESA, M. Livio y el equipo del 20 aniversario del Hubble · CC BY 4.0
+  - Apolo 15 en la Luna — NASA · dominio público
+  - Perseverance en Marte — NASA/JPL-Caltech/ASU/MSSS · dominio público
+  - Traje espacial EMU (1982) — NASA · dominio público
+  - Nebulosa de la Tarántula (James Webb) — NASA, ESA, CSA, STScI · CC BY 4.0

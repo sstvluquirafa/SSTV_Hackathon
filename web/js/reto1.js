@@ -195,7 +195,34 @@
   // ---------- Paso 3: puzle 3×3 ----------
   const META = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   const HUECO = 8;
-  let fichas = [], historial = [], inicio = [], movimientos = 0, t0 = 0, resuelto = false, foto = "";
+  // Todos los equipos reciben un desorden que necesita EXACTAMENTE estos movimientos para resolverse
+  const DISTANCIA = 20;
+  let fichas = [], historial = [], inicio = [], movimientos = 0, t0 = 0, resuelto = false, foto = "", infoFoto = null;
+  let aDistancia = null;
+
+  const textoFoto = () => (infoFoto
+    ? `<div class="credito-foto"><b>${App.escapar(infoFoto.titulo)}</b><span>${App.escapar(infoFoto.credito)}</span></div>` : "");
+
+  /** Estados del puzle a exactamente DISTANCIA movimientos de la solución (búsqueda en anchura). */
+  function desordenesDificultadFija() {
+    if (aDistancia) return aDistancia;
+    const meta = "012345678", vistos = new Set([meta]);
+    let frontera = [meta];
+    for (let d = 0; d < DISTANCIA; d++) {
+      const siguiente = [];
+      for (const s of frontera) {
+        const h = s.indexOf("8");
+        for (const p of vecinos(h)) {
+          const a = s.split("");
+          [a[h], a[p]] = [a[p], a[h]];
+          const t = a.join("");
+          if (!vistos.has(t)) { vistos.add(t); siguiente.push(t); }
+        }
+      }
+      frontera = siguiente;
+    }
+    return (aDistancia = frontera);
+  }
 
   const vecinos = (pos) => {
     const f = Math.floor(pos / 3), c = pos % 3, v = [];
@@ -209,8 +236,12 @@
     paso.classList.remove("bloqueado");
     App.lineaTiempo();
     zona.innerHTML = App.htmlCarga("Descifrando la fotografía del archivo (AES-256)…");
+    // Cada equipo recibe una foto al azar (todas con dificultad parecida: ver medir_fotos_puzle.py)
+    const fotos = window.DATOS.reto1_llaves.fotos;
+    if (estado().foto == null || !fotos[estado().foto]) Progreso.cambiar(ID, (r) => { r.foto = Math.floor(Math.random() * fotos.length); });
+    infoFoto = fotos[estado().foto];
     try {
-      const datos = await cargarDatos("reto1_foto");
+      const datos = await cargarDatos(infoFoto.archivo);
       foto = urlDe(await Cripto.abrir(estado().llave, datos));
     } catch (err) {
       zona.innerHTML = `<div class="aviso aviso-error">No se ha podido descifrar la foto. Avisad a la organización.</div>`;
@@ -220,7 +251,8 @@
     if (estado().completado) {
       paso.classList.add("hecho");
       zona.innerHTML = `<div class="referencia" style="margin:0"><img src="${foto}" alt="Fotografía reconstruida" id="r1-ref">
-        <div class="texto-2">Fotografía reconstruida en <b>${estado().movimientos}</b> movimientos y <b>${formatoTiempo(estado().tiempo)}</b>.</div></div>`;
+        <div><div class="texto-2">Fotografía reconstruida en <b>${estado().movimientos}</b> movimientos y <b>${formatoTiempo(estado().tiempo)}</b>.</div>
+        ${textoFoto()}</div></div>`;
       $("#r1-ref").addEventListener("click", ampliar);
       mostrarPremio(false);
       return;
@@ -239,7 +271,7 @@
           </div>
           <div class="referencia">
             <img src="${foto}" alt="Fotografía objetivo" id="r1-ref">
-            <div><b>Fotografía objetivo</b><div class="texto-3 pequeno">Haced clic en la miniatura para verla en grande.</div></div>
+            <div><b>Fotografía objetivo</b><div class="texto-3 pequeno">Haced clic en la miniatura para verla en grande.</div>${textoFoto()}</div>
           </div>
           <div class="botonera">
             <button class="btn btn-oscuro btn-peq" id="r1-numeros">${ICONO.ojo} Números: sí</button>
@@ -261,12 +293,8 @@
   }
 
   function barajar() {
-    fichas = [...META];
-    for (let i = 0; i < 30; i++) {
-      const h = fichas.indexOf(HUECO), v = vecinos(h), p = v[Math.floor(Math.random() * v.length)];
-      [fichas[h], fichas[p]] = [fichas[p], fichas[h]];
-    }
-    if (fichas.every((v, i) => v === META[i])) { const h = fichas.indexOf(HUECO), p = vecinos(h)[0]; [fichas[h], fichas[p]] = [fichas[p], fichas[h]]; }
+    const opciones = desordenesDificultadFija();
+    fichas = opciones[Math.floor(Math.random() * opciones.length)].split("").map(Number);
     inicio = [...fichas]; historial = [[...fichas]]; movimientos = 0; t0 = Date.now(); resuelto = false;
     pintarTablero();
   }

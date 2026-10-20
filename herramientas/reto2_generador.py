@@ -4,8 +4,11 @@ Reto 2 · Telemetría interceptada — generador y verificador de cadenas.
 Sirve de referencia para la web (que hará lo mismo en JavaScript) y como batería de pruebas:
 cada combinación se cifra y luego se descifra paso a paso como lo haría el alumno.
 
-Cifrado (lo que hace la web):   frase -> capa interior -> capa exterior -> Vigenère(APOLO)
-Descifrado (lo que hace el alumno): Vigenère(APOLO) -> capa exterior -> capa interior -> frase
+Cada grupo recibe una VARIANTE al azar: una pregunta (cuya respuesta es la clave de Vigenère)
+y su propia contraseña de la caja fuerte. Así no se pueden pasar la contraseña entre grupos.
+
+Cifrado (lo que hace la web):   frase -> capa interior -> capa exterior -> Vigenère(clave)
+Descifrado (lo que hace el alumno): Vigenère(clave) -> capa exterior -> capa interior -> frase
 
 Uso:
     python reto2_generador.py              pruebas y un ejemplo de cada combinación
@@ -13,16 +16,38 @@ Uso:
 """
 import base64
 import random
+import unicodedata
 
-FRASE = "LA CLAVE ES MACROSCOPIO-69"
-CONTRASENA = "MACROSCOPIO-69"
-CLAVE = "APOLO"
+# --- Variantes: pregunta → clave de Vigenère (una palabra) y contraseña de la caja fuerte -------------
+# Las claves pueden llevar tildes: Vigenère las ignora (JÚPITER = JUPITER).
+# Las contraseñas son ASCII (sin tildes ni Ñ), la frase no puede medir un múltiplo de 3 (ver pruebas)
+# y siempre empieza por "LA CLAVE ES", para que
+# el alumno sepa cuándo ha acertado con César y el analizador de pistas la reconozca como español.
+VARIANTES = [
+    ("¿Qué misión de la NASA llevó al ser humano a la Luna en 1969?", "APOLO", "MACROSCOPIO-69"),
+    ("¿Cómo se llamaba el primer satélite artificial, lanzado por la URSS en 1957?", "SPUTNIK", "TELESCOPIO-57"),
+    ("¿Cuál es el apellido del primer ser humano que viajó al espacio, en 1961?", "GAGARIN", "RADIOFAROS-61"),
+    ("¿Qué telescopio espacial, lanzado en 1990, lleva el apellido de un astrónomo estadounidense?", "HUBBLE", "ASTROLABIO-90"),
+    ("¿Cómo se llamaba la perra que fue el primer animal en dar vueltas alrededor de la Tierra?", "LAIKA", "PERISCOPIO-58"),
+    ("¿Qué planeta es conocido como «el planeta rojo»?", "MARTE", "GIROSCOPIO-21"),
+    ("¿Cómo se llaman las dos sondas de la NASA lanzadas en 1977 que ya han salido del sistema solar?", "VOYAGER", "CRONOMETRO-77"),
+    ("¿Cuál es el planeta más grande del sistema solar?", "JÚPITER", "MAGNETRONES-79"),
+    ("¿Qué astro dejó de ser planeta en 2006 y pasó a ser «planeta enano»?", "PLUTÓN", "PLANISFERIO-06"),
+    ("¿Qué planeta tiene los anillos más famosos del sistema solar?", "SATURNO", "SISMOGRAFO-04"),
+]
+frase = lambda contrasena: f"LA CLAVE ES {contrasena}"
 
 
 # --- Operaciones (igual que CyberChef) -------------------------------------
+def letras_clave(clave):
+    """Letras A-Z de la clave: sin tildes (Á→A, Ñ→N) y sin números, espacios ni signos."""
+    clave = unicodedata.normalize("NFD", clave.upper())
+    return [c for c in clave if "A" <= c <= "Z"]
+
+
 def vigenere(texto, clave, descifrar=False):
     """Solo cambia letras A-Z, respeta mayúsculas/minúsculas y la clave solo avanza con letras."""
-    clave = [c for c in clave.upper() if "A" <= c <= "Z"]
+    clave = letras_clave(clave)
     out, k = [], 0
     for ch in texto:
         if ch.isascii() and ch.isalpha():
@@ -68,21 +93,30 @@ COMBINACIONES = [
 
 CIFRAR = {"base64": a_base64, "hex": a_hex, "espejo": espejo}
 DESCIFRAR = {"base64": de_base64, "hex": de_hex, "espejo": espejo}
+DESPLAZAMIENTOS = [k for k in range(1, 26) if k != 13]
+
+
+def cifrar(variante, capas, n):
+    _, clave, contrasena = VARIANTES[variante]
+    texto = frase(contrasena)
+    for capa in reversed(capas):                     # se cifra de dentro hacia fuera
+        texto = cesar(texto, n) if capa == "cesar" else CIFRAR[capa](texto)
+    return vigenere(texto, clave)
 
 
 def generar(rng=random):
+    """Sorteo de un grupo: variante, combinación y (si hay César) desplazamiento."""
+    v = rng.randrange(len(VARIANTES))
     nombre, capas = rng.choice(COMBINACIONES)
-    n = rng.choice([k for k in range(1, 26) if k != 13]) if "cesar" in capas else None
-    texto = FRASE
-    for capa in reversed(capas):                     # se cifra de dentro hacia fuera
-        texto = cesar(texto, n) if capa == "cesar" else CIFRAR[capa](texto)
-    return {"combinacion": nombre, "capas": capas, "desplazamiento_cesar": n,
-            "cadena": vigenere(texto, CLAVE)}
+    n = rng.choice(DESPLAZAMIENTOS) if "cesar" in capas else None
+    return {"variante": v, "combinacion": nombre, "capas": capas, "desplazamiento_cesar": n,
+            "cadena": cifrar(v, capas, n)}
 
 
 def resolver(reto):
     """Descifra como lo haría el alumno, mostrando cada paso."""
-    pasos = [("Vigenère APOLO", vigenere(reto["cadena"], CLAVE, descifrar=True))]
+    clave = VARIANTES[reto["variante"]][1]
+    pasos = [(f"Vigenère {clave}", vigenere(reto["cadena"], clave, descifrar=True))]
     for capa in reto["capas"]:
         prev = pasos[-1][1]
         if capa == "cesar":
@@ -93,28 +127,27 @@ def resolver(reto):
 
 
 def todas_las_cadenas():
-    """Banco completo para la web: cada combinación con cada desplazamiento de César posible.
+    """Banco completo para la web: cada variante × cada combinación × cada desplazamiento de César.
 
-    La web no lleva la frase en claro (se vería con F12): elige una cadena de este banco.
-    Para que el sorteo sea igual que generar(), la web elige primero la combinación y luego la cadena.
+    La web no lleva ni las frases ni las claves en claro (se verían con F12): elige una cadena de este banco.
+    Para que el sorteo sea igual que generar(), la web elige variante, luego combinación y luego cadena.
     """
     banco = []
-    for i, (nombre, capas) in enumerate(COMBINACIONES):
-        for n in ([k for k in range(1, 26) if k != 13] if "cesar" in capas else [None]):
-            texto = FRASE
-            for capa in reversed(capas):
-                texto = cesar(texto, n) if capa == "cesar" else CIFRAR[capa](texto)
-            banco.append({"combinacion": i, "capas": capas, "desplazamiento_cesar": n,
-                          "cadena": vigenere(texto, CLAVE)})
+    for v in range(len(VARIANTES)):
+        for i, (_, capas) in enumerate(COMBINACIONES):
+            for n in (DESPLAZAMIENTOS if "cesar" in capas else [None]):
+                banco.append({"variante": v, "combinacion": i, "capas": capas, "desplazamiento_cesar": n,
+                              "cadena": cifrar(v, capas, n)})
     return banco
 
 
 def vectores_de_prueba(rng):
     """Entradas y salidas de cada operación, para comprobar que la versión JS hace lo mismo."""
-    textos = [FRASE, "Hola, Mundo 123!", "aBcXyZ-09 +/=", a_base64(FRASE), a_hex(FRASE)]
+    textos = [frase(c) for _, _, c in VARIANTES[:3]] + ["Hola, Mundo 123!", "aBcXyZ-09 +/=",
+                                                       a_base64(frase("X-1")), a_hex(frase("X-1"))]
     textos += ["".join(rng.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 +/=-")
                        for _ in range(rng.randint(5, 40))) for _ in range(30)]
-    claves = ["APOLO", "apolo 11", "Luna", "K"]
+    claves = ["APOLO", "apolo 11", "Luna", "K", "Júpiter", "plutón", "Ñandú 3"]
     v = []
     for t in textos:
         v.append({"op": "base64", "entrada": t, "salida": a_base64(t)})
@@ -130,54 +163,67 @@ def vectores_de_prueba(rng):
 
 def exportar(raiz):
     """Escribe el banco para la web y los vectores de prueba para herramientas/probar_reto2_js.mjs."""
+    import hashlib
     import json
     from pathlib import Path
     raiz = Path(raiz)
     banco = todas_las_cadenas()
-    import hashlib
     for r in banco:                                   # el banco también se comprueba
         pasos = resolver(r)
-        assert pasos[-1][1] == FRASE
+        assert pasos[-1][1] == frase(VARIANTES[r["variante"]][2])
         # Huella de cada etapa: la web la compara con la salida del alumno para saber por dónde va
         # (y dar pistas) sin llevar ningún texto intermedio en claro.
         r["etapas"] = [hashlib.sha256(t.encode()).hexdigest()[:16] for _, t in pasos]
-    nombres = [n for n, _ in COMBINACIONES]
+    datos = {
+        "combinaciones": [n for n, _ in COMBINACIONES],
+        # Para la web: la pregunta y, para la pista de rescate, cuántas letras tiene la clave y por cuál empieza
+        "variantes": [{"pregunta": p, "letras": len(letras_clave(c)), "inicial": letras_clave(c)[0]}
+                      for p, c, _ in VARIANTES],
+        "banco": banco,
+    }
     (raiz / "web" / "assets" / "data").mkdir(parents=True, exist_ok=True)
     (raiz / "web" / "assets" / "data" / "reto2_cadenas.js").write_text(
         "// Generado por herramientas/reto2_generador.py — no editar a mano.\n"
         "window.DATOS = window.DATOS || {};\n"
-        f"window.DATOS.reto2 = {json.dumps({'combinaciones': nombres, 'banco': banco}, ensure_ascii=False)};\n",
+        f"window.DATOS.reto2 = {json.dumps(datos, ensure_ascii=False, separators=(',', ':'))};\n",
         encoding="utf-8")
     (raiz / "generado" / "reto2").mkdir(parents=True, exist_ok=True)
     (raiz / "generado" / "reto2" / "vectores_prueba.json").write_text(
-        json.dumps({"frase": FRASE, "clave": CLAVE, "vectores": vectores_de_prueba(random.Random(69))},
+        json.dumps({"variantes": [{"clave": c, "frase": frase(k)} for _, c, k in VARIANTES],
+                    "vectores": vectores_de_prueba(random.Random(69))},
                    ensure_ascii=False, indent=1), encoding="utf-8")
     return len(banco)
 
 
 if __name__ == "__main__":
     import sys
+    from pathlib import Path
     if "--exportar" in sys.argv:
-        from pathlib import Path
         n = exportar(Path(__file__).resolve().parent.parent)
         print(f"Banco de {n} cadenas en web/assets/data/reto2_cadenas.js y vectores en generado/reto2/.")
         sys.exit()
     rng = random.Random(2026)
-    # 1) Cada combinación funciona y la clave APOLO es imprescindible
+    # 0) Las claves y contraseñas son válidas
+    for p, c, k in VARIANTES:
+        assert len(letras_clave(c)) >= 5, c
+        assert k.isascii() and k == k.upper(), k
+        # Si la frase tiene un nº de caracteres múltiplo de 3, su Base64 no lleva "=" de relleno
+        # y la combinación Espejo → Base64 pierde su pista ("el = aparece al principio").
+        assert len(frase(k)) % 3 != 0, f"{k}: la frase no puede tener un nº de caracteres múltiplo de 3"
+    assert len({k for _, _, k in VARIANTES}) == len(VARIANTES), "contraseñas repetidas"
+    # 1) Cada combinación funciona en cada variante y la clave es imprescindible
+    for _ in range(700):
+        r = generar(random.Random(rng.random()))
+        pasos = resolver(r)
+        assert pasos[-1][1] == frase(VARIANTES[r["variante"]][2]), (r, pasos)
+        assert vigenere(r["cadena"], VARIANTES[r["variante"]][1], True) != r["cadena"], "Vigenère no cambia nada"
+    # Las tildes de la clave no cambian nada
+    assert vigenere("HOLA", "Júpiter") == vigenere("HOLA", "JUPITER")
+    # 2) Ejemplo de cada combinación (con la variante 0)
     for nombre, capas in COMBINACIONES:
-        for _ in range(50):
-            r = generar(random.Random(rng.random()))
-            pasos = resolver(r)
-            assert pasos[-1][1] == FRASE, (r, pasos)
-            assert vigenere(r["cadena"], CLAVE, True) != r["cadena"], "Vigenère no cambia nada"
-    # 2) Ejemplo de cada combinación
-    for nombre, capas in COMBINACIONES:
-        r = {"combinacion": nombre, "capas": capas, "desplazamiento_cesar": 7 if "cesar" in capas else None}
-        t = FRASE
-        for capa in reversed(capas):
-            t = cesar(t, 7) if capa == "cesar" else CIFRAR[capa](t)
-        r["cadena"] = vigenere(t, CLAVE)
+        r = {"variante": 0, "combinacion": nombre, "capas": capas, "desplazamiento_cesar": 7 if "cesar" in capas else None}
+        r["cadena"] = cifrar(0, capas, r["desplazamiento_cesar"])
         print(f"\n## {nombre}\n  alumno recibe: {r['cadena']}")
         for paso, salida in resolver(r):
             print(f"  {paso:<15} -> {salida}")
-    print("\nTodas las combinaciones verificadas (350 cadenas aleatorias).")
+    print(f"\nTodas las combinaciones verificadas ({len(VARIANTES)} variantes, 700 cadenas aleatorias).")

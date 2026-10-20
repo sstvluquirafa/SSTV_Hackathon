@@ -1,6 +1,46 @@
 {
- "frase": "LA CLAVE ES MACROSCOPIO-69",
- "clave": "APOLO",
+ "variantes": [
+  {
+   "clave": "APOLO",
+   "frase": "LA CLAVE ES MACROSCOPIO-69"
+  },
+  {
+   "clave": "SPUTNIK",
+   "frase": "LA CLAVE ES TELESCOPIO-57"
+  },
+  {
+   "clave": "GAGARIN",
+   "frase": "LA CLAVE ES RADIOFAROS-61"
+  },
+  {
+   "clave": "HUBBLE",
+   "frase": "LA CLAVE ES ASTROLABIO-90"
+  },
+  {
+   "clave": "LAIKA",
+   "frase": "LA CLAVE ES PERISCOPIO-58"
+  },
+  {
+   "clave": "MARTE",
+   "frase": "LA CLAVE ES GIROSCOPIO-21"
+  },
+  {
+   "clave": "VOYAGER",
+   "frase": "LA CLAVE ES CRONOMETRO-77"
+  },
+  {
+   "clave": "JÚPITER",
+   "frase": "LA CLAVE ES MAGNETRONES-79"
+  },
+  {
+   "clave": "PLUTÓN",
+   "frase": "LA CLAVE ES PLANISFERIO-06"
+  },
+  {
+   "clave": "SATURNO",
+   "frase": "LA CLAVE ES SISMOGRAFO-04"
+  }
+ ],
  "vectores": [
   {
    "op": "base64",
@@ -98,6 +138,322 @@
    "salida": "BQ SBQLU UI CQSHEISEFYE-69"
   },
   {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "UU RTTZV NM BIVVFBWDXBS-69"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "CG NDHRN VY XSJNXJIZHPK-69"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "AL WEOIT PM FOPGZMVCCXZ-69"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "WP ISMIP TY TMPCDYJACTD-69"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "YA POUIE RV GNCERMPOCLI-69"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES MACROSCOPIO-69",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "YA PIGIE RP SNCELYPOCFU-69"
+  },
+  {
+   "op": "base64",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "salida": "TEEgQ0xBVkUgRVMgVEVMRVNDT1BJTy01Nw=="
+  },
+  {
+   "op": "hex",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "salida": "4C4120434C4156452045532054454C4553434F50494F2D3537"
+  },
+  {
+   "op": "espejo",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "salida": "75-OIPOCSELET SE EVALC AL"
+  },
+  {
+   "op": "cesar",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "n": 1,
+   "salida": "MB DMBWF FT UFMFTDPQJP-57"
+  },
+  {
+   "op": "cesar",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "n": 7,
+   "salida": "SH JSHCL LZ ALSLZJVWPV-57"
+  },
+  {
+   "op": "cesar",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "n": 13,
+   "salida": "YN PYNIR RF GRYRFPBCVB-57"
+  },
+  {
+   "op": "cesar",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "n": 25,
+   "salida": "KZ BKZUD DR SDKDRBNOHN-57"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "LP QWOVT SD HEASDQOEWZ-57"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "LL OAMVP QH FEWQHOOAUD-57"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "LP QWOVT SD HEASDQOEWZ-57"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "LL OAMVP QH FEWQHOOAUD-57"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "WU PLLPR ED NRLPMPOACB-57"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "AG PLPBR EH ZRLTYPOEOB-57"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "VK MVKFO OC DOVOCMYZSY-57"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "BQ SBQLU UI JUBUISEFYE-57"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "UU RTTZV NM IMEIJLIEQH-57"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "CG NDHRN VY EWSABTUAAV-57"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "AL WEOIT PM MSYTDWHDVD-57"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "WP ISMIP TY AQYPHIVBVZ-57"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "YA POUIE RV NRLRVWBPVR-57"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES TELESCOPIO-57",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "YA PIGIE RP ZRLRPIBPVL-57"
+  },
+  {
+   "op": "base64",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "salida": "TEEgQ0xBVkUgRVMgUkFESU9GQVJPUy02MQ=="
+  },
+  {
+   "op": "hex",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "salida": "4C4120434C41564520455320524144494F4641524F532D3631"
+  },
+  {
+   "op": "espejo",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "salida": "16-SORAFOIDAR SE EVALC AL"
+  },
+  {
+   "op": "cesar",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "n": 1,
+   "salida": "MB DMBWF FT SBEJPGBSPT-61"
+  },
+  {
+   "op": "cesar",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "n": 7,
+   "salida": "SH JSHCL LZ YHKPVMHYVZ-61"
+  },
+  {
+   "op": "cesar",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "n": 13,
+   "salida": "YN PYNIR RF ENQVBSNEBF-61"
+  },
+  {
+   "op": "cesar",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "n": 25,
+   "salida": "KZ BKZUD DR QZCHNEZQNR-61"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "LP QWOVT SD FASWZTAGCD-61"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "LL OAMVP QH DAOUDRACAH-61"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "LP QWOVT SD FASWZTAGCD-61"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "LL OAMVP QH DAOUDRACAH-61"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "WU PLLPR ED LNDTISACIF-61"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "AG PLPBR EH XNDXUSAGUF-61"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "VK MVKFO OC BKNSYPKBYC-61"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "BQ SBQLU UI HQTYEVQHEI-61"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "UU RTTZV NM GIWMFOUGWL-61"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "CG NDHRN VY CSKEXWGCGZ-61"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "AL WEOIT PM KOQXZZTFBH-61"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "WP ISMIP TY YMQTDLHDBD-61"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "YA POUIE RV LNDVRZNRBV-61"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "LA CLAVE ES RADIOFAROS-61",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "YA PIGIE RP XNDVLLNRBP-61"
+  },
+  {
    "op": "base64",
    "entrada": "Hola, Mundo 123!",
    "salida": "SG9sYSwgTXVuZG8gMTIzIQ=="
@@ -191,6 +547,48 @@
    "clave": "K",
    "descifrar": true,
    "salida": "Xebq, Ckdte 123!"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Hola, Mundo 123!",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "Qiai, Fyemi 123!"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Hola, Mundo 123!",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "Yuws, Tqwuu 123!"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Hola, Mundo 123!",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "Wzft, Ahcoi 123!"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Hola, Mundo 123!",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "Sdrh, Yhysu 123!"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Hola, Mundo 123!",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "Uoyd, Ghnqr 123!"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Hola, Mundo 123!",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "Uoyx, Shnql 123!"
   },
   {
    "op": "base64",
@@ -288,194 +686,320 @@
    "salida": "qRsNoP-09 +/="
   },
   {
-   "op": "base64",
-   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
-   "salida": "VEVFZ1EweEJWa1VnUlZNZ1RVRkRVazlUUTA5UVNVOHROams9"
-  },
-  {
-   "op": "hex",
-   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
-   "salida": "5445456751307842566B556752564D6754554644556B395451303951535538744E6A6B3D"
-  },
-  {
-   "op": "espejo",
-   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
-   "salida": "=kjNt8USQ90QT9kUDFUTgMVRgUkVBx0QgEET"
-  },
-  {
-   "op": "cesar",
-   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
-   "n": 1,
-   "salida": "UFFhR0yCWlVhSWNhUVGEVl9UR09RTV8uOkl="
-  },
-  {
-   "op": "cesar",
-   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
-   "n": 7,
-   "salida": "ALLnX0eICrBnYCTnABMKBr9AX09XZB8aUqr="
-  },
-  {
-   "op": "cesar",
-   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
-   "n": 13,
-   "salida": "GRRtD0kOIxHtEIZtGHSQHx9GD09DFH8gAwx="
-  },
-  {
-   "op": "cesar",
-   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
-   "n": 25,
-   "salida": "SDDfP0wAUjTfQULfSTECTj9SP09PRT8sMij="
-  },
-  {
    "op": "vigenere",
-   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
-   "clave": "APOLO",
+   "entrada": "aBcXyZ-09 +/=",
+   "clave": "Júpiter",
    "descifrar": false,
-   "salida": "TTSrE0xQJvIgGJXuTJTOIk9IE09BGU8iBuy="
+   "salida": "jVrFrD-09 +/="
   },
   {
    "op": "vigenere",
-   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
-   "clave": "APOLO",
+   "entrada": "aBcXyZ-09 +/=",
+   "clave": "Júpiter",
    "descifrar": true,
-   "salida": "TPQvC0xMHzGgCHBsTFRSGk9EC09FEU8eZyw="
+   "salida": "rHnPfV-09 +/="
   },
   {
    "op": "vigenere",
-   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
-   "clave": "apolo 11",
+   "entrada": "aBcXyZ-09 +/=",
+   "clave": "plutón",
    "descifrar": false,
-   "salida": "TTSrE0xQJvIgGJXuTJTOIk9IE09BGU8iBuy="
+   "salida": "pMwQmM-09 +/="
   },
   {
    "op": "vigenere",
-   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
-   "clave": "apolo 11",
+   "entrada": "aBcXyZ-09 +/=",
+   "clave": "plutón",
    "descifrar": true,
-   "salida": "TPQvC0xMHzGgCHBsTFRSGk9EC09FEU8eZyw="
+   "salida": "lQiEkM-09 +/="
   },
   {
    "op": "vigenere",
-   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
-   "clave": "Luna",
+   "entrada": "aBcXyZ-09 +/=",
+   "clave": "Ñandú 3",
    "descifrar": false,
-   "salida": "EYRgB0rOVvOtRGGtTFZQUv9ND09QDO8gNue="
+   "salida": "nBpAsM-09 +/="
   },
   {
    "op": "vigenere",
-   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
-   "clave": "Luna",
+   "entrada": "aBcXyZ-09 +/=",
+   "clave": "Ñandú 3",
    "descifrar": true,
-   "salida": "IKRgF0dOVzAtRKStTJLQUz9ZD09QHA8gNyq="
-  },
-  {
-   "op": "vigenere",
-   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
-   "clave": "K",
-   "descifrar": false,
-   "salida": "DOOqA0hLFuEqBFWqDEPNEu9DA09ACE8dXtu="
-  },
-  {
-   "op": "vigenere",
-   "entrada": "TEEgQ0xBVkUgRVMgTUFDUk9TQ09QSU8tNjk=",
-   "clave": "K",
-   "descifrar": true,
-   "salida": "JUUwG0nRLaKwHLCwJKVTKa9JG09GIK8jDza="
+   "salida": "nBpUeM-09 +/="
   },
   {
    "op": "base64",
-   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
-   "salida": "NEM0MTIwNDM0QzQxNTY0NTIwNDU1MzIwNEQ0MTQzNTI0RjUzNDM0RjUwNDk0RjJEMzYzOQ=="
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
+   "salida": "VEVFZ1EweEJWa1VnUlZNZ1dDMHg="
   },
   {
    "op": "hex",
-   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
-   "salida": "34433431323034333443343135363435323034353533323034443431343335323446353334333446353034393446324433363339"
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
+   "salida": "5445456751307842566B556752564D6757433078"
   },
   {
    "op": "espejo",
-   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
-   "salida": "9363D2F49405F43435F4253414D402355402546514C4340214C4"
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
+   "salida": "x0CWgMVRgUkVBx0QgEET"
   },
   {
    "op": "cesar",
-   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
    "n": 1,
-   "salida": "4D4120434D415645204553204E4143524G53434G50494G2E3639"
+   "salida": "UFFhR0yCWlVhSWNhXD0y"
   },
   {
    "op": "cesar",
-   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
    "n": 7,
-   "salida": "4J4120434J415645204553204K4143524M53434M50494M2K3639"
+   "salida": "ALLnX0eICrBnYCTnDJ0e"
   },
   {
    "op": "cesar",
-   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
    "n": 13,
-   "salida": "4P4120434P415645204553204Q4143524S53434S50494S2Q3639"
+   "salida": "GRRtD0kOIxHtEIZtJP0k"
   },
   {
    "op": "cesar",
-   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
    "n": 25,
-   "salida": "4B4120434B415645204553204C4143524E53434E50494E2C3639"
+   "salida": "SDDfP0wAUjTfQULfVB0w"
   },
   {
    "op": "vigenere",
-   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
    "clave": "APOLO",
    "descifrar": false,
-   "salida": "4C4120434R415645204553204R4143524Q53434T50494F2S3639"
+   "salida": "TTSrE0xQJvIgGJXuWR0l"
   },
   {
    "op": "vigenere",
-   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
    "clave": "APOLO",
    "descifrar": true,
-   "salida": "4C4120434N415645204553204P4143524U53434R50494F2O3639"
+   "salida": "TPQvC0xMHzGgCHBsWN0j"
   },
   {
    "op": "vigenere",
-   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
    "clave": "apolo 11",
    "descifrar": false,
-   "salida": "4C4120434R415645204553204R4143524Q53434T50494F2S3639"
+   "salida": "TTSrE0xQJvIgGJXuWR0l"
   },
   {
    "op": "vigenere",
-   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
    "clave": "apolo 11",
    "descifrar": true,
-   "salida": "4C4120434N415645204553204P4143524U53434R50494F2O3639"
+   "salida": "TPQvC0xMHzGgCHBsWN0j"
   },
   {
    "op": "vigenere",
-   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
    "clave": "Luna",
    "descifrar": false,
-   "salida": "4N4120434W415645204553204Q4143524F53434Q50494Z2Q3639"
+   "salida": "EYRgB0rOVvOtRGGtWN0r"
   },
   {
    "op": "vigenere",
-   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
    "clave": "Luna",
    "descifrar": true,
-   "salida": "4R4120434I415645204553204Q4143524F53434U50494L2Q3639"
+   "salida": "IKRgF0dOVzAtRKStWR0d"
   },
   {
    "op": "vigenere",
-   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
    "clave": "K",
    "descifrar": false,
-   "salida": "4M4120434M415645204553204N4143524P53434P50494P2N3639"
+   "salida": "DOOqA0hLFuEqBFWqGM0h"
   },
   {
    "op": "vigenere",
-   "entrada": "4C4120434C415645204553204D4143524F53434F50494F2D3639",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
    "clave": "K",
    "descifrar": true,
-   "salida": "4S4120434S415645204553204T4143524V53434V50494V2T3639"
+   "salida": "JUUwG0nRLaKwHLCwMS0n"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "CYToJ0bSEeJoKZDpQR0f"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "KKPyX0tKMqFyYRVxCN0p"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "IPYzE0kQGeNuEKXaPQ0k"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "ETKnC0kMKqBsEGBmDO0k"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "GERjK0kBInOtRIPaJC0k"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "TEEgQ0xBVkUgRVMgWC0x",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "GERdW0kBIhAtRIJmJC0k"
+  },
+  {
+   "op": "base64",
+   "entrada": "4C4120434C41564520455320582D31",
+   "salida": "NEM0MTIwNDM0QzQxNTY0NTIwNDU1MzIwNTgyRDMx"
+  },
+  {
+   "op": "hex",
+   "entrada": "4C4120434C41564520455320582D31",
+   "salida": "344334313230343334433431353634353230343535333230353832443331"
+  },
+  {
+   "op": "espejo",
+   "entrada": "4C4120434C41564520455320582D31",
+   "salida": "13D28502355402546514C4340214C4"
+  },
+  {
+   "op": "cesar",
+   "entrada": "4C4120434C41564520455320582D31",
+   "n": 1,
+   "salida": "4D4120434D41564520455320582E31"
+  },
+  {
+   "op": "cesar",
+   "entrada": "4C4120434C41564520455320582D31",
+   "n": 7,
+   "salida": "4J4120434J41564520455320582K31"
+  },
+  {
+   "op": "cesar",
+   "entrada": "4C4120434C41564520455320582D31",
+   "n": 13,
+   "salida": "4P4120434P41564520455320582Q31"
+  },
+  {
+   "op": "cesar",
+   "entrada": "4C4120434C41564520455320582D31",
+   "n": 25,
+   "salida": "4B4120434B41564520455320582C31"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C41564520455320582D31",
+   "clave": "APOLO",
+   "descifrar": false,
+   "salida": "4C4120434R41564520455320582R31"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C41564520455320582D31",
+   "clave": "APOLO",
+   "descifrar": true,
+   "salida": "4C4120434N41564520455320582P31"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C41564520455320582D31",
+   "clave": "apolo 11",
+   "descifrar": false,
+   "salida": "4C4120434R41564520455320582R31"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C41564520455320582D31",
+   "clave": "apolo 11",
+   "descifrar": true,
+   "salida": "4C4120434N41564520455320582P31"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C41564520455320582D31",
+   "clave": "Luna",
+   "descifrar": false,
+   "salida": "4N4120434W41564520455320582Q31"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C41564520455320582D31",
+   "clave": "Luna",
+   "descifrar": true,
+   "salida": "4R4120434I41564520455320582Q31"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C41564520455320582D31",
+   "clave": "K",
+   "descifrar": false,
+   "salida": "4M4120434M41564520455320582N31"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C41564520455320582D31",
+   "clave": "K",
+   "descifrar": true,
+   "salida": "4S4120434S41564520455320582T31"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C41564520455320582D31",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "4L4120434W41564520455320582S31"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C41564520455320582D31",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "4T4120434I41564520455320582O31"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C41564520455320582D31",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "4R4120434N41564520455320582X31"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C41564520455320582D31",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "4N4120434R41564520455320582J31"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C41564520455320582D31",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "4P4120434C41564520455320582Q31"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4C4120434C41564520455320582D31",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "4P4120434C41564520455320582Q31"
   },
   {
    "op": "base64",
@@ -573,6 +1097,48 @@
    "salida": "CLYif17"
   },
   {
+   "op": "vigenere",
+   "entrada": "MVIsp17",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "VPXai17"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MVIsp17",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "DBTkw17"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MVIsp17",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "BGCld17"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MVIsp17",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "XKOzb17"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MVIsp17",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "ZVVvj17"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MVIsp17",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "ZVVpv17"
+  },
+  {
    "op": "base64",
    "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
    "salida": "NC1wNFMweUkxa1NaU25iL2FOTXhJaHZGSU1iRFNmZmo="
@@ -666,6 +1232,48 @@
    "clave": "K",
    "descifrar": true,
    "salida": "4-f4I0oY1aIPIdr/qDCnYxlVYCrTIvvz"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "4-y4M0nQ1dWQBhq/iGQoRbkNBQsMMunc"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "4-g4Y0jA1rOIJtm/sUIgZngXPIkUYqxq"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "4-e4D0sB1yFODhu/oABiCajSXXvWGsuu"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "4-a4H0eP1wFKHti/mAXmOohSTBhKEsqy"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "4-c4S0lL1eFZFqv/nNZaCuvSLGoDFizw"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "4-p4S0yI1kSZSnb/aNMxIhvFIMbDSffj",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "4-c4S0lF1qFZFkh/nNZuOuvSFSoDFclw"
   },
   {
    "op": "base64",
@@ -763,6 +1371,48 @@
    "salida": "9Agx-1UwAFdoyJ"
   },
   {
+   "op": "vigenere",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "9Tkw-1MzOGwsxB"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "9Bws-1WnGYeetL"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "9Zbb-1XuXEysbH"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "9Vfn-1LsXAcepF"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "9Xqu-1HaXPabcG"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Kqh-1EgKPnyiT",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "9Xqu-1BmXPavoG"
+  },
+  {
    "op": "base64",
    "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
    "salida": "OFlqWHpiaTAgMWhJdC93SEs0M1FQdSthRHl3Zmg0VEhrTy9I"
@@ -856,6 +1506,48 @@
    "clave": "K",
    "descifrar": true,
    "salida": "8OzNpry0 1xYj/mXA43GFk+qTomvx4JXaE/X"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "8HdMhum0 1yRn/lPD43UGd+uSgpjy4CBzW/A"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "8PpIrie0 1qZz/hZR43MYl+gOqdbq4KNvG/O"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "8NuRspv0 1wTn/pVX43FAo+tRllqb4MVxD/S"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "8JyDgnv0 1sXz/dTX43BEa+hPlhun4ATxZ/W"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "8LjKcvv0 1hVw/qUK43DSo+nDlzzu4TUnI/U"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "8YjXzbi0 1hIt/wHK43QPu+aDywfh4THkO/H",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "8LjKwhv0 1hVq/cUK43DMa+nDltlu4TUhU/U"
   },
   {
    "op": "base64",
@@ -953,6 +1645,48 @@
    "salida": "5PhAFoLYZ7H hFmn/w uWKBaQZHzOEbqkQ D"
   },
   {
+   "op": "vigenere",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "5IlZXrZZS7L gXpb/x nAJTdEAAdNWeelJ H"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "5QxVHfRRA7X cHdt/p vMFDrWSIpJGswdR T"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "5OcEImIXU7L kDjm/r yZIYzLDKxLDwunO A"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "5KgQWkITY7X yBji/v kNGYvPPYvLZagbM A"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "5MrXSsIIW7U lCwk/j yTUYnUWRwBIyahD H"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "5ZrKPyVIJ7R rPwx/g eGULkAJRjYOlauA N",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "5MrXMeIIW7O xCwk/d kTUYhGWRwVUyahX T"
+  },
+  {
    "op": "base64",
    "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
    "salida": "bnZCUHpsbnhoOXlCK1VGVHFhNnN4cG5KekdScVpzdVYgNGxyUzFpZA=="
@@ -1046,6 +1780,48 @@
    "clave": "K",
    "descifrar": true,
    "salida": "dlRFpbdnx9oR+KVJgq6infdZpWHgPikL 4bhI1yt"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "wpQXspegb9nJ+NJKzu6hfirAiAGySwlE 4fgA1bh"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "ebMHghwon9jT+BBChg6dpwjSqMCiGodM 4rcK1pz"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "cgVInycib9rP+HUEkt6gkeyDsUEfKmnJ 4ygD1cw"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "ykHWlyymn9fN+HQIwh6ekacPgSEbOybH 4ycH1ok"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "avOStynkk9sO+USWkn6skshWzTUkMshY 4feS1vg"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "nvBPzlnxh9yB+UFTqa6sxpnJzGRqZsuV 4lrS1id",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "avOMfynke9eO+USQwn6skmtWzTOwMshS 4reS1va"
   },
   {
    "op": "base64",
@@ -1143,6 +1919,48 @@
    "salida": "ICk7l SLwTCBOM bEI3CC6j-st"
   },
   {
+   "op": "vigenere",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "BGj7d VZxMGAGP pFB3GB6b-vh"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "JSf7n JRpUSWQD hXJ3SX6l-jz"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "HXo7o QIvOGEMJ aZM3FA6g-ro"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "DBa7c OIrSSSKJ wDY3TY6g-ns"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "FMh7y WIgQPFLW yRM3ZM6g-fx"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "SMu7v CVgDMLYW lOS3MM6t-cd",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "FMh7s IIgQJRLW yLY3ZM6g-zj"
+  },
+  {
    "op": "base64",
    "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
    "salida": "bG5WdUg0VWZtNCtoL01xZDViTmlRM01pUHZtN0V1RWdOOU5naw=="
@@ -1236,6 +2054,48 @@
    "clave": "K",
    "descifrar": true,
    "salida": "bdLkX4Kvc4+x/Cgt5rDyG3CyFlc7UkUwD9Dwa"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "uhKcA4Ywv4+b/Byw5fErK3BqIzd7NoToG9Rxt"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "ctGmO4Qod4+n/Xik5xWzW3XaWrv7VaPyU9Jpb"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "ayPnV4Hux4+b/Feq5qYcJ3AvEgg7XiRvY9Hzy"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "wcBbT4Hqb4+n/Tcq5mCoX3YvAks7LgRrC9Tnw"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "ynIxB4Hfz4+k/Gdd5oQcD3MvSpz7EhHaA9Ntn"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "lnVuH4Ufm4+h/Mqd5bNiQ3MiPvm7EuEgN9Ngk",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "ynIrN4Hfz4+e/Sdd5oKoD3MvMbz7EhBmA9Nth"
   },
   {
    "op": "base64",
@@ -1333,6 +2193,48 @@
    "salida": "CqmxRR2x5rxZPEKzA=0lpYNaZj"
   },
   {
+   "op": "vigenere",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "VulpUF2y5kbYHHYaT=0poQQoAc"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "DghzIX2q5snURVQsB=0bkAEgSk"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "BlqaPO2w5mbCNBJuE=0onVMvDm"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "XpcoNO2s5qnQLBFyQ=0clVIzPa"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "ZajkVO2h5okDMOHmE=0izVAeWt"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MawhBB2h5bhJZOUjK=0vzIXkJt",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "ZajeHO2h5oePMOHgQ=0izVUqWt"
+  },
+  {
    "op": "base64",
    "entrada": "C/rBK1YsUz",
    "salida": "Qy9yQksxWXNVeg=="
@@ -1426,6 +2328,48 @@
    "clave": "K",
    "descifrar": true,
    "salida": "S/hRA1OiKp"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "C/rBK1YsUz",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "L/lQS1RwLi"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "C/rBK1YsUz",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "T/xMC1FoDq"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "C/rBK1YsUz",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "R/cVD1MfJk"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "C/rBK1YsUz",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "N/gHR1KfFo"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "C/rBK1YsUz",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "P/rON1SfUm"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "C/rBK1YsUz",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "P/rOH1EfUm"
   },
   {
    "op": "base64",
@@ -1523,6 +2467,48 @@
    "salida": "wAbiwBXtc1OK"
   },
   {
+   "op": "vigenere",
+   "entrada": "gKlsgLHdm1YU",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "pEaazPYmg1NC"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "gKlsgLHdm1YU",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "xQwknHQus1JM"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "gKlsgLHdm1YU",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "vVfluYWog1RI"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "gKlsgLHdm1YU",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "rZrzsYSss1FG"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "gKlsgLHdm1YU",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "tKyvaYHqp1SH"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "gKlsgLHdm1YU",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "tKypmYHqj1EH"
+  },
+  {
    "op": "base64",
    "entrada": "jO95n3",
    "salida": "ak85NW4z"
@@ -1616,6 +2602,48 @@
    "clave": "K",
    "descifrar": true,
    "salida": "zE95d3"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "jO95n3",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "sI95c3"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "jO95n3",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "aU95y3"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "jO95n3",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "yZ95h3"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "jO95n3",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "uD95t3"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "jO95n3",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "wO95a3"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "jO95n3",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "wO95a3"
   },
   {
    "op": "base64",
@@ -1713,6 +2741,48 @@
    "salida": "butoJmle3kS62fZ8UciYu/0jqYCOQNebROpuRC"
   },
   {
+   "op": "vigenere",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "uysgMamx3oR62xC8IdbCt/0btMDHUMweFPiyQU"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "ckoqAsef3aN62hQ8AvjOp/0lhEVPGIgsXHqkME"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "apxrHjkz3oV62dW8TxmBs/0gpTGROKdwVRnrQX"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "wtjfFjgd3aJ62bW8PbyPq/0glXSFMKzaHFlrMB"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "yeqbNjvb3xW62cJ8RpmVe/0gdCZYNAiyBLcyOM"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "ledyTwvo3uC62pJ8EmsIe/0taIMYAXolBYzeBM",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "yeqvZjvb3rI62cJ8RjyVe/0gxOZYNUuyBLwkOM"
+  },
+  {
    "op": "base64",
    "entrada": "MXrSeSvxPUg/fSq8=X",
    "salida": "TVhyU2VTdnhQVWcvZlNxOD1Y"
@@ -1806,6 +2876,48 @@
    "clave": "K",
    "descifrar": true,
    "salida": "CNhIuIlnFKw/vIg8=N"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "VRgAxWmgJJo/yWh8=G"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "DDcKlOeoVFy/mOz8=O"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "BIlLsFkiJNu/sHb8=R"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "XMxZqFgmVBs/sDf8=D"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "ZXeVyFvkSOt/fFt8=R"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "MXrSeSvxPUg/fSq8=X",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "ZXePkFvkMAt/fFn8=D"
   },
   {
    "op": "base64",
@@ -1903,6 +3015,48 @@
    "salida": "X4yq-bWPfe3TpPoO9=2"
   },
   {
+   "op": "vigenere",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "Q4cp-tZDgx3XoHrC9=2"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "Y4ol-dNVyf3JkRfU9=2"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "W4tu-eUMez3XsNlN9=2"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "S4xg-sSMad3JgLlJ9=2"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "U4in-oAMpb3GtMyL9=2"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "H4ia-lGZpo3DzZyY9=2",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "U4in-iMMpb3AfMyL9=2"
+  },
+  {
    "op": "base64",
    "entrada": "0zre0oGLw6Y7QvNQ-",
    "salida": "MHpyZTBvR0x3Nlk3UXZOUS0="
@@ -1996,6 +3150,48 @@
    "clave": "K",
    "descifrar": true,
    "salida": "0phu0eWBm6O7GlDG-"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "0ilt0wZPn6H7KkVJ-"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "0qxp0gNHf6P7WgFX-"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "0ocy0hUYl6J7KoBD-"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "0kgk0vSYh6N7WcZD-"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "0mrr0rAYw6L7TpAQ-"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "0zre0oGLw6Y7QvNQ-",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "0mrr0lMYw6L7NbAQ-"
   },
   {
    "op": "base64",
@@ -2093,6 +3289,48 @@
    "salida": "1Yp6ceauqj RyVO"
   },
   {
+   "op": "vigenere",
+   "entrada": "1Iz6mokeat BiFY",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "1Rt6bwdirc VxNR"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Iz6mokeat BiFY",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "1Zf6xgrajk HtXF"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Iz6mokeat BiFY",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "1Xk6ghyrpe VbTL"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Iz6mokeat BiFY",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "1To6svwrli HpRL"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Iz6mokeat BiFY",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "1Vz6zrerag EcSY"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Iz6mokeat BiFY",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "1Vz6zlqrag YoSY"
+  },
+  {
    "op": "base64",
    "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
    "salida": "cTBqK2RESjB4TmF4RFZXcUl2M3daNlQ="
@@ -2186,6 +3424,48 @@
    "clave": "K",
    "descifrar": true,
    "salida": "g0z+tTZ0nDqnTLMgYl3mP6J"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "z0d+sLC0bEjrSDPuZe3qO6B"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "h0p+oVQ0tWrdONDmRm3cK6L"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "f0u+xWX0kClrWJJfTp3pN6G"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "b0y+jKV0kYpdKHJbXb3dL6G"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "d0j+qGD0kNnaXIWdLp3jZ6G"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "q0j+dDJ0xNaxDVWqIv3wZ6T",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "d0j+qAP0kNnuJIWdFb3jZ6G"
   },
   {
    "op": "base64",
@@ -2283,6 +3563,48 @@
    "salida": "J+aiAS UxY-TxrDlCgqcpz98xZwGjSbx N"
   },
   {
+   "op": "vigenere",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "C+ehSV IyR-XwjGzDzubhc98lApKiKel O"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "K+qdCJ AqZ-JstUrVhgxrq98dSxWeUsd G"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "I+vmDQ RwT-XapAkXktamy98sDzEgRwb Q"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "E+zyRO RsX-JonAgBwhymu98wPnCgNan E"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "G+kfNW RhV-GboNiPknmmm98bWgDwWyh K"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "T+ksKC EhI-DhbNvMqamzj98hJgQtClh X",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "G+kfHI RhV-AnoNiJwnmmg98nWgDqIyh K"
+  },
+  {
    "op": "base64",
    "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
    "salida": "SFEybkExMzEgLUd0NysxeWpVYy8razArc0ZTbjhm"
@@ -2376,6 +3698,48 @@
    "clave": "K",
    "descifrar": true,
    "salida": "XG2dQ131 -Wj7+1ozKs/+a0+iVId8v"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "QK2cI131 -Zx7+1psOr/+s0+lJJw8z"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "YW2yS131 -Np7+1haAn/+c0+zBBe8l"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "WB2hT131 -Ug7+1nuOv/+y0+fUDh8y"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "SF2tH131 -Sg7+1jyAj/+w0+fQHt8m"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "UQ2aD131 -Ag7+1ywXw/+x0+sSVh8s"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "HQ2nA131 -Gt7+1yjUc/+k0+sFSn8f",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "UQ2aX131 -Mg7+1ywRi/+x0+sSPt8s"
   },
   {
    "op": "base64",
@@ -2473,6 +3837,48 @@
    "salida": "=bVTBAYr5GjS2Y2fOXb0at4w"
   },
   {
+   "op": "vigenere",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "=uZSTDMs5ZnR2Q2iCYu0es4o"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "=cLODREk5HzN2A2wUQc0qo4y"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "=aQXEYVq5BnV2W2cNSf0dr4t"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "=wUJSWVm5FzJ2U2cJWr0rp4t"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "=yFQOEVb5DwW2V2pLKf0xd4t"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "=lFDLKIb5QtC2I2pYHl0kd4g",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "=yFQIQVb5DqI2V2pLEr0xd4t"
+  },
+  {
    "op": "base64",
    "entrada": "9Ejml7iYwJF0ad+u",
    "salida": "OUVqbWw3aVl3SkYwYWQrdQ=="
@@ -2566,6 +3972,48 @@
    "clave": "K",
    "descifrar": true,
    "salida": "9Uzcb7yOmZV0qt+k"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "9Ndbt7bCnSZ0pl+n"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "9Vpxd7pUfAL0lv+b"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "9Tuge7wLlUZ0tr+h"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "9Pyss7uLhYL0hp+h"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "9Rjzo7cLwWI0uq+u"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "9Ejml7iYwJF0ad+u",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "9Rjzi7oLwWC0gq+u"
   },
   {
    "op": "base64",
@@ -2663,6 +4111,48 @@
    "salida": "1rjr45ItKNRBXdO+"
   },
   {
+   "op": "vigenere",
+   "entrada": "1btb45SdUXBLHnY+",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "1knq45AwYOKFWvR+"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1btb45SdUXBLHnY+",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "1szm45KkQGSRSfF+"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1btb45SdUXBLHnY+",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "1qev45LrHMMFAbL+"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1btb45SdUXBLHnY+",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "1mih45ZpHIQROzL+"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1btb45SdUXBLHnY+",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "1oto45VxHXOOBaY+"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1btb45SdUXBLHnY+",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "1oto45PjHXOINaY+"
+  },
+  {
    "op": "base64",
    "entrada": "/g7r8ezVp5sA4dXjj",
    "salida": "L2c3cjhlelZwNXNBNGRYamo="
@@ -2756,6 +4246,48 @@
    "clave": "K",
    "descifrar": true,
    "salida": "/w7h8upLf5iQ4tNzz"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "/p7l8thOt5jJ4xMrc"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "/x7x8prCl5bR4jIbq"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "/v7c8ysJc5hL4xQxw"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "/r7g8kgHc5dP4jEvw"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "/t7r8rcPc5sN4gRwj"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "/g7r8ezVp5sA4dXjj",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "/t7r8rwBc5sN4aDwj"
   },
   {
    "op": "base64",
@@ -2853,6 +4385,48 @@
    "salida": "1G4/B5jvPyo"
   },
   {
+   "op": "vigenere",
+   "entrada": "1Q4/L5tfZiy",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "1Z4/F5inSmp"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Q4/L5tfZiy",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "1H4/R5exGeh"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Q4/L5tfZiy",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "1F4/W5nyNvn"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Q4/L5tfZiy",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "1B4/A5zmLvj"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Q4/L5tfZiy",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "1D4/L5giTvy"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1Q4/L5tfZiy",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "1D4/L5gcFvy"
+  },
+  {
    "op": "base64",
    "entrada": "Wb4BW",
    "salida": "V2I0Qlc="
@@ -2946,6 +4520,48 @@
    "clave": "K",
    "descifrar": true,
    "salida": "Mr4RM"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Wb4BW",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "Fv4QE"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Wb4BW",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "Nh4MO"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Wb4BW",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "Lm4VP"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Wb4BW",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "Hq4HD"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Wb4BW",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "Jb4OZ"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "Wb4BW",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "Jb4OT"
   },
   {
    "op": "base64",
@@ -3043,6 +4659,48 @@
    "salida": "t+Pf59f/o/TKdI"
   },
   {
+   "op": "vigenere",
+   "entrada": "d+Zp59p/y/DUnS",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "m+Te59x/r/HLwM"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "d+Zp59p/y/DUnS",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "u+Fa59h/f/ZDeY"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "d+Zp59p/y/DUnS",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "s+Kj59i/m/QJyM"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "d+Zp59p/y/DUnS",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "o+Ov59w/k/QFcY"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "d+Zp59p/y/DUnS",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "q+Zc59s/s/QUaV"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "d+Zp59p/y/DUnS",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "q+Zc59m/e/QUaP"
+  },
+  {
    "op": "base64",
    "entrada": "3-LMi-YDN",
    "salida": "My1MTWktWURO"
@@ -3136,6 +4794,48 @@
    "clave": "K",
    "descifrar": true,
    "salida": "3-BCy-OTD"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "3-LMi-YDN",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "3-UGx-GWR"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "3-LMi-YDN",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "3-CSt-QKJ"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "3-LMi-YDN",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "3-AXc-RRA"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "3-LMi-YDN",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "3-WBo-FPA"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "3-LMi-YDN",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "3-YMv-BXA"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "3-LMi-YDN",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "3-YMv-VJA"
   },
   {
    "op": "base64",
@@ -3233,6 +4933,48 @@
    "salida": "1ed-TA67=yK/Pzgrk5"
   },
   {
+   "op": "vigenere",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "1xh-SS67=bY/Qskqc5"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "1ft-OC67=pQ/Iawmm5"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "1dy-XD67=wH/Oukui5"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "1zc-JR67=uH/Kywig5"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "1bn-QN67=cH/Zwtvh5"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "1on-DK67=iU/Zjqbu5",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "1bn-QH67=oH/Zwnhh5"
+  },
+  {
    "op": "base64",
    "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
    "salida": "SUJsb2xycGZqej1vMGlLLVdkNHVzRzN3dVdiV050"
@@ -3326,6 +5068,48 @@
    "clave": "K",
    "descifrar": true,
    "salida": "YRbebhfvzp=e0yA-Mt4kiW3mkMrMDj"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "clave": "Júpiter",
+   "descifrar": false,
+   "salida": "RVawevgodo=w0bO-Nm4ohO3pyNkQCb"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "clave": "Júpiter",
+   "descifrar": true,
+   "salida": "ZHwgsnywpk=g0pG-Fu4adY3dqFsCYl"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "clave": "plutón",
+   "descifrar": false,
+   "salida": "XMfhzeeqds=c0vZ-Hx4ngT3lfQuKAi"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "clave": "plutón",
+   "descifrar": true,
+   "salida": "TQrvxeaupg=a0vV-Lj4beT3hjCiIAe"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "clave": "Ñandú 3",
+   "descifrar": false,
+   "salida": "VByrfepsmt=b0iX-Zx4hsT3zoJbJQn"
+  },
+  {
+   "op": "vigenere",
+   "entrada": "IBlolrpfjz=o0iK-Wd4usG3wuWbWNt",
+   "clave": "Ñandú 3",
+   "descifrar": true,
+   "salida": "VBylrepsgf=b0iX-Tj4hsT3taJbJKz"
   }
  ]
 }

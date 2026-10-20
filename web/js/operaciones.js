@@ -13,9 +13,10 @@
     return String.fromCharCode(((c.charCodeAt(0) - base + d) % 26 + 26) % 26 + base);
   }
 
-  /** Vigenère como CyberChef: solo letras A-Z, conserva mayúsculas y la clave solo avanza con letras. */
+  /** Vigenère como CyberChef: solo letras A-Z, conserva mayúsculas y la clave solo avanza con letras.
+   *  Las tildes de la clave se ignoran (Á = A, Ñ = N), igual que en reto2_generador.py. */
   function vigenere(texto, clave, descifrar) {
-    const k = Array.from(String(clave).toUpperCase()).filter((c) => c >= "A" && c <= "Z");
+    const k = Array.from(String(clave).toUpperCase().normalize("NFD")).filter((c) => c >= "A" && c <= "Z");
     if (!k.length) throw new ErrorAmable("Escribe una clave con al menos una letra (los números y espacios de la clave se ignoran).");
     let i = 0, out = "";
     for (const c of texto) {

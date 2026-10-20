@@ -70,7 +70,10 @@ y después `python herramientas/construir_web.py` para volver a cifrar las recom
 
 1. La pista SSTV (foto de Aldrin en la Luna) pregunta «¿Quién hizo esta fotografía?».
 2. Respuesta: el comandante que sostenía la cámara (en `construir_web.py`). Dos pistas (bloquean 30 s y 60 s).
-3. Puzle 3×3 con la foto del prototipo (se descifra con la respuesta).
+3. Puzle 3×3 con una foto al azar de 8 del espacio (NASA/ESA, en `recursos/imagenes/puzle/` con `fotos.json`).
+   Se eligieron con `herramientas/medir_fotos_puzle.py` para que tengan una dificultad parecida (índice 8,9–13,2:
+   ninguna pieza lisa y ningún par de piezas casi iguales), y el desorden está siempre a **exactamente 20
+   movimientos** de la solución. Las fotos van cifradas con la respuesta y se muestra su título y crédito.
 4. Recompensa: audio del fragmento ORIÓN.
 
 ## Decisiones tomadas
@@ -100,10 +103,15 @@ y después `python herramientas/construir_web.py` para volver a cifrar las recom
 
 **Mecánica:** el alumno recibe una cadena cifrada aleatoria y la descifra en un mini-CyberChef integrado en la web.
 
-1. **Vigenère** con la clave `APOLO`, que obtienen respondiendo a «¿Qué misión de la NASA llevó al ser humano a la Luna en 1969?».
+1. **Vigenère** con una clave que obtienen respondiendo a una pregunta de historia del espacio (una sola palabra).
+   Hay **10 variantes** (en `reto2_generador.py`): cada grupo recibe al azar una pregunta y su propia contraseña,
+   y la caja fuerte **solo acepta la contraseña de su grupo** (no se la pueden pasar entre grupos). Ejemplo:
+   «¿Qué misión de la NASA llevó al ser humano a la Luna en 1969?» → `APOLO` → `MACROSCOPIO-69`.
+   La clave ignora tildes, números y espacios (`Júpiter`, `Apolo 11` valen).
 2. **Dos capas más**, en una combinación sorteada. Tras cada paso hay que volver a consultar la "Chuleta del Espía".
-3. El resultado es la frase `LA CLAVE ES MACROSCOPIO-69` (una frase legible, para saber cuándo se ha acertado con César).
-4. Introducen `MACROSCOPIO-69` en la caja fuerte de la web, que desbloquea el audio SSTV de su fragmento del mapa.
+3. El resultado es la frase `LA CLAVE ES <CONTRASEÑA>` (una frase legible, para saber cuándo se ha acertado con César).
+   Su longitud nunca es múltiplo de 3, para que el Base64 lleve `=` y la combinación Espejo → Base64 conserve su pista.
+4. Introducen la contraseña en la caja fuerte de la web, que desbloquea el audio SSTV de su fragmento del mapa.
 
 **Combinaciones sorteadas** (orden en que el alumno las quita tras Vigenère). Están verificadas en `herramientas/reto2_generador.py`:
 
@@ -136,5 +144,5 @@ encadenables como una receta, con la salida en directo. No indica si cada paso e
 
 **En la web:** «¿Qué tipo de código es esto?» y la «Pista de rescate» (dice la siguiente operación) son pistas:
 cada uso bloquea el reto 30 s más que el anterior (ver «Web local»).
-La web no lleva la frase: elige una de las 76 cadenas posibles del banco que genera `reto2_generador.py --exportar`,
+La web no lleva la frase: elige una de las 760 cadenas posibles (10 variantes × 76) del banco que genera `reto2_generador.py --exportar`,
 que incluye huellas SHA-256 de cada etapa para que las pistas sepan por dónde va el grupo.

@@ -12,18 +12,24 @@
   const estado = () => Progreso.reto(ID);
   const guardar = (fn) => Progreso.cambiar(ID, fn);
 
-  /** Sortea la cadena igual que generar() en Python: primero la combinación, luego el desplazamiento. */
+  /** Sortea igual que generar() en Python: variante (pregunta y contraseña), combinación y desplazamiento. */
   function sortearCadena() {
-    const { combinaciones, banco } = window.DATOS.reto2;
+    const { combinaciones, variantes, banco } = window.DATOS.reto2;
+    const v = Math.floor(Math.random() * variantes.length);
     const c = Math.floor(Math.random() * combinaciones.length);
-    const opciones = banco.map((r, i) => ({ r, i })).filter((x) => x.r.combinacion === c);
+    const opciones = banco.map((r, i) => ({ r, i })).filter((x) => x.r.variante === v && x.r.combinacion === c);
     return opciones[Math.floor(Math.random() * opciones.length)].i;
   }
   const reto = () => window.DATOS.reto2.banco[estado().cadena];
+  const variante = () => window.DATOS.reto2.variantes[reto().variante];
+  const VERSION_BANCO = 2; // si cambia el banco, el progreso guardado con el anterior se vuelve a sortear
 
   function vista(el) {
     guardar((r) => {
       r.empezado = true;
+      if (r.versionBanco !== VERSION_BANCO && !r.completado) {
+        r.cadena = null; r.entrada = null; r.receta = []; r.versionBanco = VERSION_BANCO;
+      }
       if (r.cadena == null) r.cadena = sortearCadena();
       if (!r.receta) r.receta = [];
       if (r.entrada == null) r.entrada = window.DATOS.reto2.banco[r.cadena].cadena;
@@ -52,8 +58,8 @@
             <div class="ventana informe"><div class="ventana-cuerpo" id="r2-informe">
               <p class="linea-cmd">&gt; DESCIFRANDO INFORME DEL ESPÍA…</p>
               <p>Hemos interceptado un mensaje protegido con <b>tres capas</b> de cifrado. Lo que sabemos:</p>
-              <p>1 · La capa de fuera es siempre <b>Vigenère</b>. Su clave es la respuesta a:
-                <span style="color:#fde68a">«¿Qué misión de la NASA llevó al ser humano a la Luna en 1969?»</span></p>
+              <p>1 · La capa de fuera es siempre <b>Vigenère</b>. Su clave es la respuesta (<b>una sola palabra</b>) a:
+                <span style="color:#fde68a">«${escapar(variante().pregunta)}»</span></p>
               <p>2 · Debajo hay <b>dos capas más</b>. Tras quitar cada una, mirad la <b>Chuleta del Espía</b> para saber cuál sigue.</p>
               <p>3 · Cuando leáis una frase en español, contendrá la contraseña de la caja fuerte.</p>
             </div></div>
@@ -339,7 +345,8 @@
     if (etapa === -1) {
       texto = $("#r2-entrada").value.trim() !== r.cadena
         ? "La entrada no es la transmisión original. Pulsad ↻ junto a «Entrada» para recuperarla. Después, el primer paso es <b>Vigenère</b> en modo Descifrar."
-        : "El primer paso es <b>Vigenère</b> en modo <b>Descifrar</b>. La clave es el nombre de la misión de 1969 que llevó al ser humano a la Luna. Si ya lo tenéis, revisad cómo está escrita la clave.";
+        : `El primer paso es <b>Vigenère</b> en modo <b>Descifrar</b>. La clave es la respuesta a la pregunta del informe:
+           una sola palabra de <b>${variante().letras} letras</b> que empieza por <b>«${variante().inicial}»</b>. Si ya la tenéis, revisad cómo está escrita.`;
     } else {
       texto = `Vais bien hasta el paso ${pasoBueno + 1} (${Op.OPERACIONES[receta[pasoBueno].op].nombre}). Lo siguiente es quitar la capa <b>${siguiente}</b>`;
       if (orden[etapa + 1] === "cesar") texto += ": id moviendo el desplazamiento hasta que se lea una frase en español";
@@ -376,7 +383,8 @@
     if (App.segundosBloqueo(e) > 0 || e.completado) return;
     if (!Cripto.normalizar(input.value)) { input.focus(); return; }
     $("#r2-abrir").disabled = true;
-    const llave = await Cripto.probar(window.DATOS.reto2_llaves, input.value).catch(() => null);
+    // Solo vale la contraseña de la variante de este equipo
+    const llave = await Cripto.probar(window.DATOS.reto2_llaves, input.value, reto().variante).catch(() => null);
     $("#r2-abrir").disabled = false;
     const caja = $("#r2-aviso");
     if (llave) {
