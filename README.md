@@ -61,7 +61,10 @@ y después `python herramientas/construir_web.py` para volver a cifrar las recom
   sigue aunque se recargue la página; mientras, el grupo puede volver al panel y avanzar en otro reto.
 - **Intentos:** 5 fallos → bloqueo de 1 minuto (también si se recarga la página).
 - **Progreso** en `localStorage`. "Reiniciar progreso" (abajo a la derecha, discreto) lo borra todo tras dos confirmaciones.
-- **Montaje:** las imágenes subidas no salen del PC; se pueden ordenar, girar, quitar la cabecera y descargar en PNG.
+- **Montaje:** las imágenes subidas no salen del PC; se pueden ordenar, girar y descargar en PNG. La cabecera con el
+  nombre del fragmento se quita **siempre y sola**: se busca la línea naranja que la separa del mapa (si no aparece,
+  se recortan 63 de 496 px) y se quitan además 1 fila (en PD120 las filas comparten color de dos en dos y la primera
+  sale teñida de naranja) y 2 px de cada lado (puntitos del principio y final de cada línea SSTV).
 - **Reproductor SSTV** propio (`js/reproductor.js`): cascada con el espectro en directo y marcas en 1200, 1500,
   1900 y 2300 Hz. El sonido sale por la salida predeterminada de Windows (CABLE Input en el aula).
 - **Efectos** (`js/efectos.js`): línea de tiempo de los pasos, expediente que se escribe como en un terminal,

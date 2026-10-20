@@ -5,9 +5,11 @@
   const { $, $$, escapar, Sonido } = App;
 
   // Cabecera de cada fragmento SSTV (franja azul con el nombre): 63 de 496 píxeles.
+  // Cada fragmento SSTV lleva arriba una cabecera (franja azul con su nombre y una línea naranja debajo).
+  // En el mapa montado no debe verse: se recorta SIEMPRE. Si no se encuentra la línea naranja (imagen con
+  // ruido), se recorta la proporción fija de la cabecera: 63 de 496 píxeles.
   const CABECERA = 63 / 496;
   const piezas = [null, null, null, null]; // { img, nombre, giro }
-  let recortar = false;
   let reordenado = false, descargado = false; // para marcar los pasos del montaje
 
   function vista(el) {
@@ -36,8 +38,7 @@
       </label>
 
       <div class="opciones-montaje">
-        <label class="interruptor"><input type="checkbox" id="m-recortar" ${recortar ? "checked" : ""}> Quitar las cabeceras con el nombre del fragmento</label>
-        <span class="texto-3 pequeno">${ICONO.info.replace("<svg", '<svg width="14" height="14" style="vertical-align:-2px"')} Arrastrad una pieza sobre otra para intercambiarlas, o usad las flechas.</span>
+        <span class="texto-3 pequeno">${ICONO.info.replace("<svg", '<svg width="14" height="14" style="vertical-align:-2px"')} Arrastrad una pieza sobre otra para intercambiarlas, o usad las flechas. La franja con el nombre del fragmento se quita sola.</span>
       </div>
 
       <div class="mesa" id="m-mesa"></div>
@@ -49,7 +50,6 @@
     ["dragenter", "dragover"].forEach((t) => zona.addEventListener(t, (ev) => { if (tieneArchivos(ev)) { ev.preventDefault(); zona.classList.add("encima"); } }));
     ["dragleave", "drop"].forEach((t) => zona.addEventListener(t, () => zona.classList.remove("encima")));
     zona.addEventListener("drop", (ev) => { if (tieneArchivos(ev)) { ev.preventDefault(); cargar(Array.from(ev.dataTransfer.files)); } });
-    $("#m-recortar").addEventListener("change", (ev) => { recortar = ev.target.checked; pintar(); });
     $("#m-vaciar").addEventListener("click", () => {
       if (piezas.some(Boolean) && confirm("¿Quitar todas las imágenes?")) { piezas.fill(null); reordenado = descargado = false; pintar(); }
     });
@@ -97,7 +97,8 @@
       let destino = hueco != null ? hueco : piezas.findIndex((p) => !p);
       if (destino < 0) { App.aviso($("#m-aviso"), "info", "Ya hay 4 piezas. Quitad alguna (o soltad la imagen encima de una pieza) para cambiarla."); break; }
       try {
-        piezas[destino] = { img: await leerImagen(archivo), nombre: archivo.name, giro: 0 };
+        const img = await leerImagen(archivo);
+        piezas[destino] = { img, nombre: archivo.name, giro: 0, corte: buscarCabecera(img) };
       } catch (e) {
         App.aviso($("#m-aviso"), "error", `No se ha podido abrir «${escapar(archivo.name)}».`);
       }
@@ -106,11 +107,37 @@
     pintar();
   }
 
+  /** Fila (en píxeles de la imagen) donde termina la cabecera: justo debajo de la línea naranja. */
+  function buscarCabecera(img) {
+    const w = img.naturalWidth, h = img.naturalHeight; // a resolución completa: corte exacto, sin perder filas
+    const c = document.createElement("canvas");
+    c.width = w; c.height = h;
+    const g = c.getContext("2d");
+    g.drawImage(img, 0, 0, w, h);
+    const datos = g.getImageData(0, 0, w, Math.round(h * 0.3)).data;
+    let ultimaNaranja = -1;
+    for (let y = 0; y < Math.round(h * 0.3); y++) {
+      let naranjas = 0;
+      for (let x = 0; x < w; x++) {
+        const i = (y * w + x) * 4, r = datos[i], gr = datos[i + 1], b = datos[i + 2];
+        if (r > 160 && gr > 70 && gr < 170 && b < 90 && r - b > 100) naranjas++;
+      }
+      if (naranjas > w * 0.6) ultimaNaranja = y;
+      else if (ultimaNaranja >= 0) break; // ya hemos pasado la línea
+    }
+    return ultimaNaranja >= 0 ? ultimaNaranja + 1 : Math.round(h * CABECERA);
+  }
+
   /** Dibuja una pieza girada (y sin cabecera si se pide) en un canvas nuevo. */
   function dibujarPieza(p) {
     const { img } = p;
-    const sy = recortar ? Math.round(img.naturalHeight * CABECERA) : 0;
-    const w = img.naturalWidth, h = img.naturalHeight - sy;
+    // Limpieza de bordes de la descodificación SSTV:
+    // - 1 fila más tras la cabecera: en PD120 las filas comparten el color de dos en dos y la primera fila
+    //   del mapa sale teñida de naranja por la línea de la cabecera;
+    // - 2 columnas a cada lado: el principio y el final de cada línea SSTV salen con puntitos.
+    const BORDE = 2;
+    const sy = p.corte + 1, sx = BORDE;
+    const w = img.naturalWidth - 2 * BORDE, h = img.naturalHeight - sy;
     const girada = p.giro % 180 !== 0;
     const c = document.createElement("canvas");
     c.width = girada ? h : w;
@@ -118,7 +145,7 @@
     const g = c.getContext("2d");
     g.translate(c.width / 2, c.height / 2);
     g.rotate((p.giro * Math.PI) / 180);
-    g.drawImage(img, 0, sy, w, h, -w / 2, -h / 2, w, h);
+    g.drawImage(img, sx, sy, w, h, -w / 2, -h / 2, w, h);
     return c;
   }
 
@@ -128,7 +155,7 @@
     mesa.innerHTML = "";
     piezas.forEach((p, i) => {
       const hueco = document.createElement("div");
-      hueco.className = "hueco-mapa";
+      hueco.className = "hueco-mapa" + (p ? " lleno" : "");
       hueco.innerHTML = `<span class="posicion">${i + 1}</span>`;
       const lienzo = document.createElement("div");
       lienzo.className = "lienzo-pieza";

@@ -427,6 +427,11 @@ a { color: var(--ambar); }
 .mesa { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin: 20px auto 0; max-width: 1180px; border-radius: 10px; overflow: hidden; border: 1px solid var(--borde-fuerte); background: rgba(3, 7, 18, 0.6); }
 .hueco-mapa { position: relative; display: flex; flex-direction: column; border-right: 1px dashed var(--borde-fuerte); }
 .hueco-mapa:last-child { border-right: 0; }
+/* Con imagen, las piezas van pegadas: el mapa se ve de una pieza (solo los controles quedan separados) */
+.hueco-mapa.lleno { border-right: 0; }
+.hueco-mapa.lleno .lienzo-pieza { background: #fff; }
+.hueco-mapa.lleno .controles-pieza { border-right: 1px dashed var(--borde-fuerte); }
+.hueco-mapa.lleno .posicion { opacity: 0.55; }
 .hueco-mapa.encima { background: rgba(251, 191, 36, 0.1); }
 .lienzo-pieza { aspect-ratio: 433 / 640; display: grid; place-items: center; overflow: hidden; }
 .lienzo-pieza.apaisado { aspect-ratio: 496 / 640; }
