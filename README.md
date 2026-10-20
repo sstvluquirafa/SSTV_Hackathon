@@ -93,7 +93,7 @@ y después `python herramientas/construir_web.py` para volver a cifrar las recom
 - **Fragmentos del mapa:** 4 tiras verticales enviadas giradas 90° (el mapa es 2,7:1 y PD120 es casi cuadrado;
   así se conserva un 35 % más de detalle). Cabecera con nombre de constelación (LYRA, ORIÓN, CYGNUS, ANDRÓMEDA)
   que no revela el orden. Al montar el mapa hay que girar y ordenar las piezas.
-- **Retos:** los retos 1 y 2 están en la web. Reto 4 «SSTV a mano»: especificado en `especificaciones/reto4_sstv_a_mano.md`.
+- **Retos:** los retos 1, 2 y 4 están en la web (el 4, «SSTV a mano», según `especificaciones/reto4_sstv_a_mano.md`). El reto 3 (con el SDR) sigue como «PRÓXIMAMENTE».
   Reto 3 «La baliza» (Morse; primero en la web y después por SDR con walkie PMR446): pendiente de especificar.
 - **Jupyter:** solo para la clase guiada y para generar los WAV.
 - **Asignación de fragmentos:** Reto 1 → ORIÓN · Reto 2 → CYGNUS · Reto 3 → LYRA · Reto 4 → ANDRÓMEDA.
