@@ -74,6 +74,8 @@ y después `python herramientas/construir_web.py` para volver a cifrar las recom
    Se eligieron con `herramientas/medir_fotos_puzle.py` para que tengan una dificultad parecida (índice 8,9–13,2:
    ninguna pieza lisa y ningún par de piezas casi iguales), y el desorden está siempre a **exactamente 20
    movimientos** de la solución. Las fotos van cifradas con la respuesta y se muestra su título y crédito.
+   Las piezas no llevan número: **«Ver números» es una pista** y bloquea el reto como las demás (30 s, 60 s…
+   según las pistas ya usadas). Una vez abierta, los números se pueden mostrar u ocultar libremente.
 4. Recompensa: audio del fragmento ORIÓN.
 
 ## Decisiones tomadas

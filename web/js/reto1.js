@@ -200,6 +200,17 @@
   let fichas = [], historial = [], inicio = [], movimientos = 0, t0 = 0, resuelto = false, foto = "", infoFoto = null;
   let aDistancia = null;
 
+  const numerosAbiertos = () => estado().pistas.some((p) => p.id === "numeros");
+  function pintarBotonNumeros() {
+    const b = $("#r1-numeros"), tablero = $("#r1-tablero");
+    if (!b) return;
+    if (!numerosAbiertos()) b.innerHTML = `${ICONO.reloj} Ver números (pista: ${App.proximoBloqueo(ID)} s)`;
+    else {
+      const ocultos = tablero.classList.contains("sin-numeros");
+      b.innerHTML = `${ocultos ? ICONO.ojoNo : ICONO.ojo} Números: ${ocultos ? "no" : "sí"}`;
+    }
+  }
+
   const textoFoto = () => (infoFoto
     ? `<div class="credito-foto"><b>${App.escapar(infoFoto.titulo)}</b><span>${App.escapar(infoFoto.credito)}</span></div>` : "");
 
@@ -260,7 +271,7 @@
     zona.innerHTML = `
       <div class="puzle-zona">
         <div>
-          <div class="tablero" id="r1-tablero" aria-label="Puzle"></div>
+          <div class="tablero ${numerosAbiertos() ? "" : "sin-numeros"}" id="r1-tablero" aria-label="Puzle"></div>
           <p class="texto-3 pequeno" style="text-align:center;margin:8px 0 0">Haced clic en una pieza junto al hueco para moverla, o usad las <b>flechas del teclado</b>.</p>
         </div>
         <div>
@@ -274,16 +285,26 @@
             <div><b>Fotografía objetivo</b><div class="texto-3 pequeno">Haced clic en la miniatura para verla en grande.</div>${textoFoto()}</div>
           </div>
           <div class="botonera">
-            <button class="btn btn-oscuro btn-peq" id="r1-numeros">${ICONO.ojo} Números: sí</button>
+            <button class="btn btn-oscuro btn-peq" id="r1-numeros"></button>
             <button class="btn btn-oscuro btn-peq" id="r1-deshacer">${ICONO.deshacer} Deshacer</button>
             <button class="btn btn-oscuro btn-peq" id="r1-reiniciar">${ICONO.reiniciar} Volver a empezar</button>
           </div>
         </div>
       </div>`;
     $("#r1-ref").addEventListener("click", ampliar);
-    $("#r1-numeros").addEventListener("click", (ev) => {
-      const t = $("#r1-tablero").classList.toggle("sin-numeros");
-      ev.currentTarget.innerHTML = `${t ? ICONO.ojoNo : ICONO.ojo} Números: ${t ? "no" : "sí"}`;
+    // Los números de las piezas son una pista: la primera vez bloquean el reto (30 s, 60 s, 90 s…
+    // según las pistas ya usadas). Después se pueden mostrar u ocultar libremente.
+    pintarBotonNumeros();
+    $("#r1-numeros").addEventListener("click", () => {
+      const tablero = $("#r1-tablero");
+      if (!numerosAbiertos()) {
+        if (!App.usarPista(ID, "numeros", "Vais a ver el número de cada pieza del puzle.",
+          "<b>Números de las piezas:</b> cada pieza muestra el número de su sitio. Colocadlas del 1 al 9, de izquierda a derecha y de arriba abajo; el hueco va al final.")) return;
+        tablero.classList.remove("sin-numeros");
+      } else {
+        tablero.classList.toggle("sin-numeros");
+      }
+      pintarBotonNumeros();
     });
     $("#r1-deshacer").addEventListener("click", deshacer);
     $("#r1-reiniciar").addEventListener("click", () => { fichas = [...inicio]; historial = [[...fichas]]; movimientos = 0; t0 = Date.now(); pintarTablero(); });
