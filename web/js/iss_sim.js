@@ -1,56 +1,43 @@
-// Reto 4 · Contacto con la ISS — simulación de la estación de tierra y del paso de la ISS.
-// Lógica pura y determinista (misma semilla + mismas acciones = mismo resultado): no toca el DOM ni el audio.
+// Reto 4 · Contacto con la ISS (versión 2) — lógica del seguimiento: trayectoria, antena con rotor lento,
+// Doppler, alarma del amplificador y calidad del contacto.
+// Pura y determinista (misma semilla + mismas acciones = mismo resultado): no toca el DOM.
 // La usan la web (js/reto4.js) y las pruebas de Node (herramientas/probar_reto4_iss.mjs).
 (function (raiz) {
   "use strict";
 
-  // ---------- Constantes (tiempos en segundos de misión) ----------
   const C = {
-    T_AOS: 180,            // 3:00 de puesta en marcha hasta que la ISS asoma por el horizonte (AOS)
-    T_PASO: 360,           // 6:00 de AOS a LOS
-    T_TX_DESDE_AOS: 90,    // la ISS empieza a emitir el SSTV en AOS+1:30
-    T_TX: 127,             // duración del audio PD120
-    T_DIFERENCIAL: 20,     // estación bloqueada tras saltar el diferencial
-    T_ENTRE_PASOS: 120,    // «Siguiente paso en 2:00»
-    F_BAJADA_SSTV: 145.8,  // MHz, FM
-    DOPPLER_MAX: 3.5,      // kHz (+3,5 en el AOS, 0 en la máxima aproximación, −3,5 en el LOS)
-    TOL_SINTONIA: 0.6,     // kHz
-    TOL_AZ: 15, TOL_EL: 10, // grados
-    FACTOR_LNA_APAGADO: 0.55,
-    CONTACTO_MEDIA: 0.6,   // contacto establecido: calidad media ≥ 0,6 durante la transmisión…
-    CONTACTO_TIEMPO: 0.85, // …y al menos el 85 % del tiempo por encima de 0,5 (como mucho una franja ilegible)
-    // Curva calidad → ruido, calibrada con herramientas/calibrar_ruido_iss.py (generado/iss/calibracion_ruido.json)
-    RUIDO: { R: 0.086, B: 2.827, pasoAlto: 300, pasoBajo: 3000, rms: 0.5, fs: 11025, segundos: 10 },
+    T_CUENTA: 10,          // «La ISS aparecerá por el horizonte en 10 segundos…»
+    T_PASO: 180,           // el seguimiento dura unos 3 minutos (de AOS a LOS)
+    DT: 0.1,               // paso de integración (s)
+    TOLERANCIA: 12,        // grados de cielo: antena «encima» de la ISS
+    VEL_ROTOR: 0.12,       // velocidad máxima de la antena en el mapa (radio del mapa = 1): unos 11°/s
+    DOPPLER_MAX: 3.5,      // kHz
+    ZONA_BUENA: 0.5,       // kHz a cada lado del centro de la cascada
+    PASO_CORRECCION: 0.25, // kHz por pulsación de ◀ ▶
+    ALARMA_SUBIDA: 30,     // s hasta que el amplificador se apaga solo si nadie hace nada
+    ALARMA_ENFRIADO: 8,    // s apagado hasta que el termómetro baja a verde
+    TEMP_INICIAL: 0.35, TEMP_VERDE: 0.25,
+    AMP_APAGADO: 0.5,      // mientras el amplificador está apagado, la señal buena cuenta la mitad
+    META: 0.7,             // contacto establecido con un 70 % de calidad
+    SECUENCIA: ["alimentacion", "rotor", "amplificador"],
   };
-  C.T_LOS = C.T_AOS + C.T_PASO;
-  C.T_TX_INICIO = C.T_AOS + C.T_TX_DESDE_AOS;
-  C.T_TX_FIN = C.T_TX_INICIO + C.T_TX;
 
-  // ---------- Datos del manual ----------
-  // Código de estado → secuencia de encendido y posición de referencia para calibrar el rotor
-  const CODIGOS = {
-    "E-03": { secuencia: ["alimentacion", "lna", "rotor"], referencia: { az: 0, el: 0 } },
-    "E-07": { secuencia: ["alimentacion", "rotor", "lna"], referencia: { az: 0, el: 0 } },
-    "E-12": { secuencia: ["alimentacion", "rotor", "lna"], referencia: { az: 0, el: 90 } },
-    "E-15": { secuencia: ["alimentacion", "lna", "rotor"], referencia: { az: 180, el: 0 } },
-  };
-  const FRECUENCIAS = [
-    { servicio: "Voz e imágenes SSTV", sentido: "Bajada (ISS → Tierra)", mhz: "145,800", modo: "FM" },
-    { servicio: "Voz (contactos con colegios)", sentido: "Subida (Tierra → ISS)", mhz: "145,200", modo: "FM" },
-    { servicio: "APRS (paquetes de datos)", sentido: "Subida y bajada", mhz: "145,825", modo: "FM" },
-    { servicio: "Repetidor de voz", sentido: "Bajada (ISS → Tierra)", mhz: "437,800", modo: "FM" },
-    { servicio: "Repetidor de voz", sentido: "Subida (Tierra → ISS)", mhz: "145,990", modo: "FM (tono 67 Hz)" },
+  // Memorias de la radio (MHz) y lo que se oye en cada una
+  const MEMORIAS = [
+    { mhz: "145,800", buena: true, mensaje: "✓ Sintonizada la bajada de imágenes de la ISS" },
+    { mhz: "145,825", mensaje: "Se oyen pitidos de datos (APRS): son mensajes de texto, no imágenes." },
+    { mhz: "437,800", mensaje: "Es el repetidor de voz de la ISS. Aquí no llegan imágenes." },
+    { mhz: "145,990", mensaje: "Silencio: esta frecuencia es de <b>subida</b>, para hablarle a la ISS, no para escucharla." },
+    { mhz: "437,025", mensaje: "Ruido. Aquí no transmite la ISS." },
   ];
-  const ALARMAS = {
-    "ALM-3": { titulo: "Temperatura del LNA alta", plazo: 45, apagado: 10 },
-    "ALM-5": { titulo: "Rotor bloqueado" },
-    "ALM-8": { titulo: "Interferencia", duracion: 60 },
-  };
-  const MODOS = ["FM", "USB", "LSB", "AM"];
-  const FILTROS = { "FM-W": "FM ancho · 15 kHz", "FM-N": "FM estrecho · 10 kHz", "SSB": "SSB · 2,4 kHz" };
+  const FRECUENCIAS = [
+    { servicio: "Imágenes SSTV y voz", sentido: "Bajada", mhz: "145,800" },
+    { servicio: "Datos APRS (mensajes de texto)", sentido: "Bajada y subida", mhz: "145,825" },
+    { servicio: "Repetidor de voz", sentido: "Bajada", mhz: "437,800" },
+    { servicio: "Repetidor de voz", sentido: "Subida", mhz: "145,990" },
+  ];
 
-  // Trayectorias: cuerda recta en el mapa polar (r = (90 − elevación)/90), suficiente para el reto.
-  // phi = acimut del punto de máxima aproximación; sentido = por dónde cruza el cielo.
+  // Trayectorias: cuerda recta en el mapa del cielo (r = (90 − elevación)/90). Distinta dirección y altura máxima.
   const TRAYECTORIAS = [
     { phi: 120, elMax: 62, sentido: 1 },
     { phi: 300, elMax: 41, sentido: -1 },
@@ -60,7 +47,6 @@
     { phi: 80, elMax: 70, sentido: -1 },
   ];
 
-  // ---------- Utilidades ----------
   function mulberry32(semilla) {
     let a = semilla >>> 0;
     return function () {
@@ -72,339 +58,172 @@
   }
   const rad = (g) => (g * Math.PI) / 180;
   const grados = (r) => (r * 180) / Math.PI;
-  const difAngulo = (a, b) => Math.abs((((a - b) % 360) + 540) % 360 - 180);
 
-  /** Caída suave: 1 en el centro, 0,8 en el límite de tolerancia y 0 al doble. */
-  function suave(error, tolerancia) {
-    const x = Math.abs(error) / tolerancia;
-    return x <= 1 ? 1 - 0.2 * x * x : Math.max(0, 0.8 * (2 - x));
+  // ---------- Mapa del cielo: (acimut, elevación) ↔ (x, y), con el norte hacia +y ----------
+  function aXY(az, el) { const r = (90 - el) / 90; return { x: r * Math.sin(rad(az)), y: r * Math.cos(rad(az)) }; }
+  function deXY(x, y) {
+    const r = Math.min(1, Math.hypot(x, y));
+    return { az: ((grados(Math.atan2(x, y)) % 360) + 360) % 360, el: 90 * (1 - r) };
+  }
+  /** Separación en grados de cielo entre dos direcciones (ángulo entre vectores). */
+  function separacion(a, b) {
+    const v = (p) => [Math.cos(rad(p.el)) * Math.sin(rad(p.az)), Math.cos(rad(p.el)) * Math.cos(rad(p.az)), Math.sin(rad(p.el))];
+    const [x1, y1, z1] = v(a), [x2, y2, z2] = v(b);
+    return grados(Math.acos(Math.max(-1, Math.min(1, x1 * x2 + y1 * y2 + z1 * z2))));
   }
 
-  /** Ley calidad → ganancias de señal y ruido (calibrada en Python; ver C.RUIDO). */
-  function ganancias(q) {
-    q = Math.min(1, Math.max(0, q));
-    if (q <= 0) return { senal: 0, ruido: 1 };
-    const rho = C.RUIDO.R * Math.pow((1 - q) / q, C.RUIDO.B);
-    return { senal: 1 / (1 + rho), ruido: rho / (1 + rho) };
-  }
-
-  // ---------- Geometría del paso ----------
-  function posicion(indiceTrayectoria, t) {
-    const tr = TRAYECTORIAS[indiceTrayectoria];
-    const s = (t - C.T_AOS) / C.T_PASO;
+  /** Posición de la ISS t segundos después de aparecer (AOS). */
+  function posicion(k, t) {
+    const tr = TRAYECTORIAS[k], s = t / C.T_PASO;
     const rmin = (90 - tr.elMax) / 90, h = Math.sqrt(1 - rmin * rmin);
     const mx = rmin * Math.sin(rad(tr.phi)), my = rmin * Math.cos(rad(tr.phi));
     const ux = tr.sentido * Math.cos(rad(tr.phi)), uy = -tr.sentido * Math.sin(rad(tr.phi));
-    const k = (2 * s - 1) * h;
-    const x = mx + k * ux, y = my + k * uy, r = Math.hypot(x, y);
-    const az = ((grados(Math.atan2(x, y)) % 360) + 360) % 360;
-    return { az, el: 90 * (1 - r), visible: s >= 0 && s <= 1, x, y };
+    const d = (2 * s - 1) * h, x = mx + d * ux, y = my + d * uy;
+    return { ...deXY(x, y), x, y, visible: s >= 0 && s <= 1 };
   }
 
-  /** Desplazamiento Doppler en kHz: curva en S, +3,5 en el AOS, 0 en la máxima aproximación, −3,5 en el LOS. */
+  /** Doppler (kHz): curva en S, +3,5 al aparecer, 0 en el punto más alto, −3,5 al desaparecer. Cambia más rápido arriba. */
   function doppler(t) {
-    const s = Math.min(1, Math.max(0, (t - C.T_AOS) / C.T_PASO)), k = 6;
+    const s = Math.min(1, Math.max(0, t / C.T_PASO)), k = 6;
     return (C.DOPPLER_MAX * Math.tanh((0.5 - s) * k)) / Math.tanh(0.5 * k);
   }
 
-  /** Tabla del paso cada 30 s (para la pestaña Órbita y el manual). */
-  function tablaPaso(indiceTrayectoria) {
-    const filas = [];
-    for (let d = 0; d <= C.T_PASO; d += 30) {
-      const p = posicion(indiceTrayectoria, C.T_AOS + d);
-      filas.push({ desdeAOS: d, az: Math.round(p.az) % 360, el: Math.max(0, Math.round(p.el)) });
-    }
-    return filas;
-  }
-
-  // ---------- Sorteo de un intento (reproducible con la semilla) ----------
+  /** Sorteo de un intento: trayectoria y momento de la alarma (en la mitad central del paso). */
   function crearIntento(semilla) {
     const rng = mulberry32(semilla);
-    const codigos = Object.keys(CODIGOS);
-    const codigo = codigos[Math.floor(rng() * codigos.length)];
     const trayectoria = Math.floor(rng() * TRAYECTORIAS.length);
-    const azInicial = Math.floor(rng() * 72) * 5 + 5;
-    // 1 o 2 averías distintas, nunca en los primeros 20 s de la transmisión, separadas al menos 50 s
-    const tipos = Object.keys(ALARMAS).sort(() => rng() - 0.5).slice(0, rng() < 0.5 ? 1 : 2);
-    const desde = C.T_AOS + 20, hasta = C.T_LOS - 50;
-    const averias = [];
-    for (const tipo of tipos) {
-      for (let intento = 0; intento < 200; intento++) {
-        const t = Math.round(desde + rng() * (hasta - desde));
-        const enArranqueTX = t >= C.T_TX_INICIO && t < C.T_TX_INICIO + 20;
-        if (!enArranqueTX && averias.every((a) => Math.abs(a.t - t) >= 50)) { averias.push({ tipo, t }); break; }
-      }
-    }
-    averias.sort((a, b) => a.t - b.t);
-    return { semilla, codigo, trayectoria, azInicial, averias };
+    const tAlarma = Math.round(C.T_PASO / 4 + rng() * (C.T_PASO / 2));
+    return { semilla, trayectoria, tAlarma };
   }
 
-  // ---------- Estación ----------
-  function estacionInicial(intento) {
-    return {
-      alimentacion: false, lna: false, lnaAveriado: false, rotorCalibrado: false, rotorBloqueado: false, audio: false,
-      frecuencia: 144.0, fino: 0, modo: "USB", filtro: "FM-W", az: intento.azInicial, el: 0,
-      pasoEncendido: 0, diferencialHasta: -1, diferenciales: 0, calibracionFallida: false,
-    };
+  // ---------- Paso 1: encendido ----------
+  /** Nuevo estado del encendido tras pulsar un interruptor: {encendidos, ok, error, completo}. */
+  function encender(encendidos, cual) {
+    if (encendidos.includes(cual)) return { encendidos, ok: true, completo: encendidos.length === C.SECUENCIA.length };
+    if (C.SECUENCIA[encendidos.length] !== cual) return { encendidos: [], ok: false, error: "orden" };
+    const nuevos = [...encendidos, cual];
+    return { encendidos: nuevos, ok: true, completo: nuevos.length === C.SECUENCIA.length };
   }
 
-  class Simulador {
-    constructor(intento, guardado) {
+  // ---------- Paso 3: seguimiento ----------
+  class Seguimiento {
+    constructor(intento) {
       this.intento = intento;
-      this.cod = CODIGOS[intento.codigo];
-      this.t = 0;
-      this.e = estacionInicial(intento);
-      this.alarmas = intento.averias.map((a) => ({ ...a, estado: "pendiente", lnaApagado: 0, resueltaEn: null }));
-      this.registro = [];   // 1 muestra por segundo durante el paso (para el informe)
-      this.eventos = [];    // hechos con hora: diferencial, averías, AOS…
-      this.mensaje = null;  // último aviso de la estación {t, texto, tipo}
-      if (guardado) Object.assign(this, JSON.parse(JSON.stringify(guardado)));
+      this.t = -C.T_CUENTA;                       // cuenta atrás: la ISS aparece en t = 0
+      this.antena = { x: 0, y: 0 };               // al empezar, la antena mira al cenit: en la cuenta atrás llega a cualquier horizonte
+      this.objetivo = { ...this.antena };
+      this.correccion = doppler(0);               // la señal empieza centrada en la cascada
+      this.amp = "on";                            // "on" · "off" · "averiado"
+      this.alarma = { estado: "pendiente", temp: 0, enfriarDesde: null, tempAlApagar: 0 };
+      this.integral = 0;                          // ∫ calidad instantánea dt durante el paso
+      this.perdidas = { antena: [0, 0, 0], doppler: [0, 0, 0], amplificador: [0, 0, 0] }; // por tercios del paso
+      this.avisos = [];                           // mensajes para la pantalla (el motor los va recogiendo)
     }
 
-    /** Lo que se guarda en el progreso (y basta para reconstruir el simulador). */
-    serializar() {
-      return JSON.parse(JSON.stringify({ t: this.t, e: this.e, alarmas: this.alarmas, registro: this.registro, eventos: this.eventos, mensaje: this.mensaje }));
-    }
+    get enPaso() { return this.t >= 0 && this.t < C.T_PASO; }
+    get terminado() { return this.t >= C.T_PASO - 1e-9; }
 
-    get listo() { return this.e.pasoEncendido >= this.cod.secuencia.length; }
-    get enDiferencial() { return this.t < this.e.diferencialHasta; }
-    alarmaActiva(tipo) { return this.alarmas.find((a) => a.estado === "activa" && (!tipo || a.tipo === tipo)) || null; }
+    /** El alumno arrastra la antena: el rotor irá hacia ese punto a velocidad limitada. */
+    apuntarXY(x, y) { const r = Math.hypot(x, y); this.objetivo = r > 1 ? { x: x / r, y: y / r } : { x, y }; }
+    apuntar(az, el) { const p = aXY(az, el); this.apuntarXY(p.x, p.y); }
 
-    avisar(texto, tipo = "info") { this.mensaje = { t: this.t, texto, tipo }; }
-    evento(tipo, texto) { this.eventos.push({ t: Math.round(this.t), tipo, texto }); }
+    /** ◀ (−1) o ▶ (+1): mueve la sintonía para devolver la señal al centro. */
+    corregir(sentido) { this.correccion += sentido * C.PASO_CORRECCION; }
 
-    saltaDiferencial() {
-      const e = this.e;
-      e.alimentacion = false; e.lna = false; e.rotorCalibrado = false; e.pasoEncendido = 0;
-      e.diferencialHasta = this.t + C.T_DIFERENCIAL;
-      e.diferenciales++;
-      this.evento("diferencial", "Saltó el diferencial por un encendido fuera de orden");
-      this.avisar(`¡Ha saltado el diferencial! Orden de encendido incorrecto para ${this.intento.codigo}. La estación se ha apagado: esperad ${C.T_DIFERENCIAL} s.`, "error");
-    }
-
-    /** Paso de la secuencia de encendido. Devuelve false si salta el diferencial. */
-    pasoSecuencia(paso) {
-      if (this.listo) return true;
-      if (this.cod.secuencia[this.e.pasoEncendido] !== paso) { this.saltaDiferencial(); return false; }
-      this.e.pasoEncendido++;
-      if (this.listo) this.avisar("Puesta en marcha completada: estación lista.", "ok");
+    amplificador(encender) {
+      const a = this.alarma;
+      if (this.amp === "averiado") { this.avisos.push({ tipo: "error", texto: "El amplificador se ha apagado por sobrecalentamiento y no se puede encender en este paso." }); return false; }
+      if (!encender && this.amp === "on") {
+        this.amp = "off";
+        if (a.estado === "activa") { a.enfriarDesde = this.t; a.tempAlApagar = a.temp; }
+        return true;
+      }
+      if (encender && this.amp === "off") {
+        if (a.estado === "activa" && a.temp > C.TEMP_VERDE) {
+          this.avisos.push({ tipo: "error", texto: "Todavía está caliente: esperad a que el termómetro baje a verde." });
+          return false;
+        }
+        this.amp = "on";
+        if (a.estado === "activa") { a.estado = "resuelta"; a.temp = 0.1; this.avisos.push({ tipo: "ok", texto: "✓ Amplificador refrigerado" }); }
+        return true;
+      }
       return true;
     }
 
-    /** Aplica una acción del operador. Devuelve true si se ha hecho. */
-    accion(nombre, valor) {
-      const e = this.e;
-      if (this.enDiferencial) { this.avisar(`Diferencial: estación bloqueada ${Math.ceil(e.diferencialHasta - this.t)} s más.`, "error"); return false; }
-      e.calibracionFallida = false;
-      switch (nombre) {
-        case "alimentacion":
-          if (valor === e.alimentacion) return true;
-          if (valor) {
-            e.alimentacion = true;
-            this.pasoSecuencia("alimentacion");
-          } else {
-            e.alimentacion = false; e.lna = false; e.rotorCalibrado = false; e.pasoEncendido = 0;
-            this.avisar("Estación apagada. Al volver a encenderla hay que repetir la puesta en marcha.");
-          }
-          return true;
-        case "lna":
-          if (!e.alimentacion) { this.avisar("Sin alimentación."); return false; }
-          if (valor && e.lnaAveriado) { this.avisar("El LNA está averiado: no se puede encender en este paso.", "error"); return false; }
-          if (valor === e.lna) return true;
-          if (valor && !this.pasoSecuencia("lna")) return false;
-          e.lna = !!valor;
-          return true;
-        case "calibrar": {
-          if (!e.alimentacion) { this.avisar("Sin alimentación."); return false; }
-          // En la puesta en marcha se usa la referencia del código; después (o con ALM-5), 0° / 0°
-          const ref = this.listo || e.rotorBloqueado ? { az: 0, el: 0 } : this.cod.referencia;
-          if (!this.listo && !e.rotorBloqueado && this.cod.secuencia[e.pasoEncendido] !== "rotor") { this.saltaDiferencial(); return false; }
-          if (difAngulo(e.az, ref.az) > 2 || Math.abs(e.el - ref.el) > 2) {
-            e.calibracionFallida = true;
-            this.avisar(`E-21 · Calibración fallida: el rotor debe estar en acimut ${ref.az}° y elevación ${ref.el}°.`, "error");
-            return false;
-          }
-          e.rotorCalibrado = true;
-          if (!this.listo && this.cod.secuencia[e.pasoEncendido] === "rotor") this.pasoSecuencia("rotor");
-          if (e.rotorBloqueado) {
-            e.rotorBloqueado = false;
-            const a = this.alarmaActiva("ALM-5");
-            if (a) { a.estado = "resuelta"; a.resueltaEn = this.t; this.evento("ALM-5", "Rotor recalibrado: ALM-5 resuelta"); }
-            this.avisar("Rotor recalibrado y desbloqueado.", "ok");
-          } else if (this.listo) this.avisar("Rotor calibrado.", "ok");
-          return true;
-        }
-        case "aparcar":
-          if (!e.alimentacion) { this.avisar("Sin alimentación."); return false; }
-          e.az = 0; e.el = 0;
-          return true;
-        case "antena":
-          if (!e.alimentacion) { this.avisar("Sin alimentación."); return false; }
-          if (e.rotorBloqueado) { this.avisar("ALM-5 · Rotor bloqueado: la antena no se mueve.", "error"); return false; }
-          if (valor.az != null) e.az = ((Math.round(valor.az) % 360) + 360) % 360;
-          if (valor.el != null) e.el = Math.min(90, Math.max(0, Math.round(valor.el)));
-          return true;
-        case "frecuencia":
-          e.frecuencia = Math.round(Math.min(450, Math.max(100, Number(valor))) * 200) / 200; // pasos de 5 kHz
-          return true;
-        case "fino":
-          e.fino = Math.round(Math.min(5, Math.max(-5, Number(valor))) * 10) / 10;
-          return true;
-        case "modo":
-          if (MODOS.includes(valor)) e.modo = valor;
-          return true;
-        case "filtro":
-          if (FILTROS[valor]) e.filtro = valor;
-          return true;
-        case "audio":
-          e.audio = !!valor;
-          return true;
-      }
-      return false;
+    estado() {
+      const iss = posicion(this.intento.trayectoria, Math.max(0, Math.min(C.T_PASO, this.t)));
+      const ant = deXY(this.antena.x, this.antena.y);
+      const sep = separacion(ant, iss);
+      const desvio = doppler(Math.max(0, this.t)) - this.correccion; // kHz respecto al centro de la cascada
+      const apuntado = sep <= C.TOLERANCIA, enZona = Math.abs(desvio) <= C.ZONA_BUENA;
+      const factorAmp = this.amp === "on" ? 1 : this.amp === "off" ? C.AMP_APAGADO : 0;
+      const q = this.enPaso && apuntado && enZona ? factorAmp : 0;
+      // Medidor de señal (continuo, solo para verlo): cuánto apunta, cuánto está en la zona y el amplificador
+      const medidor = this.enPaso ? Math.max(0, 1 - sep / (3 * C.TOLERANCIA)) * Math.max(0, 1 - Math.abs(desvio) / (3 * C.ZONA_BUENA))
+        * (this.amp === "on" ? 1 : this.amp === "off" ? 0.5 : 0.3) : 0;
+      return { iss, antena: ant, sep, desvio, apuntado, enZona, factorAmp, q, medidor };
     }
 
-    /** Avanza el tiempo de misión hasta t: averías, plazos y registro. */
-    avanzar(t) {
-      if (t <= this.t) return;
-      const e = this.e;
-      const pasos = Math.ceil(t - this.t); // como mucho 1 s por vuelta: los plazos se miden bien
-      const base = this.t;                  // (this.t cambia dentro del bucle: los pasos se cuentan desde aquí)
-      let t0 = base;
-      for (let i = 1; i <= pasos; i++) {
-        const t1 = i === pasos ? t : base + i;
-        const dt = t1 - t0;
-        if (t0 < C.T_AOS && t1 >= C.T_AOS) this.evento("aos", this.listo ? "AOS con la estación lista" : "AOS sin terminar la puesta en marcha");
-        for (const a of this.alarmas) {
-          if (a.estado === "pendiente" && t1 >= a.t) this.activar(a);
-          if (a.estado !== "activa") continue;
-          if (a.tipo === "ALM-3") {
-            if (!(e.lna && e.alimentacion)) a.lnaApagado += dt;
-            if (a.lnaApagado >= ALARMAS["ALM-3"].apagado) {
-              a.estado = "resuelta"; a.resueltaEn = t1;
-              this.evento("ALM-3", "LNA enfriado a tiempo: ALM-3 resuelta");
-              this.avisar("ALM-3 resuelta: el LNA se ha enfriado. Ya podéis volver a encenderlo.", "ok");
-            } else if (t1 >= a.t + ALARMAS["ALM-3"].plazo) {
-              a.estado = "fallida"; a.resueltaEn = t1;
-              e.lna = false; e.lnaAveriado = true;
-              this.evento("lna-averiado", "LNA averiado por temperatura (ALM-3 sin atender)");
-              this.avisar("ALM-3 sin atender: el LNA se ha averiado y queda apagado el resto del paso.", "error");
+    /** Calidad del contacto hasta ahora: fracción del tiempo del paso con señal buena. */
+    calidad() { const dur = Math.min(Math.max(this.t, 0), C.T_PASO); return dur > 0 ? this.integral / dur : 0; }
+
+    avanzar(hasta) {
+      while (this.t < hasta - 1e-9) {
+        const dt = Math.min(C.DT, hasta - this.t);
+        // Rotor: la antena va hacia el objetivo a velocidad limitada
+        const dx = this.objetivo.x - this.antena.x, dy = this.objetivo.y - this.antena.y, d = Math.hypot(dx, dy), paso = C.VEL_ROTOR * dt;
+        if (d <= paso) this.antena = { ...this.objetivo }; else this.antena = { x: this.antena.x + (dx / d) * paso, y: this.antena.y + (dy / d) * paso };
+        // Calidad (integral sobre el paso) y de dónde salen las pérdidas
+        if (this.enPaso) {
+          const e = this.estado(), tercio = Math.min(2, Math.floor((this.t / C.T_PASO) * 3));
+          this.integral += e.q * dt;
+          if (!e.apuntado) this.perdidas.antena[tercio] += dt;
+          else if (!e.enZona) this.perdidas.doppler[tercio] += dt;
+          else if (e.factorAmp < 1) this.perdidas.amplificador[tercio] += dt * (1 - e.factorAmp);
+        }
+        // Alarma del amplificador
+        const a = this.alarma;
+        if (a.estado === "pendiente" && this.t >= this.intento.tAlarma) {
+          a.estado = "activa"; a.temp = C.TEMP_INICIAL;
+          if (this.amp === "off") { a.enfriarDesde = this.t; a.tempAlApagar = a.temp; }
+          this.avisos.push({ tipo: "alarma", texto: "🔥 Alarma: el amplificador se está calentando" });
+        }
+        if (a.estado === "activa") {
+          if (this.amp === "on") {
+            a.temp += ((1 - C.TEMP_INICIAL) / C.ALARMA_SUBIDA) * dt;
+            if (a.temp >= 1) {
+              a.temp = 1; a.estado = "fallida"; this.amp = "averiado";
+              this.avisos.push({ tipo: "error", texto: "El amplificador se ha sobrecalentado y se ha apagado solo. La señal queda baja el resto del paso." });
             }
-          }
-          if (a.tipo === "ALM-8" && t1 >= a.t + ALARMAS["ALM-8"].duracion) {
-            a.estado = "resuelta"; a.resueltaEn = t1;
-            this.evento("ALM-8", "Fin de la interferencia");
-            this.avisar("ALM-8: ha terminado la interferencia. Podéis volver al filtro FM ancho.", "ok");
+          } else {
+            const f = Math.min(1, (this.t + dt - a.enfriarDesde) / C.ALARMA_ENFRIADO);
+            a.temp = a.tempAlApagar + (C.TEMP_VERDE - 0.05 - a.tempAlApagar) * f;
           }
         }
-        // Registro: una muestra por segundo entero durante el paso
-        for (let s = Math.floor(t0) + 1; s <= Math.floor(t1); s++) {
-          if (s >= C.T_AOS && s <= C.T_LOS) { this.t = s; this.registro.push(this.muestra()); }
-        }
-        this.t = t1;
-        t0 = t1;
+        this.t += dt;
       }
     }
 
-    activar(a) {
-      a.estado = "activa";
-      const info = ALARMAS[a.tipo];
-      this.evento(a.tipo, `${a.tipo} · ${info.titulo}`);
-      if (a.tipo === "ALM-5") { this.e.rotorBloqueado = true; this.e.rotorCalibrado = false; }
-      this.avisar(`${a.tipo} · ${info.titulo}. Mirad el manual (Alarmas).`, "alarma");
+    /** Resultado del paso: calidad, si hay contacto y el motivo principal (el factor que más calidad ha restado). */
+    informe() {
+      const calidad = this.calidad(), exito = calidad >= C.META;
+      const total = (k) => this.perdidas[k].reduce((s, x) => s + x, 0);
+      const motivo = ["antena", "doppler", "amplificador"].reduce((m, k) => (total(k) > total(m) ? k : m), "antena");
+      const tercios = this.perdidas[motivo], peor = tercios.indexOf(Math.max(...tercios));
+      // Si la pérdida está repartida por todo el paso, no tiene sentido decir «al final»
+      const repartida = Math.min(...tercios) >= 0.6 * Math.max(...tercios);
+      const cuando = repartida ? "durante todo el paso" : ["al principio del paso", "a mitad del paso", "al final del paso"][peor];
+      let texto;
+      if (motivo === "antena") texto = `Lo que ha fallado: la antena perdió a la ISS ${cuando}. Moved la antena un poco antes de que llegue la ISS: el rotor tarda en girar.`;
+      else if (motivo === "doppler") texto = `Lo que ha fallado: la señal se salió de la zona buena ${cuando} (efecto Doppler). Corregidla con ◀ ▶ o con las teclas A y D.`;
+      else if (this.amp === "averiado") texto = "Lo que ha fallado: el amplificador se sobrecalentó y se apagó solo. Cuando salte la alarma, apagadlo hasta que el termómetro baje a verde.";
+      else texto = "Lo que ha fallado: el amplificador estuvo apagado demasiado tiempo. Volved a encenderlo en cuanto el termómetro esté en verde.";
+      return { calidad, exito, motivo: total(motivo) > 0 ? motivo : null, cuando, texto,
+        perdidas: { antena: total("antena"), doppler: total("doppler"), amplificador: total("amplificador") } };
     }
 
-    /** Calidad instantánea (0-1) y sus factores. */
-    calidad() {
-      const e = this.e, t = this.t, iss = posicion(this.intento.trayectoria, t);
-      const f = {};
-      f.alimentacion = e.alimentacion ? 1 : 0;
-      f.horizonte = iss.visible && iss.el >= 0 ? 1 : 0;
-      f.modo = e.modo === "FM" ? 1 : 0;
-      const errorKHz = Math.abs(e.frecuencia * 1000 + e.fino - (C.F_BAJADA_SSTV * 1000 + doppler(t)));
-      f.sintonia = suave(errorKHz, C.TOL_SINTONIA);
-      const pesoAz = Math.max(Math.cos(rad(Math.max(0, iss.el))), 0.3); // cerca del cenit el acimut importa menos
-      f.apuntado = e.rotorCalibrado ? suave(difAngulo(e.az, iss.az) * pesoAz, C.TOL_AZ) * suave(e.el - iss.el, C.TOL_EL) : 0;
-      f.lna = e.lna && !e.lnaAveriado ? 1 : C.FACTOR_LNA_APAGADO;
-      const interferencia = !!this.alarmaActiva("ALM-8");
-      f.filtro = e.filtro === "SSB" ? 0.2 : e.filtro === "FM-N" ? 0.9 : interferencia ? 0.3 : 1;
-      f.audio = e.audio ? 1 : 0;
-      const radio = f.alimentacion * f.horizonte * f.modo * f.sintonia * f.apuntado * f.lna * f.filtro;
-      // Señal de RF en el medidor: no depende del modo ni del ajuste fino (sirve para buscar la ISS con la antena)
-      const rf = f.alimentacion * f.horizonte * f.apuntado * f.lna * Math.max(0, 1 - errorKHz / 8);
-      return { total: radio * f.audio, radio, rf, factores: f, errorKHz, iss };
-    }
-
-    muestra() {
-      const c = this.calidad(), f = c.factores, r = (x) => Math.round(x * 1000) / 1000;
-      return { t: this.t, q: r(c.total), radio: r(c.radio), ap: r(f.apuntado), si: r(f.sintonia), lna: f.lna, fi: f.filtro,
-        au: f.audio, al: f.alimentacion, mo: f.modo, err: Math.round(c.errorKHz * 10) / 10 };
-    }
-
-    /** Código que muestra la pantallita de estado. */
-    codigoEstado() {
-      const e = this.e;
-      if (this.enDiferencial) return "DIF";
-      const a = this.alarmaActiva();
-      if (a) return a.tipo;
-      if (e.calibracionFallida) return "E-21";
-      if (!this.listo) return this.intento.codigo;
-      if (e.lnaAveriado) return "LNA-X";
-      return "OK";
-    }
+    serializar() { return JSON.parse(JSON.stringify(this)); }
   }
 
-  // ---------- Informe de la misión ----------
-  function informe(sim) {
-    const reg = sim.registro, tx = reg.filter((m) => m.t >= C.T_TX_INICIO && m.t < C.T_TX_FIN);
-    const media = tx.length ? tx.reduce((s, m) => s + m.q, 0) / tx.length : 0;
-    const porEncima = tx.length ? tx.filter((m) => m.q >= 0.5).length / tx.length : 0;
-    const contacto = media >= C.CONTACTO_MEDIA && porEncima >= C.CONTACTO_TIEMPO;
-    const pct = (n, total) => Math.round((100 * n) / Math.max(1, total));
-    const minuto = (t) => Math.floor((t - C.T_AOS) / 60) + 1;
-    const h = [];
-    const bien = (texto) => h.push({ tipo: "bien", texto }), mal = (texto) => h.push({ tipo: "mal", texto });
-
-    const aos = sim.eventos.find((x) => x.tipo === "aos");
-    if (aos && aos.texto.includes("sin terminar")) mal("Llegasteis al AOS sin terminar la puesta en marcha.");
-    else if (aos) bien("Estación lista antes del AOS.");
-    if (sim.e.diferenciales) mal(`Saltó el diferencial ${sim.e.diferenciales} ${sim.e.diferenciales === 1 ? "vez" : "veces"} por encender en otro orden.`);
-
-    const visibles = reg.filter((m) => m.al);
-    if (reg.length) {
-      const apagada = reg.filter((m) => !m.al).length;
-      if (apagada > 5) mal(`Estación apagada ${apagada} s durante el paso.`);
-      const fuera = visibles.filter((m) => m.ap < 0.5).length;
-      if (visibles.length) (pct(fuera, visibles.length) > 10 ? mal : bien)(`Antena fuera de la ISS el ${pct(fuera, visibles.length)} % del tiempo.`);
-      const malaFrecuencia = visibles.filter((m) => !m.mo || m.err > 8).length;
-      if (pct(malaFrecuencia, visibles.length) > 5) mal(`Frecuencia o modo incorrectos el ${pct(malaFrecuencia, visibles.length)} % del paso (la bajada SSTV es 145,800 MHz en FM).`);
-      // Doppler: minutos con la sintonía mal estando en la frecuencia buena
-      const minutos = {};
-      for (const m of visibles) if (m.mo && m.err <= 8) { const k = minuto(m.t); minutos[k] = minutos[k] || [0, 0]; minutos[k][1]++; if (m.si < 0.5) minutos[k][0]++; }
-      const malos = Object.keys(minutos).map(Number).filter((k) => minutos[k][0] / minutos[k][1] > 0.5);
-      const ultimo = Math.max(...Object.keys(minutos).map(Number));
-      if (malos.length) mal(malos.includes(ultimo) && malos.length === 1 ? "Doppler sin corregir en el último minuto."
-        : `Doppler sin corregir en ${malos.length === 1 ? "el minuto" : "los minutos"} ${malos.join(", ")} del paso.`);
-      else if (Object.keys(minutos).length) bien("Doppler corregido durante todo el paso.");
-    }
-    for (const a of sim.alarmas) {
-      if (a.estado === "pendiente") continue;
-      if (a.tipo === "ALM-3") a.estado === "resuelta" ? bien(`ALM-3 atendida a tiempo (minuto ${minuto(a.t)}).`)
-        : mal(`LNA averiado en el minuto ${minuto(a.resueltaEn || a.t)} (ALM-3 sin atender).`);
-      if (a.tipo === "ALM-5") {
-        const dur = Math.round((a.resueltaEn != null ? a.resueltaEn : C.T_LOS) - a.t);
-        (dur <= 20 ? bien : mal)(`Rotor bloqueado durante ${dur} s (ALM-5, minuto ${minuto(a.t)}).`);
-      }
-      if (a.tipo === "ALM-8") {
-        const sin = reg.filter((m) => m.t >= a.t && m.t < a.t + ALARMAS["ALM-8"].duracion && m.fi < 0.5).length;
-        (sin <= 10 ? bien : mal)(sin <= 10 ? `Interferencia filtrada a tiempo (ALM-8, minuto ${minuto(a.t)}).` : `Interferencia sin filtrar durante ${sin} s (ALM-8).`);
-      }
-    }
-    const sinAudio = tx.filter((m) => !m.au).length;
-    if (sinAudio) mal(`Audio desconectado durante ${sinAudio} s de la transmisión: Black Cat no recibió esa parte.`);
-    else if (tx.length) bien("Audio conectado al decodificador durante toda la transmisión.");
-    return { media, porEncima, contacto, hallazgos: h, curva: tx.map((m) => m.q) };
-  }
-
-  raiz.SimISS = { C, CODIGOS, FRECUENCIAS, ALARMAS, MODOS, FILTROS, TRAYECTORIAS, mulberry32, suave, ganancias,
-    posicion, doppler, tablaPaso, crearIntento, estacionInicial, Simulador, informe, difAngulo };
+  raiz.SimISS = { C, MEMORIAS, FRECUENCIAS, TRAYECTORIAS, mulberry32, aXY, deXY, separacion, posicion, doppler, crearIntento, encender, Seguimiento };
 })(typeof window !== "undefined" ? window : globalThis);

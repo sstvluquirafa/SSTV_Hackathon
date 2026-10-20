@@ -27,8 +27,6 @@ Web_Hackathon/
 │   ├── reto2_generador.py          genera y verifica las cadenas del reto 2 (--exportar: banco para la web)
 │   ├── probar_reto2_js.mjs         comprueba que web/js/operaciones.js da lo mismo que el script de Python
 │   ├── probar_reto4_iss.mjs        pruebas de la lógica del reto 4 (web/js/iss_sim.js)
-│   ├── calibrar_ruido_iss.py       calibra la curva calidad → ruido del reto 4 (sale en generado/iss/)
-│   ├── comprobar_grabacion_iss.py  decodifica la grabación del reto 4 y la compara con su registro
 │   ├── medir_fotos_puzle.py        mide la dificultad de las fotos del puzle del reto 1
 │   └── construir_web.py            copia imágenes, prepara la pista y cifra las recompensas en web/assets/data/
 ├── generado/
@@ -37,8 +35,7 @@ Web_Hackathon/
 │   │   ├── comprobacion_mapa_decodificado.png  mapa reconstruido a partir de los audios
 │   │   └── solucion_organizadores.json     orden correcto de los fragmentos
 │   ├── reto1/            ← pista del reto 1 a 11 025 Hz (y su imagen descodificada)
-│   ├── reto2/            ← vectores de prueba para probar_reto2_js.mjs
-│   └── iss/              ← calibración del ruido del reto 4 (tabla JSON e imágenes por calidad)
+│   └── reto2/            ← vectores de prueba para probar_reto2_js.mjs
 ├── referencia/
 │   └── reto1_prototipo.html  ← prototipo del reto 1 (pista → nombre → puzle 3×3 → audio)
 └── web/                  ← la web local: doble clic en web/index.html
@@ -98,8 +95,9 @@ y después `python herramientas/construir_web.py` para volver a cifrar las recom
 - **Fragmentos del mapa:** 4 tiras verticales enviadas giradas 90° (el mapa es 2,7:1 y PD120 es casi cuadrado;
   así se conserva un 35 % más de detalle). Cabecera con nombre de constelación (LYRA, ORIÓN, CYGNUS, ANDRÓMEDA)
   que no revela el orden. Al montar el mapa hay que girar y ordenar las piezas.
-- **Retos:** los retos 1, 2 y 4 están en la web. El reto 4 es «Contacto con la ISS» (`especificaciones/reto4_contacto_iss.md`);
-  sustituyó a «SSTV a mano» (`especificaciones/descartadas/`, su código queda en el historial de git).
+- **Retos:** los retos 1, 2 y 4 están en la web. El reto 4 es «Contacto con la ISS», versión 2
+  (`especificaciones/reto4_contacto_iss.md`). Las versiones anteriores («SSTV a mano» y la v1 del contacto con la ISS)
+  están en `especificaciones/descartadas/` y su código queda en el historial de git.
   El reto 3 (con el SDR) sigue como «PRÓXIMAMENTE».
   Reto 3 «La baliza» (Morse; primero en la web y después por SDR con walkie PMR446): pendiente de especificar.
 - **Jupyter:** solo para la clase guiada y para generar los WAV.
@@ -160,39 +158,37 @@ cada uso bloquea el reto 30 s más que el anterior (ver «Web local»).
 La web no lleva la frase: elige una de las 760 cadenas posibles (10 variantes × 76) del banco que genera `reto2_generador.py --exportar`,
 que incluye huellas SHA-256 de cada etapa para que las pistas sepan por dónde va el grupo.
 
-## Reto 4 · "Contacto con la ISS" → ANDRÓMEDA (duración objetivo: 12–15 min)
+## Reto 4 · "Contacto con la ISS" (versión 2) → ANDRÓMEDA (duración objetivo: 12–15 min)
 
-Especificación completa: `especificaciones/reto4_contacto_iss.md`. El grupo maneja la estación de tierra durante un
-paso simulado de la ISS. **La recompensa es la propia recepción:** durante el paso, el audio SSTV de ANDRÓMEDA sale
-por el cable virtual mezclado con ruido según lo bien que manejen la estación, y lo decodifican en directo con Black Cat.
+Especificación: `especificaciones/reto4_contacto_iss.md`. **Regla de diseño:** en cualquier momento, quien mire la
+pantalla tiene que saber en 3 segundos qué hay que hacer. Una sola vista guiada, sin pestañas y sin scroll a 1366×768:
 
-- **Fases:** briefing → puesta en marcha (3:00 hasta el AOS) → paso (6:00; la ISS emite en AOS+1:30 durante 127 s)
-  → resultado. Sin contacto: «Siguiente paso en 2:00», con otro sorteo (código, trayectoria y averías). Sin límite.
-- **Pantalla:** barra con el reloj de misión, la fase y las alarmas, y tres pestañas (Estación, Órbita, Manual).
-  La simulación sigue aunque cambien de pestaña o de sección: obliga a repartirse el trabajo.
-- **Calidad instantánea** = alimentación × modo FM × sintonía (frecuencia + ajuste fino frente a 145,800 + Doppler,
-  ±0,6 kHz) × apuntado (±15° de acimut, ±10° de elevación, con caída suave) × LNA × filtro × audio conectado.
-  **Contacto establecido:** calidad media ≥ 0,6 y al menos el **85 %** de la transmisión por encima de 0,5
-  (el 75 % dejaba perder una cuarta parte del fragmento; con el 85 %, como mucho una franja).
-- **Puesta en marcha:** 4 códigos de estado (E-03, E-07, E-12, E-15), cada uno con su secuencia y su posición de
-  referencia del rotor. Fuera de orden salta el diferencial (20 s); calibrar fuera de la referencia da E-21.
-- **Averías** (1 o 2 por paso, nunca en los primeros 20 s de la transmisión): ALM-3 (LNA caliente: apagarlo 10 s en
-  45 s o se avería), ALM-5 (rotor bloqueado: llevar a 0° y calibrar), ALM-8 (interferencia 1 min: filtro FM estrecho).
-- **Ruido calibrado con Python** (`calibrar_ruido_iss.py`): el decodificador solo ve la relación ruido/señal ρ, y la
-  web usa ρ(q) = 0,086·((1−q)/q)^2,827. Resultado (mirando las imágenes de `generado/iss/calibracion_hoja.png`):
-  calidad ≥ 0,7 limpia; 0,5–0,6 ruido visible pero el mapa se lee; ≤ 0,3 ilegible. `sstv_pd120.decodificar` admite
-  ahora `inicio=` (y hay `buscar_inicio`), porque con ruido la cabecera VIS puede no encontrarse.
-- **Grabación descargable:** cada cambio de ganancia de la transmisión se apunta con su instante, y al acabar se
-  renderiza con `OfflineAudioContext` la misma mezcla (mismo ruido, misma semilla): idéntica a lo que sonó.
-- **Sin contraseña:** el audio va cifrado con una llave que viaja con él (`reto4_llaves.js`); no es secreta, pero el
-  WAV no se saca con F12 sin hacer el paso. Puntos: calidad media × 100 − 5 por contacto perdido.
-- **Pistas** (bloqueo de 30 s, 60 s, 90 s…), solo fuera del paso. Tras un contacto perdido, el informe hace de pista.
-- **Recargar la página:** en la puesta en marcha, la misión queda en pausa en el mismo punto; durante el paso, el paso
-  se reinicia 1 minuto antes del AOS (misma trayectoria y averías), avisando. Hay que pulsar «Reanudar».
-- **Modo organizador:** `Ctrl + Alt + O` (o `#/reto4?org`): velocidad ×4 (durante la transmisión siempre ×1),
-  saltar al AOS, a la transmisión o al final del paso, forzar ALM-3/5/8 y saltar la espera entre pasos.
-- **Pruebas:** `node herramientas/probar_reto4_iss.mjs` (lógica: operación perfecta ≈ 1, sin Doppler, antena quieta,
-  averías, diferencial, las dos estrategias de seguimiento, saltos de tiempo y ley de ruido), `python
-  herramientas/calibrar_ruido_iss.py` (tabla ruido → error) y `python herramientas/comprobar_grabacion_iss.py
-  grabacion.wav registro.json` (la grabación decodificada coincide, franja a franja, con su registro de calidad).
-- **Fuera de alcance:** mecánica orbital real (las trayectorias son cuerdas en el mapa polar) e integración con el SDR (reto 3).
+- **Tarjeta de paso** siempre arriba: ① Encender ─ ② Sintonizar ─ ③ Seguir a la ISS ─ ④ Recibir, con una frase de
+  instrucción y «Abrir el manual aquí», que abre el manual lateral por la sección exacta.
+- **Solo están activos (con borde ámbar) los controles del paso actual**; el resto se ve apagado. Cada acción tiene
+  respuesta inmediata (✓ y sonido, o el motivo del error), y al acertar se pasa sola al paso siguiente.
+- **Paso 1:** tres interruptores (en pantalla en otro orden) que se encienden Alimentación → Rotor → Amplificador.
+  Si el orden falla, todo se apaga «por seguridad» y se reintenta al momento.
+- **Paso 2:** 5 memorias; cada una incorrecta explica por qué (datos APRS, repetidor, subida, ruido).
+  Al acertar, cuenta atrás de 10 s hasta que aparece la ISS.
+- **Paso 3 (3 minutos):** se arrastra la antena (una cruz) sobre el mapa del cielo hasta la ISS (rotor lento: hay que
+  adelantarse; tolerancia de 12°) y se mantiene la señal en la zona buena de la cascada con ◀ ▶ o las teclas A y D
+  (el Doppler cambia más deprisa cuando la ISS está más alta). A mitad del paso salta la alarma del amplificador:
+  apagarlo hasta que el termómetro baje a verde (unos 8 s) y volver a encenderlo; si no, a los 30 s se apaga solo.
+  La barra «Calidad del contacto» es el porcentaje del tiempo con señal buena (antena encima, señal en la zona buena,
+  amplificador encendido; apagado cuenta la mitad), con la meta en el 70 %.
+- **Paso 4:** con ≥ 70 % se desbloquea el audio de ANDRÓMEDA, limpio, en el reproductor de siempre (para Black Cat).
+  Si no, «Contacto perdido» con el motivo principal en una frase (el factor que más calidad ha restado y cuándo) y
+  «Repetir el paso», que empieza directamente en el paso 3 con otra trayectoria. Sin esperas ni límite.
+- **Puntos:** 100 − 5 por repetición. Las pistas (pasos 1 y 2 y entre repeticiones; no durante el seguimiento)
+  penalizan con tiempo bloqueado, como en el resto de retos, en lugar de restar puntos.
+- **Audio:** cifrado con una llave que viaja con él (`reto4_llaves.js`): no hay contraseña, pero no se saca con F12.
+- **Recargar:** en los pasos 1 y 2 se conserva lo hecho; en el paso 3 el seguimiento vuelve a empezar con la
+  estación preparada, avisando.
+- **Modo organizador:** `Ctrl + Alt + O` (o `#/reto4?org`): velocidad ×4, saltar al paso 3 y forzar la alarma.
+- **Pruebas:** `node herramientas/probar_reto4_iss.mjs` (seguimiento y Doppler perfectos ≈ 100 %, antena quieta < 70 %,
+  alarma sin atender, motivo del informe, encendido, memorias, rotor y sorteo). La «prueba de los 3 segundos» (captura
+  de cada paso, tarjeta con instrucción y solo los controles del paso activos) va en el recorrido de la skill `probar-web`.
+- **Quitado respecto a la v1:** pestañas, códigos de estado y diferencial, entrada de frecuencia, modo y filtro,
+  ajuste fino continuo, cuenta atrás de 3 minutos, averías múltiples, audio en directo con ruido, su calibración y la
+  grabación renderizada (con sus scripts y datos). `sstv_pd120.decodificar(inicio=…)` se conserva: es general.
