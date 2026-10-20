@@ -26,6 +26,9 @@ Web_Hackathon/
 │   ├── generar_fragmentos_mapa.py  corta mapa.png en 4 fragmentos y crea sus WAV
 │   ├── reto2_generador.py          genera y verifica las cadenas del reto 2 (--exportar: banco para la web)
 │   ├── probar_reto2_js.mjs         comprueba que web/js/operaciones.js da lo mismo que el script de Python
+│   ├── reto4_generador.py          fuente 3×5, códigos e imágenes del reto 4 (--exportar)
+│   ├── probar_reto4_js.mjs         pruebas de la señal del reto 4 (web/js/senal_sstv.js)
+│   ├── medir_fotos_puzle.py        mide la dificultad de las fotos del puzle del reto 1
 │   └── construir_web.py            copia imágenes, prepara la pista y cifra las recompensas en web/assets/data/
 ├── generado/
 │   ├── mapa/             ← salida de generar_fragmentos_mapa.py (no editar: se regenera)
@@ -90,7 +93,8 @@ y después `python herramientas/construir_web.py` para volver a cifrar las recom
 - **Fragmentos del mapa:** 4 tiras verticales enviadas giradas 90° (el mapa es 2,7:1 y PD120 es casi cuadrado;
   así se conserva un 35 % más de detalle). Cabecera con nombre de constelación (LYRA, ORIÓN, CYGNUS, ANDRÓMEDA)
   que no revela el orden. Al montar el mapa hay que girar y ordenar las piezas.
-- **Retos:** los retos 1 y 2 están en la web. Los retos 3 y 4 aparecen como "PRÓXIMAMENTE" y se definen más adelante.
+- **Retos:** los retos 1 y 2 están en la web. Reto 4 «SSTV a mano»: especificado en `especificaciones/reto4_sstv_a_mano.md`.
+  Reto 3 «La baliza» (Morse; primero en la web y después por SDR con walkie PMR446): pendiente de especificar.
 - **Jupyter:** solo para la clase guiada y para generar los WAV.
 - **Asignación de fragmentos:** Reto 1 → ORIÓN · Reto 2 → CYGNUS · Reto 3 → LYRA · Reto 4 → ANDRÓMEDA.
 - **Estilo:** el oscuro de "Explorador Enigma" (https://sstv.groundcontrol.granasat.space/retos): fondo espacial,
@@ -148,3 +152,30 @@ encadenables como una receta, con la salida en directo. No indica si cada paso e
 cada uso bloquea el reto 30 s más que el anterior (ver «Web local»).
 La web no lleva la frase: elige una de las 760 cadenas posibles (10 variantes × 76) del banco que genera `reto2_generador.py --exportar`,
 que incluye huellas SHA-256 de cada etapa para que las pistas sepan por dónde va el grupo.
+
+## Reto 4 · "SSTV a mano" → ANDRÓMEDA (duración objetivo: 10–15 min)
+
+Especificación completa: `especificaciones/reto4_sstv_a_mano.md`. El grupo hace de decodificador SSTV:
+escucha tonos, lee su frecuencia en un espectro y pinta una imagen de **13 × 7 píxeles** con un código de
+3 caracteres, que abre la caja fuerte.
+
+- **Señal en directo** con Web Audio (sin archivos de audio): por línea, sincronismo de 1200 Hz (400 ms) y
+  un tono por píxel, 1500 Hz negro / 2300 Hz blanco (700 ms; 1 s en «modo lento»). Imagen completa: 66,5 s.
+  Se puede pausar y repetir cualquier línea; la cuadrícula resalta la celda que está sonando.
+- **Espectro** de 1000 a 2600 Hz (marcas cada 100 Hz, etiquetas cada 500 Hz y marca en el pico), sin número
+  salvo con la pista 2. Analiza la señal interna, así que funciona aunque el sonido salga por otro dispositivo.
+- **Fuente 3×5 propia** y **10 variantes** en `herramientas/reto4_generador.py`. Caracteres: `3 4 7 A C E H K L P R T U X Y`
+  (fuera, además de los de la especificación, 9 ≈ 3, F ≈ P y N ≈ H: en 3×5 solo se distinguían por 1–2 píxeles).
+  Dos caracteres cualesquiera difieren en **3 píxeles o más**.
+- **Sin códigos en claro:** la caja fuerte usa el mismo esquema que el reto 2 (llaves por variante: solo vale el
+  código del grupo). La imagen 13×7 de cada variante no puede ir cifrada con el código (tiene que sonar antes de
+  saberlo), así que va cifrada con una «llave de señal» aparte en `assets/data/reto4_senal.js`: no es secreta,
+  pero ni los códigos ni los dibujos se leen con F12 y sacarlos costaría más que hacer el reto.
+- **Pistas** (bloqueo de 30 s, 60 s, 90 s…): para qué sirve el tono grave · lectura numérica del pico ·
+  revelar una fila elegida (se puede usar varias veces).
+- **Ver el código:** enseña `pixelAFrecuencia` y `planDeLinea` con `toString()`, es decir, el código que suena.
+- **Pruebas:** `python herramientas/reto4_generador.py` (fuente, variantes e imagen) y, tras
+  `python herramientas/reto4_generador.py --exportar`, `node herramientas/probar_reto4_js.mjs`
+  (ida y vuelta de la señal: plan de tonos y audio sintetizado medido con Goertzel). La prueba con
+  `OfflineAudioContext` (el audio real del navegador) se hace en Chrome con la skill `probar-web`.
+- **Fuera de alcance:** modo grises (constante `NIVELES` en `js/senal_sstv.js`, ahora 2) e integración con el SDR (reto 3).

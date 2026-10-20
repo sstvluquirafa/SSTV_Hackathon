@@ -76,8 +76,27 @@
       <path d="M0 60 L40 60 L48 50 L56 70 L64 60 L300 60" stroke="#64748b" stroke-width="1.5" fill="none" opacity=".7"/>
     </svg>`;
 
+  // Reto 4: una cuadrícula 13×7 a medio pintar sobre la traza de un espectro
+  const pixeles = (() => {
+    // Dibujo abstracto (dos destellos): NUNCA un código de las variantes
+    const dibujo = ["0000000000000", "0001000001000", "0011100011100", "0111111111110", "0011100011100", "0001000001000", "0000000000000"];
+    let celdas = "";
+    dibujo.forEach((fila, f) => Array.from(fila).forEach((v, c) => {
+      const pintada = f * 13 + c < 58; // la imagen se va "recibiendo" de arriba abajo
+      const color = !pintada ? "#334155" : v === "1" ? "#f8fafc" : "#0b1120";
+      celdas += `<rect x="${46 + c * 16}" y="${8 + f * 15}" width="14" height="13" rx="2" fill="${color}"/>`;
+    }));
+    return `
+    <svg viewBox="0 0 300 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <rect width="300" height="120" fill="#0b1226"/>
+      ${celdas}
+      <rect class="arte-celda" x="46" y="68" width="14" height="13" rx="2" fill="none" stroke="#fbbf24" stroke-width="2"/>
+      <path d="M0 112 L60 112 L66 110 L70 92 L74 110 L150 111 L156 109 L160 88 L164 109 L300 112" stroke="#fbbf24" stroke-width="1.6" fill="none" opacity=".8"/>
+    </svg>`;
+  })();
+
   App.portadaReto = function (id) {
-    const arte = id === "reto1" ? sstv : id === "reto2" ? cifrado() : estatica;
+    const arte = id === "reto1" ? sstv : id === "reto2" ? cifrado() : id === "reto4" ? pixeles : estatica;
     return `<div class="tarjeta-arte">${arte}</div>`;
   };
 })();

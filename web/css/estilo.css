@@ -650,6 +650,49 @@ a { color: var(--ambar); }
 .silueta svg { width: 22px; height: 22px; }
 .mapa-grande { max-width: 94vw; max-height: 80vh; border-radius: 10px; border: 2px solid var(--ambar); box-shadow: 0 0 40px rgba(217, 119, 6, 0.35); background: #0f172a; }
 
+/* ---------- Reto 4: SSTV a mano ---------- */
+.leyenda-tonos { display: grid; gap: 6px; margin-top: 16px; padding: 12px 14px; border-radius: 10px; background: rgba(3, 7, 18, 0.55); border: 1px solid rgba(251, 191, 36, 0.35); }
+.leyenda-tonos div { display: flex; gap: 12px; align-items: center; font-size: 13.5px; color: var(--texto-2); }
+.leyenda-tonos b { color: var(--ambar); min-width: 72px; }
+.leyenda-tonos span { display: inline-flex; align-items: center; gap: 8px; }
+.muestra { width: 16px; height: 16px; border-radius: 3px; display: inline-block; border: 1px solid var(--borde-fuerte); }
+.muestra.negro { background: #000; }
+.muestra.blanco { background: #f8fafc; }
+.r4-trabajo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 22px; align-items: start; }
+.r4-espectro { position: relative; height: 190px; }
+.r4-espectro canvas { width: 100%; height: 100%; display: block; }
+.r4-lectura { position: absolute; top: 8px; right: 10px; padding: 3px 10px; border-radius: 6px; background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.5); color: var(--ambar); font-weight: 700; font-size: 15px; }
+.r4-controles { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 12px; border-top: 1px solid var(--borde); }
+.r4-repetir, .r4-revelar { display: inline-flex; gap: 6px; align-items: center; }
+.r4-controles select, .r4-revelar select {
+  padding: 6px 8px; border-radius: 8px; background: rgba(3, 7, 18, 0.85); border: 1px solid var(--borde-fuerte); font-family: var(--mono); font-size: 13px;
+}
+.r4-rejilla { display: grid; grid-template-columns: 26px repeat(13, minmax(0, 1fr)); gap: 4px; user-select: none; }
+.r4-col-num, .r4-fila-num { display: grid; place-items: center; font-size: 11px; color: var(--texto-3); border-radius: 5px; }
+.r4-fila-num.sonando { color: #1c1203; background: var(--ambar); box-shadow: 0 0 12px rgba(251, 191, 36, 0.6); }
+.r4-celda {
+  aspect-ratio: 1; border-radius: 6px; cursor: pointer; padding: 0; position: relative;
+  background: #475569; border: 1px solid rgba(148, 163, 184, 0.45); transition: background 0.12s, transform 0.12s;
+}
+.r4-celda:hover { transform: scale(1.06); border-color: var(--ambar); }
+.r4-celda.blanco { background: #f8fafc; border-color: #f8fafc; }
+.r4-celda.negro { background: #000; border-color: #1e293b; }
+.r4-celda.sonando { outline: 3px solid var(--ambar); outline-offset: 1px; box-shadow: 0 0 16px rgba(251, 191, 36, 0.8); z-index: 1; }
+.r4-celda.revelada::after { content: ""; position: absolute; right: 3px; bottom: 3px; width: 6px; height: 6px; border-radius: 50%; background: var(--ambar); }
+.r4-pie-rejilla { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.r4-codigo summary { list-style: none; cursor: pointer; }
+.r4-codigo summary::-webkit-details-marker { display: none; }
+.r4-codigo[open] summary { margin-bottom: 12px; }
+.codigo { margin: 6px 0 14px; padding: 14px 16px; border-radius: 10px; background: var(--terminal); border: 1px solid var(--borde-fuerte); overflow-x: auto; font-size: 13px; line-height: 1.6; color: #e2e8f0; font-variant-ligatures: none; }
+.c-com { color: #64748b; font-style: italic; }
+.c-txt { color: #86efac; }
+.c-pal { color: #f472b6; font-weight: 600; }
+.c-num { color: var(--ambar); }
+.dato-curioso { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; margin-bottom: 14px; border-radius: 10px; background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.35); color: #fde68a; }
+.dato-curioso svg { width: 22px; height: 22px; flex: none; }
+.dato-curioso p { margin: 0; }
+@media (max-width: 1100px) { .r4-trabajo { grid-template-columns: 1fr; } }
+
 /* ---------- Pie ---------- */
 .pie { max-width: 1440px; margin: 0 auto; padding: 0 28px 28px; display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--texto-3); font-size: 12px; }
 .reinicio { background: none; border: 0; color: rgba(148, 163, 184, 0.45); cursor: pointer; font-size: 12px; padding: 4px; }

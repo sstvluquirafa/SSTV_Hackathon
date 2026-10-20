@@ -21,9 +21,9 @@
       resumen: "Este expediente todavía no se ha desclasificado. Vuelve más tarde, operador.",
     },
     {
-      id: "reto4", num: 4, fragmento: "ANDRÓMEDA", base: 100, duracion: "~15 min", pronto: true,
-      titulo: "Expediente clasificado",
-      resumen: "Este expediente todavía no se ha desclasificado. Vuelve más tarde, operador.",
+      id: "reto4", num: 4, fragmento: "ANDRÓMEDA", base: 100, duracion: "10–15 min",
+      titulo: "SSTV a mano",
+      resumen: "Sé tú el decodificador: escucha los tonos, lee el espectro y pinta la imagen píxel a píxel.",
     },
   ];
   App.FRAGMENTOS = ["ORIÓN", "CYGNUS", "LYRA", "ANDRÓMEDA"];
