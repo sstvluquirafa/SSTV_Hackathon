@@ -95,9 +95,9 @@ y después `python herramientas/construir_web.py` para volver a cifrar las recom
 - **Fragmentos del mapa:** 4 tiras verticales enviadas giradas 90° (el mapa es 2,7:1 y PD120 es casi cuadrado;
   así se conserva un 35 % más de detalle). Cabecera con nombre de constelación (LYRA, ORIÓN, CYGNUS, ANDRÓMEDA)
   que no revela el orden. Al montar el mapa hay que girar y ordenar las piezas.
-- **Retos:** los retos 1, 2 y 4 están en la web. El reto 4 es «Contacto con la ISS», versión 2
-  (`especificaciones/reto4_contacto_iss.md`). Las versiones anteriores («SSTV a mano» y la v1 del contacto con la ISS)
-  están en `especificaciones/descartadas/` y su código queda en el historial de git.
+- **Retos:** los retos 1, 2 y 4 están en la web. El reto 4 es «Contacto con la ISS», versión 3
+  (`especificaciones/reto4_contacto_iss.md`): la v2 era demasiado fácil. Las versiones anteriores («SSTV a mano» y
+  las v1 y v2 del contacto con la ISS) están en `especificaciones/descartadas/` y su código queda en el historial de git.
   El reto 3 (con el SDR) sigue como «PRÓXIMAMENTE».
   Reto 3 «La baliza» (Morse; primero en la web y después por SDR con walkie PMR446): pendiente de especificar.
 - **Jupyter:** solo para la clase guiada y para generar los WAV.
@@ -158,37 +158,47 @@ cada uso bloquea el reto 30 s más que el anterior (ver «Web local»).
 La web no lleva la frase: elige una de las 760 cadenas posibles (10 variantes × 76) del banco que genera `reto2_generador.py --exportar`,
 que incluye huellas SHA-256 de cada etapa para que las pistas sepan por dónde va el grupo.
 
-## Reto 4 · "Contacto con la ISS" (versión 2) → ANDRÓMEDA (duración objetivo: 12–15 min)
+## Reto 4 · "Contacto con la ISS" (versión 3) → ANDRÓMEDA (duración objetivo: 12–15 min)
 
-Especificación: `especificaciones/reto4_contacto_iss.md`. **Regla de diseño:** en cualquier momento, quien mire la
-pantalla tiene que saber en 3 segundos qué hay que hacer. Una sola vista guiada, sin pestañas y sin scroll a 1366×768:
+Especificación: `especificaciones/reto4_contacto_iss.md` (la v2 está en `especificaciones/descartadas/`).
+**Regla de diseño:** el «qué» sigue siendo evidente en 3 segundos (tarjeta de paso, solo los controles del paso
+activos, manual lateral que se abre por la sección exacta, sin scroll a 1366×768), pero el «cómo» exige observar,
+comparar y razonar. Una sola vista guiada: ① Reparar la estación ─ ② Encontrar la señal ─ ③ Seguir a la ISS ─ ④ Recibir.
 
-- **Tarjeta de paso** siempre arriba: ① Encender ─ ② Sintonizar ─ ③ Seguir a la ISS ─ ④ Recibir, con una frase de
-  instrucción y «Abrir el manual aquí», que abre el manual lateral por la sección exacta.
-- **Solo están activos (con borde ámbar) los controles del paso actual**; el resto se ve apagado. Cada acción tiene
-  respuesta inmediata (✓ y sonido, o el motivo del error), y al acertar se pasa sola al paso siguiente.
-- **Paso 1:** tres interruptores (en pantalla en otro orden) que se encienden Alimentación → Rotor → Amplificador.
-  Si el orden falla, todo se apaga «por seguridad» y se reintenta al momento.
-- **Paso 2:** 5 memorias; cada una incorrecta explica por qué (datos APRS, repetidor, subida, ruido).
-  Al acertar, cuenta atrás de 10 s hasta que aparece la ISS.
-- **Paso 3 (3 minutos):** se arrastra la antena (una cruz) sobre el mapa del cielo hasta la ISS (rotor lento: hay que
-  adelantarse; tolerancia de 12°) y se mantiene la señal en la zona buena de la cascada con ◀ ▶ o las teclas A y D
-  (el Doppler cambia más deprisa cuando la ISS está más alta). A mitad del paso salta la alarma del amplificador:
-  apagarlo hasta que el termómetro baje a verde (unos 8 s) y volver a encenderlo; si no, a los 30 s se apaga solo.
-  La barra «Calidad del contacto» es el porcentaje del tiempo con señal buena (antena encima, señal en la zona buena,
-  amplificador encendido; apagado cuenta la mitad), con la meta en el 70 %.
-- **Paso 4:** con ≥ 70 % se desbloquea el audio de ANDRÓMEDA, limpio, en el reproductor de siempre (para Black Cat).
-  Si no, «Contacto perdido» con el motivo principal en una frase (el factor que más calidad ha restado y cuándo) y
-  «Repetir el paso», que empieza directamente en el paso 3 con otra trayectoria. Sin esperas ni límite.
-- **Puntos:** 100 − 5 por repetición. Las pistas (pasos 1 y 2 y entre repeticiones; no durante el seguimiento)
-  penalizan con tiempo bloqueado, como en el resto de retos, en lugar de restar puntos.
+- **Paso 1 · Diagnóstico:** el panel muestra 5 lecturas (luz de red, voltímetro, ventilador, luz del rotor y
+  «Prueba de antena»). Cada grupo tiene una de 5 averías (fusible, fuente en protección, rotor bloqueado, cable de
+  antena suelto, ventilador), cada una con lecturas distintas. El manual tiene un diagrama de decisión (SVG generado
+  desde `SimISS.DIAGRAMA`) con preguntas de sí/no que se responden mirando el panel. 5 botones de reparación:
+  el error explica que no era y bloquea 10 s (20 s, 30 s… si repiten).
+- **Paso 2 · Huellas:** cascada grande en bucle con 5 señales (SSTV, APRS, Morse, voz, interferencia) en posiciones
+  sorteadas por grupo; las imágenes siempre en 145,800 MHz. Cada huella se dibuja con la misma función en la cascada
+  y en el catálogo del manual (con su dato clave). Clic en una señal: si no es la de imágenes, explica qué es y bloquea.
+- **Paso 3 · Seguir a la ISS sin verla:** mapa con la predicción (línea discontinua con marcas cada 30 s, salida,
+  altura máxima y puesta) y reloj del paso; la ISS no se dibuja. 20 s de preparación para llevar la antena a la
+  salida. La ISS real va 5–10 s adelantada o retrasada (sorteado): hay que corregir con el **medidor de señal**
+  («frío o caliente»: lóbulo de 20°; señal buena con unos 7° de error). Doppler con ◀ ▶ / A D: el desplazamiento
+  cambia de signo en el punto más alto (de aguda a grave) y ahí es cuando más deprisa se mueve; la marca ámbar de la
+  cascada pequeña es 145,800 MHz exactos.
+- **Avería durante el paso:** hacia la mitad, «⚠ Algo va mal en la estación» con [Diagnóstico], sin decir qué es.
+  Síntomas → causa → solución (tabla del manual): amplificador sobrecalentado (la señal baja poco a poco y sube el
+  termómetro: apagar hasta verde y encender), rotor atascado (cae de golpe y la luz del rotor parpadea en ámbar:
+  «Liberar rotor») e interferencia (ruido y mancha en la cascada: filtro). La solución equivocada no arregla nada y
+  quita 5 s de señal; sin respuesta en 30 s, la avería se queda hasta el final.
+- **Calidad:** porcentaje del tiempo del paso con señal buena (antena dentro del lóbulo útil, Doppler en la zona
+  buena, sin avería activa ni amplificador apagado); meta `C.META` = 70 %. Con ≥ 70 %, audio de ANDRÓMEDA en el
+  reproductor de siempre y dato curioso. Si no, informe de 1–2 frases con el factor que más restó («Al principio la
+  antena no apuntaba al punto de salida», «El Doppler cambió de sentido y la señal se escapó», «La avería no se
+  resolvió»…) y «Repetir el paso», que empieza en la preparación del paso 3 con otra trayectoria y otra avería.
+- **Puntos:** 100 − 5 por cada error de los pasos 1 y 2 y por cada repetición (mínimo 10). Las pistas (en los pasos
+  1 y 2, en la preparación y entre repeticiones; no durante el seguimiento) penalizan con tiempo bloqueado.
+- **Variantes:** por grupo, la avería del paso 1 y la disposición de las señales; por intento, trayectoria,
+  desfase y avería del paso.
 - **Audio:** cifrado con una llave que viaja con él (`reto4_llaves.js`): no hay contraseña, pero no se saca con F12.
-- **Recargar:** en los pasos 1 y 2 se conserva lo hecho; en el paso 3 el seguimiento vuelve a empezar con la
-  estación preparada, avisando.
-- **Modo organizador:** `Ctrl + Alt + O` (o `#/reto4?org`): velocidad ×4, saltar al paso 3 y forzar la alarma.
-- **Pruebas:** `node herramientas/probar_reto4_iss.mjs` (seguimiento y Doppler perfectos ≈ 100 %, antena quieta < 70 %,
-  alarma sin atender, motivo del informe, encendido, memorias, rotor y sorteo). La «prueba de los 3 segundos» (captura
-  de cada paso, tarjeta con instrucción y solo los controles del paso activos) va en el recorrido de la skill `probar-web`.
-- **Quitado respecto a la v1:** pestañas, códigos de estado y diferencial, entrada de frecuencia, modo y filtro,
-  ajuste fino continuo, cuenta atrás de 3 minutos, averías múltiples, audio en directo con ruido, su calibración y la
-  grabación renderizada (con sus scripts y datos). `sstv_pd120.decodificar(inicio=…)` se conserva: es general.
+- **Recargar:** en los pasos 1 y 2 se conserva lo hecho; en el paso 3 el paso vuelve a la preparación, avisando.
+- **Modo organizador:** `Ctrl + Alt + O` (o `#/reto4?org`): velocidad ×4, saltar a los pasos 1, 2 y 3, forzar cada
+  avería y mostrar la ISS en el mapa (solo para probar).
+- **Pruebas:** `node herramientas/probar_reto4_iss.mjs` (diagrama recorrido con las 5 averías, señales del paso 2,
+  seguimiento real ≈ 100 %, solo con la predicción < 100 % pero alcanzable corrigiendo con el medidor, antena quieta
+  < 70 %, Doppler sin corregir tras el cambio de sentido, síntomas distinguibles y soluciones equivocadas).
+- **Quitado respecto a la v2:** los 3 interruptores con orden de encendido, las 5 memorias, el punto visible de la
+  ISS y la alarma única con procedimiento fijo.

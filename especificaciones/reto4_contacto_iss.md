@@ -1,201 +1,174 @@
-# Reto 4 · "Contacto con la ISS" (versión 2: clara e intuitiva) → fragmento ANDRÓMEDA
+# Reto 4 · "Contacto con la ISS" (versión 3: clara, pero con reto) → fragmento ANDRÓMEDA
 
-> **Rehace el reto 4 actual sobre lo que ya existe** (`web/js/reto4.js`, `web/js/iss_sim.js`…). La versión 1
-> (especificación en `descartadas/reto4_contacto_iss_v1.md`) funciona pero **no se entiende qué hay que hacer**.
-> El objetivo de esta versión no es que sea más fácil, sino que **sea evidente en todo momento cuál es el
-> siguiente paso**. Reutiliza todo lo que sirva (simulación de la trayectoria, mapa polar, estilo, pistas,
-> reproductor, llaves del audio, tarjeta del panel) y elimina lo que esta especificación quita (sección 9).
-> Usa la skill `nuevo-reto`, actualiza el `README.md` y termina con `probar-web`.
-
-## 0. La regla de diseño
-
-**En cualquier momento, un alumno de 14 años que mire la pantalla tiene que poder responder en 3 segundos
-a «¿qué tengo que hacer ahora?».** Cada decisión de diseño se comprueba contra esta regla.
-
-Consecuencias:
-- Siempre hay **una tarjeta de paso** visible arriba con el paso actual y una frase de instrucción.
-- **Solo están activos los controles del paso actual**, resaltados con borde ámbar. El resto se ve, apagado.
-- La información se pone **donde se necesita**: si hay que consultar el manual, la tarjeta del paso tiene un
-  botón que lo abre **por la sección exacta**.
-- **Lenguaje claro primero, jerga después y en pequeño**: «La ISS aparece (AOS)», «Amplificador (LNA)».
-- **Feedback inmediato**: cada acción correcta se celebra (✓ verde, sonido corto, frase) y se pasa sola al
-  siguiente paso. Cada error se explica en una frase y se puede reintentar al momento.
-- **Nada de esperas sin hacer nada.**
-
-## 1. Pantalla (una sola vista, sin pestañas, sin scroll a 1366×768)
-
-```
-┌────────────────────────────────────────────────────────────────────┐
-│ TARJETA DE PASO:  ①Encender ─ ②Sintonizar ─ ③Seguir a la ISS ─ ④Recibir │
-│ "Paso 1 de 4 · Enciende la estación"   [Abrir el manual aquí]        │
-├──────────────────────────────┬─────────────────────────────────────┤
-│                              │  ESTACIÓN                            │
-│     MAPA DEL CIELO           │  · 3 interruptores                   │
-│   (grande, la antena se      │  · 5 memorias de la radio            │
-│    arrastra con el ratón)    │  · Cascada + botones ◀ ▶             │
-│                              │  · Señal (barras) · Termómetro LNA   │
-├──────────────────────────────┴─────────────────────────────────────┤
-│ CALIDAD DEL CONTACTO  ███████████░░░░░░░░ 58 %        meta: 70 % ▲  │
-└────────────────────────────────────────────────────────────────────┘
-                           + MANUAL en panel lateral (se abre y se cierra sin tapar el mapa)
-```
-
-La barra de calidad solo aparece durante el paso 3. El manual es un panel lateral deslizable con índice.
-
-## 2. Briefing (antes de empezar)
-
-Expediente corto, con el estilo de los otros retos:
-
-> **EXPEDIENTE #04 · CONTACTO CON LA ISS**
-> La Estación Espacial Internacional va a pasar sobre Granada y enviará una imagen por radio.
-> Tenéis que preparar la estación de GranaSAT y seguir a la ISS mientras cruza el cielo.
-> Si lo hacéis bien, recibiréis vuestro trozo del mapa.
+> Parte de la **versión 2** (`descartadas/reto4_contacto_iss_v2.md`): mantiene su estructura y todas sus reglas
+> de claridad (secciones 0, 1, 2, 6, 8 y 11 de la v2 siguen vigentes salvo lo que se cambia aquí). La v2 resultó
+> **demasiado fácil**: cada paso se resolvía leyendo una línea del manual. En la v3 **el «qué» sigue siendo evidente,
+> pero el «cómo» exige observar, comparar y razonar**.
 >
-> [ Empezar ]
+> Si la v2 ya está implementada, **modifícala**; si no, implementa directamente esta versión sobre lo que exista.
+> Reutiliza todo lo posible. Usa la skill `nuevo-reto`, actualiza el `README.md` y termina con `probar-web`.
 
-## 3. Paso 1 · Encender la estación
+## 0. Regla de diseño (sin cambios)
 
-**Tarjeta:** «**Paso 1 de 4 · Enciende la estación.** Los equipos se encienden en un orden concreto. Consultad el manual.» `[Abrir el manual aquí]`
+En cualquier momento, un alumno de 14 años tiene que poder responder en 3 segundos a **«¿qué tengo que hacer ahora?»**.
+Tarjeta de paso siempre visible, solo los controles del paso actual activos y resaltados, manual en panel lateral que se
+abre por la sección exacta, lenguaje claro con la jerga en pequeño, feedback inmediato y nada de esperas vacías.
 
-- Tres interruptores grandes con icono y nombre claro:
-  **Alimentación** · **Rotor de la antena** · **Amplificador (LNA)**.
-- **Orden correcto**: Alimentación → Rotor de la antena → Amplificador.
-- **En pantalla se colocan en otro orden** (por ejemplo: Amplificador, Alimentación, Rotor), para que no
-  baste con pulsarlos de arriba abajo.
-- Manual, sección «Encendido»: el orden, con el **porqué** en una línea cada uno
-  (sin alimentación no funciona nada; el rotor tiene que estar calibrado antes de amplificar la señal;
-  el amplificador va el último para no dañarlo).
-- **Error**: los interruptores vuelven a apagarse y aparece «⚡ Orden incorrecto: la estación se ha apagado
-  por seguridad. Revisad el orden en el manual.» Sin penalización de tiempo: se reintenta al momento.
-- **Acierto**: «✓ Estación encendida» y se pasa al paso 2.
+Los 4 pasos: **① Reparar la estación · ② Encontrar la señal · ③ Seguir a la ISS · ④ Recibir**.
+Duración objetivo: **12–15 minutos**.
 
-## 4. Paso 2 · Sintonizar la ISS
+## 1. Paso 1 · Reparar la estación (diagnóstico con diagrama)
 
-**Tarjeta:** «**Paso 2 de 4 · Sintoniza la ISS.** La radio tiene 5 memorias. Solo una recibe las imágenes de la ISS.» `[Abrir el manual aquí]`
+**Tarjeta:** «**Paso 1 de 4 · La estación no arranca.** Encontrad la avería siguiendo el diagrama del manual y reparadla.»
+`[Abrir el diagrama]`
 
-- **5 botones de memoria** grandes, con la frecuencia en `JetBrains Mono`:
-  `145,800` · `145,825` · `437,800` · `145,990` · `437,025` (MHz). Sin nombre del servicio: eso está en el manual.
-- Manual, sección «Frecuencias de la ISS»: tabla con servicio, **sentido (bajada / subida)** y frecuencia.
-  Explica en una frase qué es bajada (de la ISS a la Tierra) y subida (de la Tierra a la ISS).
-- **Cada memoria incorrecta da una explicación**, para que aprendan algo aunque fallen:
-  - 145,825 → «Se oyen pitidos de datos (APRS): son mensajes de texto, no imágenes.»
-  - 437,800 → «Es el repetidor de voz de la ISS. Aquí no llegan imágenes.»
-  - 145,990 → «Silencio: esta frecuencia es de **subida**, para hablarle a la ISS, no para escucharla.»
-  - 437,025 → «Ruido. Aquí no transmite la ISS.»
-- **Acierto** (145,800): «✓ Sintonizada la bajada de imágenes de la ISS» → «La ISS aparecerá por el horizonte
-  en 10 segundos…» (cuenta atrás visible de 10 s) → paso 3.
+**Lecturas del panel** (siempre visibles, grandes y claras; son lo que el diagrama pregunta):
+- Luz de **red** (encendida / apagada).
+- **Voltímetro** de la fuente (aguja o display: 0 V, 5 V, 13,8 V).
+- **Ventilador** de la fuente (se ve girar o no).
+- Luz del **rotor** (verde fija / ámbar parpadeando / apagada).
+- Botón **«Prueba de antena»**: al pulsarlo, el medidor de señal muestra si llega ruido de la antena (sube) o nada.
 
-## 5. Paso 3 · Seguir a la ISS (el paso central, unos 3 minutos)
+**Averías sorteadas por grupo** (cada una produce una combinación distinta de lecturas):
 
-**Tarjeta:** «**Paso 3 de 4 · Sigue a la ISS.** Mantén la antena encima de la ISS y la señal en el centro.»
+| Avería | Red | Voltímetro | Ventilador | Rotor | Prueba de antena | Reparación |
+|---|---|---|---|---|---|---|
+| Fusible fundido | apagada | 0 V | parado | apagada | nada | Cambiar el fusible |
+| Fuente en protección | encendida | 5 V | gira | apagada | nada | Reiniciar la fuente |
+| Rotor bloqueado | encendida | 13,8 V | gira | ámbar parpadeando | sube | Desbloquear el rotor |
+| Cable de antena suelto | encendida | 13,8 V | gira | verde | nada | Reconectar el cable |
+| Ventilador averiado | encendida | 13,8 V | parado | verde | sube | Cambiar el ventilador |
 
-### Seguimiento (mapa del cielo)
-- Mapa polar grande: norte arriba, horizonte en el borde, cenit en el centro. Etiquetas N, E, S, O.
-- La **ISS** es un punto brillante que recorre su trayectoria (la trayectoria prevista se ve como línea discontinua).
-- La **antena** es una cruz que el alumno **arrastra con el ratón** (también con flechas del teclado).
-  La antena **sigue al ratón a velocidad limitada**, como un rotor real: hay que anticiparse un poco.
-- La cruz se pone **verde** cuando está encima de la ISS (tolerancia generosa, unos 12° de cielo) y roja si no.
-- **La primera vez**: una flecha animada con el texto «Arrastra la antena hasta la ISS», que desaparece
-  al primer arrastre.
-- Debajo, en pequeño y para quien tenga curiosidad: azimut y elevación de la antena y de la ISS.
+**El diagrama** (manual, sección «Diagnóstico»): un diagrama de decisión dibujado (cajas y flechas, SVG), con preguntas
+de sí/no sobre esas lecturas, de arriba abajo, hasta una hoja con la avería y su reparación. Ejemplo de inicio:
+«¿Está encendida la luz de red? → No: ¿marca algo el voltímetro? …». Cada pregunta debe poder responderse **mirando el
+panel**, nunca adivinando. Comprueba que las 5 averías llevan a hojas distintas y que ninguna combinación es ambigua.
 
-### Doppler (cascada)
-- Mini cascada con una **banda central marcada** («zona buena») y la línea de la señal.
-- La línea **deriva lentamente** hacia un lado (más rápido cerca del punto más alto del paso) y hay que
-  mantenerla en la banda con dos botones grandes **◀ ▶** (también con las teclas A y D).
-- Verde dentro de la banda, roja fuera.
-- **La primera vez**: «La señal se mueve (efecto Doppler): mantenla en el centro con ◀ ▶».
-- Así el reparto sale solo: uno sigue a la ISS con el ratón y otro corrige el Doppler.
+**Acciones de reparación**: un bloque de 5 botones con las reparaciones de la tabla (iguales para todos los grupos).
+- **Acierto**: animación breve, lecturas normales, «✓ Estación reparada y encendida» → paso 2.
+- **Error**: «✗ Eso no era. La estación sigue sin funcionar. Volved al diagrama y revisad cada respuesta.»
+  Bloqueo de 10 s para que no prueben los 5 botones a ciegas (bloqueo creciente si repiten errores).
 
-### Una avería a mitad del paso
-- Hacia la mitad del paso: banner rojo **«🔥 Alarma: el amplificador se está calentando»** con un botón grande
-  `[Qué hacer]` que abre el manual en la sección «Alarma del amplificador».
-- Junto al interruptor del amplificador aparece un **termómetro** que va subiendo.
-- Procedimiento (en el manual, 2 líneas): «Apagad el amplificador. Esperad a que el termómetro baje a verde.
-  Volved a encenderlo.» (unos 8 segundos).
-- Mientras está apagado, la señal baja pero no desaparece (la calidad cuenta menos). Si no hacen nada en
-  30 s, el amplificador se apaga solo y no se puede volver a encender durante este paso (la señal queda baja).
-- Al resolverla: «✓ Amplificador refrigerado».
+## 2. Paso 2 · Encontrar la señal (identificar su «huella»)
 
-### Calidad del contacto
-- Barra horizontal abajo, con una **marca en el 70 %** («meta»).
-- Se llena con el **porcentaje del tiempo del paso con señal buena**. Señal buena = antena sobre la ISS **y**
-  señal en la zona buena **y** amplificador encendido (o ya refrigerado).
-- El porcentaje se ve en directo: tienen que notar al instante si lo están haciendo bien.
-- El medidor de señal (barras) refleja la calidad instantánea.
+**Tarjeta:** «**Paso 2 de 4 · Encontrad la frecuencia de las imágenes.** Esta es la grabación del paso anterior de la ISS.
+En la cascada hay varias señales: comparadlas con el catálogo del manual y elegid la de imágenes.» `[Abrir el catálogo]`
 
-## 6. Paso 4 · Recibir (resultado)
+- Una **cascada grande** (grabación del paso anterior, en bucle) con **5 señales** en posiciones distintas, cada una
+  con su frecuencia debajo en `JetBrains Mono`.
+- Tipos de señal y su **huella** (dibujo estilizado, pero idéntico en la cascada y en el catálogo):
+  - **Imágenes SSTV**: banda de anchura media, **continua durante mucho tiempo**, con textura que cambia sin parar.
+  - **Datos APRS**: **ráfagas cortas** que aparecen y desaparecen.
+  - **Baliza en Morse**: **línea muy fina** que se enciende y apaga con ritmo de puntos y rayas.
+  - **Voz**: banda ancha **irregular**, con pausas (frases).
+  - **Interferencia**: mancha ancha y uniforme que **no cambia**.
+- El **catálogo** (manual, sección «Huellas de señales») muestra un dibujo de cada tipo con 1 línea de descripción
+  y **un dato clave** que permite distinguirlas (por ejemplo: «Una imagen tarda 2 minutos en transmitirse: su señal no se corta»).
+- **Variantes por grupo**: el orden y las posiciones de las 5 señales se sortean. La frecuencia de las imágenes
+  siempre es la de la ISS (145,800 MHz); las demás cambian.
+- El alumno **hace clic en una señal** para sintonizarla:
+  - Correcta: «✓ Sintonizada la bajada de imágenes de la ISS: 145,800 MHz» → paso 3.
+  - Incorrecta: explica **qué es** lo que ha elegido («Son ráfagas de datos (APRS): mensajes de texto, no imágenes»,
+    «Es una baliza en Morse», «Es voz», «Es una interferencia: no transmite nada»). Bloqueo de 10 s.
 
-**Si la calidad final es ≥ 70 %:**
-> **✓ Contacto establecido · Calidad 84 %**
-> Habéis recibido la transmisión de la ISS. Decodificadla con Black Cat SSTV.
-> [ reproductor del audio de ANDRÓMEDA ] [ Descargar ]
+## 3. Paso 3 · Seguir a la ISS sin verla
 
-- El audio se desbloquea **en diferido**, limpio, con el mismo reproductor y esquema de llaves que los retos 1 y 2.
-- Reto completado y puntuación (base menos pistas y repeticiones).
-- Una línea de dato curioso: «La ISS viaja a 28 000 km/h: por eso hay que moverse rápido con la antena
-  y corregir el Doppler».
+**Tarjeta (antes del AOS):** «**Paso 3 de 4 · Apuntad la antena al punto por donde saldrá la ISS.** Mirad la predicción del paso.»
+**Tarjeta (durante el paso):** «**Seguid a la ISS.** No la veréis: guiaos por la predicción y por la señal.»
 
-**Si es < 70 %:**
-> **Contacto perdido · Calidad 52 %**
-> Lo que ha fallado: la antena perdió a la ISS al final del paso.
-> [ Repetir el paso ]
+### Predicción y antena
+- En el mapa del cielo se dibuja la **trayectoria prevista** (línea discontinua) con **marcas de tiempo** cada 30 s
+  (`0:00`, `0:30`, `1:00`…), y los puntos de **salida**, **altura máxima** y **puesta** destacados.
+- **La ISS no se dibuja.** Esto es lo central del reto: como en la realidad, solo se «oye».
+- Reloj del paso grande y visible, para saber en qué marca de tiempo estamos.
+- **Fase de preparación**: 20 s antes de que salga la ISS, con cuenta atrás. Tienen que llevar la antena al punto de salida.
+  Si no llegan, no pasa nada grave: pierden los primeros segundos de señal.
+- La antena es una cruz que se **arrastra con el ratón** (o con flechas), con **velocidad limitada** como un rotor real.
+- El **medidor de señal** es la otra guía, tipo «frío o caliente»: depende del error angular entre la antena y la
+  posición real de la ISS (lóbulo de la antena: máximo en el centro, cae suavemente hasta ~20°, nada más allá).
+- Pequeñas desviaciones entre la predicción y el paso real (la ISS va unos segundos adelantada o retrasada, sorteado)
+  para que no baste con seguir la línea con el reloj: hay que **ajustar con el medidor**.
 
-- **Una o dos frases** con el motivo principal (el factor que más calidad ha restado: antena, Doppler o
-  amplificador), en lenguaje claro.
-- «Repetir el paso» empieza **directamente en el paso 3** (la estación sigue encendida y sintonizada), con
-  la cuenta atrás de 10 s y **otra trayectoria**. Sin esperas. Sin límite de repeticiones.
+### Doppler con cambio de sentido
+- Mismo esquema que la v2 (cascada pequeña con banda central y botones ◀ ▶, o teclas A y D), pero la deriva
+  **cambia de sentido en el punto de altura máxima** y es **más rápida cerca de ese punto**.
+- El manual (sección «Efecto Doppler») explica por qué: «mientras la ISS se acerca, su señal llega más aguda; cuando se
+  aleja, más grave». Quien lo entienda puede anticiparse.
 
-## 7. Pistas
+## 4. Durante el paso · Una avería con síntomas
 
-Mismo sistema de pistas con bloqueo de tiempo que los otros retos. Disponibles en los pasos 1 y 2 y entre
-repeticiones; **no durante el seguimiento** (dura solo 3 minutos).
-1. «¿Por qué ese orden? Sin corriente no funciona nada, y el amplificador siempre va el último.»
-2. «Queréis **escuchar** a la ISS, no hablarle: buscad una frecuencia de **bajada**.»
-3. «Uno de vosotros mueve la antena y otro controla la señal con ◀ ▶. Repartíos el trabajo.»
+- Hacia la mitad del paso aparece un aviso **«⚠ Algo va mal en la estación»** con un botón `[Diagnóstico]`. **No dice qué es.**
+- El panel muestra **síntomas**. El manual (sección «Averías durante el paso») tiene una tabla síntomas → causa → solución
+  con **3 averías de síntomas parecidos**:
 
-## 8. Manual (panel lateral)
+| Síntomas | Causa | Solución |
+|---|---|---|
+| La señal baja poco a poco y el termómetro del amplificador sube | Amplificador sobrecalentado | Apagar el amplificador hasta que el termómetro esté en verde y volver a encenderlo |
+| La señal cae de golpe y la luz del rotor parpadea en ámbar | Rotor atascado | Pulsar «Liberar rotor» y volver a apuntar |
+| La señal se llena de ruido y aparece una mancha en la cascada | Interferencia cercana | Activar el filtro de interferencias |
 
-Corto, con índice clicable. Cada sección cabe en el panel sin scroll. Textos para 14 años, con la jerga en pequeño.
-1. **Encendido**: el orden y el porqué.
-2. **Frecuencias de la ISS**: tabla (servicio, bajada/subida, frecuencia) y qué significa bajada y subida.
-3. **Seguir a un satélite**: cómo leer el mapa del cielo (horizonte en el borde, encima de ti en el centro).
-4. **Efecto Doppler**: por qué la señal se mueve (como la sirena de una ambulancia que pasa) y cómo corregirlo.
-5. **Alarma del amplificador**: el procedimiento.
-6. **Después del contacto**: cómo decodificar el audio con Black Cat SSTV (como en los otros retos).
+- Se sortea una por paso. Las 3 soluciones están siempre disponibles como botones.
+- **Solución equivocada**: no arregla nada y además cuesta señal unos segundos (por ejemplo, apagar el amplificador sin motivo).
+- **Sin respuesta en 30 s**: la avería se queda el resto del paso (la señal queda mermada, pero el paso sigue).
 
-Los botones `[Abrir el manual aquí]` y `[Qué hacer]` abren el panel y saltan a la sección correspondiente.
+## 5. Calidad, resultado y repetición
 
-## 9. Qué se elimina de la versión 1
+- Igual que la v2: barra de calidad con marca en el **70 %** (constante ajustable tras probar con alumnos),
+  calculada como porcentaje del tiempo del paso con señal buena (apuntado dentro del lóbulo útil, Doppler en la
+  banda y sin avería activa).
+- **Éxito**: audio de ANDRÓMEDA en diferido (mismo reproductor y llaves que los retos 1 y 2), puntuación y dato curioso.
+- **Fracaso**: informe de 1–2 frases con el factor que más calidad restó, en lenguaje claro
+  («Al principio la antena no apuntaba al punto de salida», «El Doppler cambió de sentido y la señal se escapó»,
+  «La avería no se resolvió»). Botón `[Repetir el paso]`: empieza en la **fase de preparación del paso 3**
+  (la estación sigue reparada y sintonizada), con **otra trayectoria y otra avería**. Sin límite.
 
-- Las pestañas (Estación / Órbita / Manual) que se tapaban entre sí.
-- Los códigos de estado de arranque (`E-07`…) y su tabla.
-- La entrada de frecuencia a mano, el selector de modo y el filtro.
-- El ajuste fino continuo (lo sustituyen los botones ◀ ▶ sobre la cascada).
-- La cuenta atrás de 3 minutos antes del AOS y el diferencial de 20 s.
-- Las averías múltiples y aleatorias (queda una, siempre la misma, hacia la mitad).
-- El audio en directo mezclado con ruido, su calibración y la grabación renderizada con `OfflineAudioContext`
-  (y los scripts, datos y tests asociados que ya no se usen).
-- La tabla numérica del paso (azimut y elevación solo como dato secundario en pequeño).
+## 6. Pistas (mismo sistema de bloqueo de tiempo)
 
-## 10. Variantes
+Disponibles en los pasos 1 y 2, en la preparación del paso 3 y entre repeticiones; no durante el seguimiento.
+1. Paso 1: «Seguid el diagrama desde arriba, pregunta a pregunta. Comprobad cada respuesta en el panel.»
+2. Paso 2: «Una imagen tarda 2 minutos en transmitirse. ¿Qué señal no se corta nunca?»
+3. Paso 3: «Primero apuntad al punto de salida. Después, si la señal baja, moved la antena un poco a cada lado
+   hasta que vuelva a subir. Repartíos: uno con la antena y otro con el Doppler.»
 
-Por intento: trayectoria (unas 6, con distinta dirección y altura máxima) y el momento exacto de la avería
-(dentro de la mitad central del paso). El orden de encendido y las memorias son iguales para todos.
-Como la recompensa es el audio (que todos los grupos reciben igual), no hace falta contraseña por grupo.
+## 7. Manual (panel lateral, actualiza el de la v2)
 
-## 11. Modo organizador
+1. **Diagnóstico**: el diagrama de decisión (SVG) y la lista de reparaciones.
+2. **Huellas de señales**: catálogo con dibujo y dato clave de cada tipo.
+3. **Seguir a un satélite**: cómo leer el mapa del cielo, la predicción y las marcas de tiempo; por qué la predicción
+   no es exacta y hay que corregir con la señal.
+4. **Efecto Doppler**: por qué la señal se mueve y por qué cambia de sentido (como la sirena de una ambulancia).
+5. **Averías durante el paso**: la tabla de síntomas.
+6. **Después del contacto**: decodificar el audio con Black Cat SSTV.
 
-Mantén el atajo que ya exista: acelerar ×4, saltar al paso 3 y forzar la alarma.
+## 8. Qué se elimina respecto a la v2
 
-## 12. Pruebas
+- Los 3 interruptores con orden de encendido (lo sustituye el diagnóstico).
+- Las 5 memorias de frecuencia (lo sustituye la cascada con huellas).
+- El punto visible de la ISS en el mapa.
+- La alarma única con procedimiento fijo (la sustituyen los síntomas).
 
-1. **Lógica** (Node, en `herramientas/`): seguimiento y Doppler perfectos → calidad ≈ 100 %; antena quieta →
-   por debajo del 70 %; alarma no atendida → amplificador apagado el resto del paso; el motivo del informe
-   es el factor que más calidad ha restado.
-2. **Prueba de los 3 segundos** (con Playwright si está disponible): captura de pantalla de cada paso y del
-   resultado; en cada una, comprueba que la tarjeta de paso indica qué hacer y que solo los controles de
-   ese paso están activos y resaltados. Revisa las capturas tú mismo con esa pregunta en mente.
-3. Skill **`probar-web`**: recorrido completo con éxito, un contacto perdido y su repetición (debe empezar
-   en el paso 3), errores en los pasos 1 y 2 con sus mensajes, recarga a mitad (debe volver a un estado
-   coherente: durante el paso 3, reinicia el paso con la estación preparada) y sin peticiones a internet.
+## 9. Variantes
+
+Por grupo: avería del paso 1 y disposición de las señales del paso 2.
+Por intento del paso 3: trayectoria, desfase de la predicción y avería durante el paso.
+
+## 10. Modo organizador
+
+Mantén el atajo existente: acelerar ×4, saltar a cada paso, forzar cada avería y **mostrar la ISS** en el mapa
+(solo para probar).
+
+## 11. Pruebas
+
+1. **Lógica** (Node, en `herramientas/`):
+   - Las 5 averías del paso 1 producen lecturas distintas y el diagrama lleva a cada una a su hoja correcta
+     (recorre el árbol programáticamente con las lecturas de cada avería).
+   - Paso 3: seguimiento perfecto de la posición **real** → calidad ≈ 100 %; seguir solo la predicción sin corregir
+     el desfase → calidad por debajo del 100 % pero alcanzable con correcciones; antena quieta → < 70 %;
+     Doppler sin corregir tras el cambio de sentido → cae la calidad.
+   - Las 3 averías del paso tienen síntomas distinguibles y la solución equivocada no las arregla.
+2. **Prueba de los 3 segundos** con capturas (Playwright si está disponible) de cada paso, de la fase de preparación,
+   de una avería y del resultado. En cada captura: ¿se ve qué hay que hacer?
+3. **Prueba de dificultad**: recorre el reto como lo haría un alumno, sin atajos, y cronométralo. Debe estar entre
+   12 y 15 minutos con algún error. Indícame qué paso te ha llevado más y menos tiempo.
+4. Skill **`probar-web`**: recorrido completo, errores en los pasos 1 y 2, contacto perdido y repetición (empieza
+   en la preparación del paso 3), recarga a mitad y sin peticiones a internet.

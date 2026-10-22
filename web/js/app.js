@@ -23,7 +23,7 @@
     {
       id: "reto4", num: 4, fragmento: "ANDRÓMEDA", base: 100, duracion: "12–15 min",
       titulo: "Contacto con la ISS",
-      resumen: "Tenéis una sola pasada. Manejad la estación de tierra, seguid a la ISS y recibid su imagen SSTV en directo.",
+      resumen: "Reparad la estación, encontrad la señal de la ISS entre otras y seguidla por el cielo sin poder verla.",
     },
   ];
   App.FRAGMENTOS = ["ORIÓN", "CYGNUS", "LYRA", "ANDRÓMEDA"];
