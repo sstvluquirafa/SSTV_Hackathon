@@ -68,7 +68,7 @@
     return `<pre class="arte-cifrado" aria-hidden="true">${lineas}\n${lineas}</pre>`;
   }
 
-  // Retos 3 y 4: estática de radio (sin señal todavía)
+  // Reto 3: estática de radio (sin señal todavía)
   const estatica = `
     <svg viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true">
       <filter id="arte-estatica"><feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="1" seed="4"/><feColorMatrix values="0 0 0 0 .6  0 0 0 0 .65  0 0 0 0 .75  0 0 0 1.6 -.5"/></filter>
@@ -76,20 +76,23 @@
       <path d="M0 60 L40 60 L48 50 L56 70 L64 60 L300 60" stroke="#64748b" stroke-width="1.5" fill="none" opacity=".7"/>
     </svg>`;
 
-  // Reto 4: un paso de la ISS sobre el mapa polar del cielo
-  const pasoISS = `
+  // Reto 4: un expediente con la lupa sobre el satélite saboteado
+  const caso = `
     <svg viewBox="0 0 300 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <rect width="300" height="120" fill="#0b1226"/>
-      <circle cx="150" cy="60" r="52" fill="none" stroke="#334155" stroke-width="1.5"/>
-      <circle cx="150" cy="60" r="34" fill="none" stroke="#1e293b"/><circle cx="150" cy="60" r="17" fill="none" stroke="#1e293b"/>
-      <path d="M104 86 Q150 22 198 44" fill="none" stroke="#fbbf24" stroke-width="2" stroke-dasharray="5 4"/>
-      <circle cx="104" cy="86" r="4" fill="#10b981"/><circle cx="198" cy="44" r="4" fill="#ef4444"/>
-      <g class="arte-iss"><circle cx="146" cy="47" r="9" fill="#fbbf24" opacity=".25"/><circle cx="146" cy="47" r="4" fill="#fff"/></g>
-      <text x="150" y="13" fill="#64748b" font-size="9" text-anchor="middle" font-family="monospace">N</text>
+      <rect x="62" y="16" width="120" height="92" rx="6" fill="#111a33" stroke="#334155" transform="rotate(-6 122 62)"/>
+      <rect x="74" y="14" width="120" height="92" rx="6" fill="#16213f" stroke="#475569"/>
+      <text x="84" y="32" fill="#fbbf24" font-size="9" font-family="monospace" font-weight="700">EXPEDIENTE #04</text>
+      <rect x="84" y="40" width="84" height="4" rx="2" fill="#334155"/><rect x="84" y="50" width="64" height="4" rx="2" fill="#334155"/>
+      <g transform="translate(124 80)"><rect x="-9" y="-6" width="18" height="12" rx="2" fill="#94a3b8"/>
+        <rect x="-33" y="-4" width="20" height="8" fill="#38bdf8" transform="rotate(90 -23 0)"/><rect x="13" y="-4" width="20" height="8" fill="#38bdf8" transform="rotate(90 23 0)"/></g>
+      <text x="146" y="96" fill="#ef4444" font-size="8" font-family="monospace" font-weight="700">SIN SEÑAL</text>
+      <g class="arte-lupa"><circle cx="222" cy="58" r="26" fill="rgba(251,191,36,.08)" stroke="#fbbf24" stroke-width="5"/>
+        <path d="M241 77 L262 98" stroke="#fbbf24" stroke-width="8" stroke-linecap="round"/></g>
     </svg>`;
 
   App.portadaReto = function (id) {
-    const arte = id === "reto1" ? sstv : id === "reto2" ? cifrado() : id === "reto4" ? pasoISS : estatica;
+    const arte = id === "reto1" ? sstv : id === "reto2" ? cifrado() : id === "reto4" ? caso : estatica;
     return `<div class="tarjeta-arte">${arte}</div>`;
   };
 })();

@@ -26,22 +26,24 @@ Web_Hackathon/
 │   ├── generar_fragmentos_mapa.py  corta mapa.png en 4 fragmentos y crea sus WAV
 │   ├── reto2_generador.py          genera y verifica las cadenas del reto 2 (--exportar: banco para la web)
 │   ├── probar_reto2_js.mjs         comprueba que web/js/operaciones.js da lo mismo que el script de Python
-│   ├── probar_reto4_iss.mjs        pruebas de la lógica del reto 4 (web/js/iss_sim.js)
+│   ├── probar_reto4_sabotaje.mjs   pruebas del reto 4: solo la solución abre el caso y el contador de datos acertados
 │   ├── medir_fotos_puzle.py        mide la dificultad de las fotos del puzle del reto 1
-│   └── construir_web.py            copia imágenes, prepara la pista y cifra las recompensas en web/assets/data/
+│   └── construir_web.py            copia imágenes, prepara las pistas y cifra las recompensas (`construir_web.py reto4`: solo ese reto)
 ├── generado/
 │   ├── mapa/             ← salida de generar_fragmentos_mapa.py (no editar: se regenera)
 │   │   ├── fragmento_N_nombre.png / .wav   los 4 fragmentos (PD120, 127 s, 2,8 MB)
 │   │   ├── comprobacion_mapa_decodificado.png  mapa reconstruido a partir de los audios
 │   │   └── solucion_organizadores.json     orden correcto de los fragmentos
 │   ├── reto1/            ← pista del reto 1 a 11 025 Hz (y su imagen descodificada)
+│   ├── reto4/            ← cámara de la azotea del reto 4 (WAV PD120, su imagen y la comprobación) y resumen del caso
 │   └── reto2/            ← vectores de prueba para probar_reto2_js.mjs
+├── especificaciones/     ← especificación del reto 4 (y las versiones descartadas en descartadas/)
 ├── referencia/
 │   └── reto1_prototipo.html  ← prototipo del reto 1 (pista → nombre → puzle 3×3 → audio)
 └── web/                  ← la web local: doble clic en web/index.html
-    ├── index.html        una sola página; rutas #/panel, #/reto1, #/reto2, #/montaje
+    ├── index.html        una sola página; rutas #/panel, #/reto1, #/reto2, #/reto4, #/montaje
     ├── css/estilo.css    estilo "Explorador Enigma"
-    ├── js/               base (progreso, cifrado), app (panel), reto1, reto2, operaciones, montaje
+    ├── js/               base (progreso, cifrado), app (panel), reto1, reto2, operaciones, reto4, caso_sabotaje, montaje
     └── assets/           fuentes, imágenes y datos (.js con base64; las recompensas van cifradas)
 ```
 
@@ -95,9 +97,9 @@ y después `python herramientas/construir_web.py` para volver a cifrar las recom
 - **Fragmentos del mapa:** 4 tiras verticales enviadas giradas 90° (el mapa es 2,7:1 y PD120 es casi cuadrado;
   así se conserva un 35 % más de detalle). Cabecera con nombre de constelación (LYRA, ORIÓN, CYGNUS, ANDRÓMEDA)
   que no revela el orden. Al montar el mapa hay que girar y ordenar las piezas.
-- **Retos:** los retos 1, 2 y 4 están en la web. El reto 4 es «Contacto con la ISS», versión 3
-  (`especificaciones/reto4_contacto_iss.md`): la v2 era demasiado fácil. Las versiones anteriores («SSTV a mano» y
-  las v1 y v2 del contacto con la ISS) están en `especificaciones/descartadas/` y su código queda en el historial de git.
+- **Retos:** los retos 1, 2 y 4 están en la web. El reto 4 es «¿Quién saboteó el GranaSAT-II?»
+  (`especificaciones/reto4_sabotaje.md`), un caso tipo Cluedo para 4. Sustituye a «Contacto con la ISS» (v1–v3) y a
+  «SSTV a mano», que están en `especificaciones/descartadas/`; su código queda en el historial de git.
   El reto 3 (con el SDR) sigue como «PRÓXIMAMENTE».
   Reto 3 «La baliza» (Morse; primero en la web y después por SDR con walkie PMR446): pendiente de especificar.
 - **Jupyter:** solo para la clase guiada y para generar los WAV.
@@ -158,47 +160,33 @@ cada uso bloquea el reto 30 s más que el anterior (ver «Web local»).
 La web no lleva la frase: elige una de las 760 cadenas posibles (10 variantes × 76) del banco que genera `reto2_generador.py --exportar`,
 que incluye huellas SHA-256 de cada etapa para que las pistas sepan por dónde va el grupo.
 
-## Reto 4 · "Contacto con la ISS" (versión 3) → ANDRÓMEDA (duración objetivo: 12–15 min)
+## Reto 4 · "¿Quién saboteó el GranaSAT-II?" → ANDRÓMEDA (duración objetivo: 10–12 min)
 
-Especificación: `especificaciones/reto4_contacto_iss.md` (la v2 está en `especificaciones/descartadas/`).
-**Regla de diseño:** el «qué» sigue siendo evidente en 3 segundos (tarjeta de paso, solo los controles del paso
-activos, manual lateral que se abre por la sección exacta, sin scroll a 1366×768), pero el «cómo» exige observar,
-comparar y razonar. Una sola vista guiada: ① Reparar la estación ─ ② Encontrar la señal ─ ③ Seguir a la ISS ─ ④ Recibir.
+Especificación: `especificaciones/reto4_sabotaje.md`. Un misterio tipo Cluedo para **grupos de 4**: el satélite del
+equipo dejó de responder el 15 de julio y el grupo investiga con **cuatro expedientes**, uno por persona. Dificultad
+media-baja (decidido así): la foto de la cámara da el culpable y la hora; los demás expedientes confirman y explican.
 
-- **Paso 1 · Diagnóstico:** el panel muestra 5 lecturas (luz de red, voltímetro, ventilador, luz del rotor y
-  «Prueba de antena»). Cada grupo tiene una de 5 averías (fusible, fuente en protección, rotor bloqueado, cable de
-  antena suelto, ventilador), cada una con lecturas distintas. El manual tiene un diagrama de decisión (SVG generado
-  desde `SimISS.DIAGRAMA`) con preguntas de sí/no que se responden mirando el panel. 5 botones de reparación:
-  el error explica que no era y bloquea 10 s (20 s, 30 s… si repiten).
-- **Paso 2 · Huellas:** cascada grande en bucle con 5 señales (SSTV, APRS, Morse, voz, interferencia) en posiciones
-  sorteadas por grupo; las imágenes siempre en 145,800 MHz. Cada huella se dibuja con la misma función en la cascada
-  y en el catálogo del manual (con su dato clave). Clic en una señal: si no es la de imágenes, explica qué es y bloquea.
-- **Paso 3 · Seguir a la ISS sin verla:** mapa con la predicción (línea discontinua con marcas cada 30 s, salida,
-  altura máxima y puesta) y reloj del paso; la ISS no se dibuja. 20 s de preparación para llevar la antena a la
-  salida. La ISS real va 5–10 s adelantada o retrasada (sorteado): hay que corregir con el **medidor de señal**
-  («frío o caliente»: lóbulo de 20°; señal buena con unos 7° de error). Doppler con ◀ ▶ / A D: el desplazamiento
-  cambia de signo en el punto más alto (de aguda a grave) y ahí es cuando más deprisa se mueve; la marca ámbar de la
-  cascada pequeña es 145,800 MHz exactos.
-- **Avería durante el paso:** hacia la mitad, «⚠ Algo va mal en la estación» con [Diagnóstico], sin decir qué es.
-  Síntomas → causa → solución (tabla del manual): amplificador sobrecalentado (la señal baja poco a poco y sube el
-  termómetro: apagar hasta verde y encender), rotor atascado (cae de golpe y la luz del rotor parpadea en ámbar:
-  «Liberar rotor») e interferencia (ruido y mancha en la cascada: filtro). La solución equivocada no arregla nada y
-  quita 5 s de señal; sin respuesta en 30 s, la avería se queda hasta el final.
-- **Calidad:** porcentaje del tiempo del paso con señal buena (antena dentro del lóbulo útil, Doppler en la zona
-  buena, sin avería activa ni amplificador apagado); meta `C.META` = 70 %. Con ≥ 70 %, audio de ANDRÓMEDA en el
-  reproductor de siempre y dato curioso. Si no, informe de 1–2 frases con el factor que más restó («Al principio la
-  antena no apuntaba al punto de salida», «El Doppler cambió de sentido y la señal se escapó», «La avería no se
-  resolvió»…) y «Repetir el paso», que empieza en la preparación del paso 3 con otra trayectoria y otra avería.
-- **Puntos:** 100 − 5 por cada error de los pasos 1 y 2 y por cada repetición (mínimo 10). Las pistas (en los pasos
-  1 y 2, en la preparación y entre repeticiones; no durante el seguimiento) penalizan con tiempo bloqueado.
-- **Variantes:** por grupo, la avería del paso 1 y la disposición de las señales; por intento, trayectoria,
-  desfase y avería del paso.
-- **Audio:** cifrado con una llave que viaja con él (`reto4_llaves.js`): no hay contraseña, pero no se saca con F12.
-- **Recargar:** en los pasos 1 y 2 se conserva lo hecho; en el paso 3 el paso vuelve a la preparación, avisando.
-- **Modo organizador:** `Ctrl + Alt + O` (o `#/reto4?org`): velocidad ×4, saltar a los pasos 1, 2 y 3, forzar cada
-  avería y mostrar la ISS en el mapa (solo para probar).
-- **Pruebas:** `node herramientas/probar_reto4_iss.mjs` (diagrama recorrido con las 5 averías, señales del paso 2,
-  seguimiento real ≈ 100 %, solo con la predicción < 100 % pero alcanzable corrigiendo con el medidor, antena quieta
-  < 70 %, Doppler sin corregir tras el cambio de sentido, síntomas distinguibles y soluciones equivocadas).
-- **Quitado respecto a la v2:** los 3 interruptores con orden de encendido, las 5 memorias, el punto visible de la
-  ISS y la alarma única con procedimiento fijo.
+- **Inicio del caso:** expediente con texto tipo terminal y «Abrir la investigación».
+- **Mesa de investigación** (sin scroll a 1366×768, letra grande): arriba las 5 fichas de sospechosos (siluetas
+  dibujadas, no fotos), en el centro los 4 expedientes con su color y su rol, y abajo la **pizarra de deducción**
+  (quién · cómo · cuándo, se tacha y destacha con un clic y se guarda) con «Hacer la acusación».
+  Cada expediente se **amplía** a casi pantalla completa y se vuelve a la mesa con un botón o con Esc.
+  1. **Telemetría** (analista): recuadro de la **hora universal** (suma 2 horas) y 5 gráficas con preguntas
+     sencillas; al pasar el ratón se lee la hora exacta y el valor.
+  2. **Registro de radio** (operador): el mismo recuadro, la tabla de órdenes y la norma de la llave física.
+  3. **Cámara de la azotea** (imagen): «Recibir la transmisión de la cámara» reproduce `reto4_camara.js`
+     (el WAV PD120 de `generado/reto4/`, sin cifrar) con el reproductor común, y se puede descargar.
+     **La foto no está en la web**: solo se ve decodificándola con Black Cat SSTV. Mientras suena, la mesa lo indica.
+  4. **Accesos y declaraciones** (seguridad): horas de España, registro de tarjetas y declaraciones (la de Javier, comprobada).
+- **Acusación:** una opción de cada columna. 3 acusaciones por ronda; el fallo dice cuántos de los 3 datos se han
+  acertado, sin decir cuáles. Tras 3 fallos, 1 minuto sin acusar y 3 acusaciones más (la solución nunca se revela).
+  **Puntos:** 100 − 5 por acusación fallida (mínimo 10); las pistas penalizan con tiempo bloqueado, como en todos.
+- **Sin la solución en el código:** la acusación «quién cómo cuándo» se prueba contra las llaves cifradas
+  (`reto4_llaves.js`): si abre la llave del reto, descifra el audio de ANDRÓMEDA y el **resumen del caso** (que también va
+  cifrado porque cuenta la solución). Para contar los datos acertados, cada dato envuelve una llave aleatoria que no
+  abre nada (`comprobaciones` en `construir_web.py`). La lógica está en `web/js/caso_sabotaje.js`.
+- **Recargar:** se conservan la pizarra, las acusaciones usadas y el bloqueo.
+- **Pruebas:** `node herramientas/probar_reto4_sabotaje.mjs` (las 80 combinaciones: solo la solución abre el caso y el
+  contador de aciertos es el real; el audio y el resumen se descifran; la solución no aparece en claro en `web/`).
+  El WAV de la cámara se decodifica con `sstv_pd120.py` con un error medio de 3,4/255 frente a `camara_azotea_pd120.png`.
+- **Para más adelante:** más casos (otro culpable, método, hora y foto) para repartir uno por grupo.

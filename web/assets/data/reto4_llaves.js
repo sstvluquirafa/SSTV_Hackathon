@@ -1,3 +1,3 @@
 // Generado por herramientas/construir_web.py — no editar a mano.
 window.DATOS = window.DATOS || {};
-window.DATOS["reto4_llaves"] = {"sal": "ITOl+58oYP3q4mGuwCTTTw==", "iteraciones": 150000, "grupos": [], "archivos": {"audio": "reto4_audio"}, "llave": "Vh84ZJSWbiqLMxcXdwUA6KOW2eZ4d4F5GwBr6gqk/UE="};
+window.DATOS["reto4_llaves"] = {"sal": "wPfTFgd/QaltnFkNg9pHqw==", "iteraciones": 150000, "grupos": [[{"iv": "qA0m2pi72m4TVIoN", "ct": "Q1iP7aef+slNyL8zNaSZxHHpDoVn+LpV1r6zOog9aODBgzhvZmDb4QSP/WPqkxiA"}]], "archivos": {"audio": "reto4_audio", "resumen": "reto4_resumen"}, "datos": [[{"iv": "vKxmuwS6DQ7JBbcn", "ct": "hw4B84ks+9n0KLxhCQrGVpfy+hT3IiyH8dpdb1ApaV1q9hJeemzlr1Qch6yzo0AV"}], [{"iv": "tA1tbUBZYSNVl4bs", "ct": "FXLULQuxa5Ckj8lT9At+2/V97r7WbyzvI0veutIXnCYCcW+b03vdkIq9tVE7EZh8"}], [{"iv": "zXjWERTKjkaoqIQ4", "ct": "gLlWeHQp2qtWSzCWGM1CSHYK7zPA78v9EkP2vzXUtouQ0SUDqGMRTT4S9TUIMtJs"}]]};

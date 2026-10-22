@@ -1,7 +1,8 @@
 """
 Prepara los datos de la web local (web/assets/): imágenes, pista del reto 1 y recompensas cifradas.
 
-Uso:   python construir_web.py
+Uso:   python construir_web.py            (todo)
+       python construir_web.py reto4      (solo las recompensas de ese reto: no cambia los datos de los demás)
 Vuelve a ejecutarlo si cambias un audio, una respuesta o mapa.png (después de generar_fragmentos_mapa.py).
 
 Por qué los datos van como .js
@@ -60,17 +61,31 @@ RETOS = {
             "audio": (RAIZ / "generado" / "mapa" / "fragmento_3_cygnus.wav", "audio/wav"),
         },
     },
-    # Reto 4 (Contacto con la ISS): no hay contraseña, la recompensa es la propia recepción. El audio va
-    # cifrado con una llave que viaja con él ("llave_abierta"): no es secreta, pero así el WAV no se puede
-    # sacar con F12 sin hacer el paso (descifrarlo a mano costaría más que el propio reto).
+    # Reto 4 (¿Quién saboteó el GranaSAT-II?): la respuesta es la acusación "quién cómo cuándo" con los
+    # identificadores de las opciones de la web (js/reto4.js). Abre el audio y el resumen del caso, que también
+    # va cifrado porque cuenta la solución. "comprobaciones" permite decir cuántos de los 3 datos se han acertado
+    # sin escribir ninguno en la web: cada dato envuelve una llave aleatoria que no abre nada.
     "reto4": {
-        "grupos": [],
-        "llave_abierta": True,
+        "grupos": [["pablo paneles 1415"]],
+        "comprobaciones": [["quien pablo"], ["como paneles"], ["cuando 1415"]],
         "archivos": {
             "audio": (RAIZ / "generado" / "mapa" / "fragmento_4_andromeda.wav", "audio/wav"),
+            "resumen": (RAIZ / "generado" / "reto4" / "resumen_caso.html", "text/html"),
         },
     },
 }
+
+
+# Resumen del caso que se ve al resolverlo (sección 7 de especificaciones/reto4_sabotaje.md).
+RESUMEN_RETO4 = """<p><b>Quién:</b> Pablo, el becario. <b>Cómo:</b> giró el satélite para que sus paneles solares no recibieran
+la luz del Sol. <b>Cuándo:</b> entre las 14:15 y las 14:45 (hora de España).</p>
+<p><b>Cómo:</b> a las 12:32 (hora universal) alguien envió desde la azotea una orden de giro que no estaba en el plan.
+Los paneles dejaron de mirar al Sol y la batería se vació hasta apagar el satélite.</p>
+<p><b>Cuándo:</b> las 12:32 en hora universal son las <b>14:32 en España</b>. La cámara fotografió al saboteador a las 14:31.</p>
+<p><b>Quién:</b> a esa hora solo estaba en la azotea la tarjeta de Javier, pero Javier estaba en la reunión: alguien cogió
+su tarjeta de la chaqueta. La cámara muestra a alguien con <b>gorra roja</b>: Pablo, que salió del laboratorio a las
+14:20, cinco minutos antes. Los auriculares verdes de la mesa eran una pista falsa: son de Javier y se quedan en la estación.</p>
+"""
 
 
 def normalizar(texto):
@@ -112,8 +127,24 @@ def foto_puzle(ruta):
     return buf.getvalue(), medir(img)["indice"]
 
 
-def main():
+def main(solo=None):
     DATOS.mkdir(parents=True, exist_ok=True)
+    (RAIZ / "generado" / "reto4").mkdir(parents=True, exist_ok=True)
+    (RAIZ / "generado" / "reto4" / "resumen_caso.html").write_text(RESUMEN_RETO4, encoding="utf-8")
+    if not solo:
+        datos_comunes()
+    if not solo or "reto4" in solo:
+        # Cámara de la azotea del reto 4 (sin cifrar: decodificarla es parte del reto). No se copia ningún PNG.
+        tam = escribir_js("reto4_camara", "reto4_camara", b64((RAIZ / "generado" / "reto4" / "camara_azotea.wav").read_bytes()))
+        print(f"reto4_camara.js           {tam / 1e6:5.2f} MB")
+    for reto, cfg in RETOS.items():
+        if not solo or reto in solo:
+            recompensa(reto, cfg)
+    print("Recompensas cifradas y comprobadas.")
+
+
+def datos_comunes():
+    """Imágenes de la interfaz y audios que no son recompensa (no van cifrados: decodificarlos ES el reto)."""
     IMG.mkdir(parents=True, exist_ok=True)
 
     # 1) Imágenes de la interfaz
@@ -131,47 +162,54 @@ def main():
     tam = escribir_js("reto1_pista", "reto1_pista", b64(pista.read_bytes()))
     print(f"reto1_pista.js            {tam / 1e6:5.2f} MB")
 
-    # 3) Recompensas cifradas: un archivo pequeño con las llaves y uno por cada archivo grande
-    for reto, cfg in RETOS.items():
-        k = AESGCM.generate_key(bit_length=256)
-        sal = os.urandom(16)
-        indice = {"sal": b64(sal), "iteraciones": ITERACIONES,
-                  "grupos": [[cifrar(derivar(r, sal), k) for r in grupo] for grupo in cfg["grupos"]],
-                  "archivos": {}}
-        for nombre, (origen, tipo) in cfg["archivos"].items():
-            datos = cifrar(k, Path(origen).read_bytes())
-            datos["tipo"] = tipo
-            clave_js = f"{reto}_{nombre}"
-            tam = escribir_js(clave_js, clave_js, datos)
-            indice["archivos"][nombre] = clave_js
-            print(f"{clave_js + '.js':<25} {tam / 1e6:5.2f} MB  (cifrado)")
-        # Fotos del puzle (reto 1): una por archivo; la web solo carga la que le toca al grupo
-        if "fotos_puzle" in cfg:
-            for viejo in DATOS.glob(f"{reto}_foto*.js"):
-                viejo.unlink()
-            meta = json.loads(cfg["fotos_puzle"].read_text(encoding="utf-8"))["fotos"]
-            indice["fotos"] = []
-            for i, f in enumerate(meta):
-                jpeg, dificultad = foto_puzle(cfg["fotos_puzle"].parent / f["archivo"])
-                datos = cifrar(k, jpeg)
-                datos["tipo"] = "image/jpeg"
-                clave_js = f"{reto}_foto_{i}"
-                tam = escribir_js(clave_js, clave_js, datos)
-                indice["fotos"].append({"archivo": clave_js, "titulo": f["titulo"], "credito": f["credito"]})
-                print(f"{clave_js + '.js':<25} {tam / 1e6:5.2f} MB  (cifrado, índice {dificultad:.1f})")
-        if cfg.get("llave_abierta"):
-            indice["llave"] = b64(k)
-        escribir_js(f"{reto}_llaves", f"{reto}_llaves", indice)
 
-        # Comprobación: cada respuesta abre la llave SOLO en su grupo, y una incorrecta no abre nada
-        for g, grupo in enumerate(cfg["grupos"]):
-            for r in grupo:
-                kek = derivar(r, sal)
-                for g2, envueltas in enumerate(indice["grupos"]):
-                    abre = any(_abre(kek, x) == k for x in envueltas)
-                    assert abre == (g2 == g), (reto, r, g, g2)
-        assert all(_abre(derivar("respuesta falsa", sal), x) is None for grupo in indice["grupos"] for x in grupo)
-    print("Recompensas cifradas y comprobadas.")
+def recompensa(reto, cfg):
+    """Un archivo pequeño con las llaves y uno por cada archivo grande, cifrado."""
+    k = AESGCM.generate_key(bit_length=256)
+    sal = os.urandom(16)
+    indice = {"sal": b64(sal), "iteraciones": ITERACIONES,
+              "grupos": [[cifrar(derivar(r, sal), k) for r in grupo] for grupo in cfg["grupos"]],
+              "archivos": {}}
+    for nombre, (origen, tipo) in cfg["archivos"].items():
+        datos = cifrar(k, Path(origen).read_bytes())
+        datos["tipo"] = tipo
+        clave_js = f"{reto}_{nombre}"
+        tam = escribir_js(clave_js, clave_js, datos)
+        indice["archivos"][nombre] = clave_js
+        print(f"{clave_js + '.js':<25} {tam / 1e6:5.2f} MB  (cifrado)")
+    # Fotos del puzle (reto 1): una por archivo; la web solo carga la que le toca al grupo
+    if "fotos_puzle" in cfg:
+        for viejo in DATOS.glob(f"{reto}_foto*.js"):
+            viejo.unlink()
+        meta = json.loads(cfg["fotos_puzle"].read_text(encoding="utf-8"))["fotos"]
+        indice["fotos"] = []
+        for i, f in enumerate(meta):
+            jpeg, dificultad = foto_puzle(cfg["fotos_puzle"].parent / f["archivo"])
+            datos = cifrar(k, jpeg)
+            datos["tipo"] = "image/jpeg"
+            clave_js = f"{reto}_foto_{i}"
+            tam = escribir_js(clave_js, clave_js, datos)
+            indice["fotos"].append({"archivo": clave_js, "titulo": f["titulo"], "credito": f["credito"]})
+            print(f"{clave_js + '.js':<25} {tam / 1e6:5.2f} MB  (cifrado, índice {dificultad:.1f})")
+    if cfg.get("comprobaciones"):
+        indice["datos"] = [[cifrar(derivar(r, sal), os.urandom(32)) for r in grupo] for grupo in cfg["comprobaciones"]]
+    escribir_js(f"{reto}_llaves", f"{reto}_llaves", indice)
+
+    # Comprobación: cada respuesta abre la llave SOLO en su grupo, y una incorrecta no abre nada
+    for g, grupo in enumerate(cfg["grupos"]):
+        for r in grupo:
+            kek = derivar(r, sal)
+            for g2, envueltas in enumerate(indice["grupos"]):
+                abre = any(_abre(kek, x) == k for x in envueltas)
+                assert abre == (g2 == g), (reto, r, g, g2)
+    assert all(_abre(derivar("respuesta falsa", sal), x) is None for grupo in indice["grupos"] for x in grupo)
+    # Cada comprobación abre solo su dato y nunca la llave del reto
+    for i, grupo in enumerate(cfg.get("comprobaciones", [])):
+        for r in grupo:
+            kek = derivar(r, sal)
+            assert all(_abre(kek, x) not in (None, k) for x in indice["datos"][i])
+            assert all(_abre(kek, x) is None for j, g in enumerate(indice["datos"]) if j != i for x in g)
+            assert all(_abre(kek, x) is None for g in indice["grupos"] for x in g)
 
 
 def _abre(kek, envuelta):
@@ -182,4 +220,4 @@ def _abre(kek, envuelta):
 
 
 if __name__ == "__main__":
-    main()
+    main(set(sys.argv[1:]) or None)

@@ -21,9 +21,9 @@
       resumen: "Este expediente todavía no se ha desclasificado. Vuelve más tarde, operador.",
     },
     {
-      id: "reto4", num: 4, fragmento: "ANDRÓMEDA", base: 100, duracion: "12–15 min",
-      titulo: "Contacto con la ISS",
-      resumen: "Reparad la estación, encontrad la señal de la ISS entre otras y seguidla por el cielo sin poder verla.",
+      id: "reto4", num: 4, fragmento: "ANDRÓMEDA", base: 100, duracion: "10–12 min",
+      titulo: "¿Quién saboteó el GranaSAT-II?",
+      resumen: "Un caso para 4 investigadores.",
     },
   ];
   App.FRAGMENTOS = ["ORIÓN", "CYGNUS", "LYRA", "ANDRÓMEDA"];
