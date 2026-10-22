@@ -57,14 +57,14 @@ y después `python herramientas/construir_web.py` para volver a cifrar las recom
 
 ## Cómo empezar a colaborar
 
-Repositorio: https://github.com/sstvluquirafa/hackathon-sstv-granasat (rama `main`).
+Repositorio: https://github.com/sstvluquirafa/SSTV_Hackathon (rama `main`).
 
 ### 1. Clonar el proyecto
 
 Hace falta [Git](https://git-scm.com/download/win). En una terminal (Git Bash o PowerShell):
 
 ```bash
-git clone https://github.com/sstvluquirafa/hackathon-sstv-granasat.git Web_Hackathon
+git clone https://github.com/sstvluquirafa/SSTV_Hackathon.git Web_Hackathon
 cd Web_Hackathon
 git config user.name "Tu nombre"
 git config user.email "tu@correo"
