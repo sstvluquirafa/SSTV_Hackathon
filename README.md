@@ -12,6 +12,9 @@ Web_Hackathon/
 ├── README.md            ← este archivo
 ├── CLAUDE.md            ← instrucciones para Claude Code (contexto, reglas y estilo)
 ├── .claude/skills/      ← skills del proyecto: audio-sstv, nuevo-reto, probar-web
+├── docker-compose.yml   ← entorno de desarrollo opcional (servicios "herramientas" y "web")
+├── docker/              ← Dockerfile del servicio "herramientas"
+├── requirements.txt     ← dependencias de Python de herramientas/
 ├── recursos/            ← materiales originales (no editar a mano)
 │   ├── imagenes/
 │   │   ├── mapa.png                 mapa del recinto (3380×1248), pendiente de añadir estaciones
@@ -51,6 +54,79 @@ Web_Hackathon/
 
 **Si cambias `mapa.png`** (por ejemplo, al añadir las estaciones), vuelve a ejecutar `python herramientas/generar_fragmentos_mapa.py`
 y después `python herramientas/construir_web.py` para volver a cifrar las recompensas de la web.
+
+## Cómo empezar a colaborar
+
+Repositorio: https://github.com/sstvluquirafa/hackathon-sstv-granasat (rama `main`).
+
+### 1. Clonar el proyecto
+
+Hace falta [Git](https://git-scm.com/download/win). En una terminal (Git Bash o PowerShell):
+
+```bash
+git clone https://github.com/sstvluquirafa/hackathon-sstv-granasat.git Web_Hackathon
+cd Web_Hackathon
+git config user.name "Tu nombre"
+git config user.email "tu@correo"
+```
+
+La primera vez que hagas `push`, Git abrirá el navegador para iniciar sesión en GitHub.
+
+### 2. Instalar Claude Code
+
+- Instálalo siguiendo https://docs.claude.com/claude-code (aplicación de escritorio o, en terminal,
+  `npm install -g @anthropic-ai/claude-code`, que necesita Node).
+- Ábrelo **en la carpeta del proyecto**. Lee solo `CLAUDE.md` (reglas, estilo y estructura) y tiene las skills de
+  `.claude/skills/` (`audio-sstv`, `nuevo-reto`, `probar-web`), así que trabaja igual en los dos PC.
+- Tus ajustes personales (permisos, etc.) van en `.claude/settings.local.json`, que **no se sube**.
+
+### 3. Preparar el entorno: Docker o instalación directa
+
+**Opción A · Docker** (no hay que instalar Python ni Node). Con [Docker Desktop](https://www.docker.com/products/docker-desktop/) abierto:
+
+```bash
+docker compose up -d
+```
+
+- **web:** nginx sirve `web/` en http://localhost:8080 (solo para desarrollo; en el aula la web se abre con doble
+  clic en `web/index.html`, y antes de dar algo por terminado hay que probarla así, con `file://`).
+- **herramientas:** Python 3.13 (numpy, Pillow, cryptography) y Node 22, con el proyecto montado en `/proyecto`.
+  Los archivos que generan los scripts aparecen directamente en tu carpeta:
+
+```bash
+docker compose run --rm herramientas python herramientas/construir_web.py
+docker compose run --rm herramientas node herramientas/probar_reto4_sabotaje.mjs
+docker compose run --rm herramientas bash
+```
+
+Para pararlo todo: `docker compose down`. Si cambias `requirements.txt`: `docker compose build herramientas`.
+
+**Opción B · Instalación directa**
+
+1. [Python 3.12 o superior](https://www.python.org/downloads/) (marca «Add python.exe to PATH») y después
+   `pip install -r requirements.txt`.
+2. [Node.js LTS](https://nodejs.org/) (para las pruebas `.mjs` y, si quieres, para instalar Claude Code).
+3. Comprueba que todo va: `python herramientas/comprobar_caso_reto4.py` y `node herramientas/probar_reto2_js.mjs`.
+
+### 4. Rutina de trabajo (pull / push)
+
+Somos dos sobre la misma rama `main`, así que:
+
+```bash
+git pull                      # 1. SIEMPRE antes de empezar
+# ... trabajar, regenerar con los scripts y probar la web ...
+git status                    # 2. revisar qué ha cambiado
+git add -A
+git commit -m "Reto 3: añade la tarjeta y su recompensa"   # 3. mensaje en español
+git pull                      # 4. traer lo que haya subido el otro
+git push                      # 5. subir
+```
+
+- Commits pequeños y frecuentes; avisad si vais a tocar el mismo reto a la vez.
+- Los `.js` de `web/assets/data/` y los WAV de `generado/` se **regeneran con los scripts**: si hay conflicto en
+  ellos, no los mezcles a mano. Quédate con una versión (`git checkout --theirs <archivo>`) y vuelve a ejecutar el
+  script que los genera.
+- No subáis nada de `../Organización/` (está fuera del repositorio).
 
 ## Web local
 

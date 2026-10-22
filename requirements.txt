@@ -1,0 +1,4 @@
+# Dependencias de los scripts de herramientas/
+numpy
+Pillow
+cryptography

@@ -1,0 +1,20 @@
+# Entorno de desarrollo (opcional). La web del aula se sigue abriendo con doble clic en web/index.html.
+#   docker compose up -d                      → web en http://localhost:8080
+#   docker compose run --rm herramientas python herramientas/construir_web.py
+services:
+  herramientas:
+    build:
+      context: .
+      dockerfile: docker/herramientas.Dockerfile
+    volumes:
+      - .:/proyecto
+    working_dir: /proyecto
+    stdin_open: true
+    tty: true
+
+  web:
+    image: nginx:1.27-alpine
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - ./web:/usr/share/nginx/html:ro

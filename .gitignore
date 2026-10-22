@@ -1,2 +1,23 @@
+# Python
 __pycache__/
 *.pyc
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# Claude Code: se suben CLAUDE.md y .claude/skills/, pero no los ajustes personales
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Archivos del sistema y de editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+
+# Secretos locales
+.env
