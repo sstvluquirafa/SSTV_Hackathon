@@ -25,7 +25,7 @@ const comprobar = (cond, msg) => { if (cond) ok++; else { fallos++; console.erro
 
 // Solución (sección 7) y respuestas de las preguntas (sección 5). Solo viven aquí, en las pruebas (fuera de web/).
 const SOLUCION = { quien: "pablo", como: "paneles", cuando: "1430" };
-const RESPUESTAS = { telemetria: "a", radio: "c", camara: "a", accesos: "c" };
+const RESPUESTAS = { camara: ["c"], telemetria: ["a", "b"], radio: ["d"], accesos: ["b"] };
 const esperado = (e) => ["quien", "como", "cuando"].filter((c) => e[c] === SOLUCION[c]).length;
 
 // 1) Las 120 combinaciones: solo una abre el caso y el contador de aciertos es el real
@@ -62,26 +62,33 @@ const esperado = (e) => ["quien", "como", "cuando"].filter((c) => e[c] === SOLUC
   console.log(`2) ${trampas.length} trampas: el contador de aciertos es el real`);
 }
 
-// 3) Preguntas: solo la opción correcta extrae la tarjeta; sin las 4 pruebas no se puede resolver
+// 3) Preguntas: solo las respuestas correctas extraen la tarjeta (todas las combinaciones); sin las 4 pruebas no se resuelve
 {
   const pruebas = {};
+  const combinaciones = (preguntas) => preguntas.reduce((acc, p) => acc.flatMap((c) => p.opciones.map((o) => [...c, o.id])), [[]]);
   for (const c of Caso.CARPETAS) {
-    for (const o of c.opciones) {
-      const tarjeta = await Caso.extraer(llaves, c.id, o.id, Cripto);
-      comprobar(!!tarjeta === (o.id === RESPUESTAS[c.id]), `${c.id} · «${o.texto}»: ${tarjeta ? "da la tarjeta" : "no da nada"}`);
+    let abren = 0;
+    for (const resp of combinaciones(c.preguntas)) {
+      const tarjeta = await Caso.extraer(llaves, c.id, resp, Cripto);
+      const buena = resp.join() === RESPUESTAS[c.id].join();
+      comprobar(!!tarjeta === buena, `${c.id} · ${resp.join(" ")}: ${tarjeta ? "da la tarjeta" : "no da nada"}`);
       if (tarjeta) {
+        abren++;
         pruebas[c.id] = tarjeta;
-        comprobar(/hora universal|hora de España/.test(tarjeta), `${c.id}: la tarjeta dice con qué reloj está la hora`);
+        comprobar(/hora del satélite|hora de España/.test(tarjeta), `${c.id}: la tarjeta dice con qué reloj está la hora`);
       }
     }
+    comprobar(abren === 1, `${c.id}: solo una combinación de respuestas extrae la prueba (${abren})`);
     const r = Caso.puedeResolver(pruebas);
     const quedan = Caso.CARPETAS.length - Object.keys(pruebas).length;
     comprobar(r.ok === (quedan === 0) && r.faltan.length === quedan, `con ${Object.keys(pruebas).length} pruebas: ${r.ok ? "se puede resolver" : "faltan " + r.faltan.join(", ")}`);
   }
+  comprobar(!(await Caso.extraer(llaves, "telemetria", ["a"], Cripto)), "telemetría: con una sola pregunta acertada no se extrae");
   comprobar(!Caso.puedeResolver({}).ok && Caso.puedeResolver({}).faltan.length === 4, "sin pruebas, el botón de resolver no se activa");
-  comprobar(!Caso.puedeResolver({ telemetria: "x", radio: "x", camara: "x" }).ok, "con 3 de 4 pruebas, tampoco");
+  comprobar(!Caso.puedeResolver({ camara: "x", telemetria: "x", radio: "x" }).ok, "con 3 de 4 pruebas, tampoco");
   comprobar([1, 2, 3, 4, 9].map(Caso.bloqueoAcusacion).join() === "60,180,300,300,300", "bloqueos tras acusaciones falladas: 1, 3, 5, 5… min");
-  console.log("3) Preguntas, tarjetas, botón de resolver y bloqueos crecientes");
+  comprobar(Caso.BLOQUEO_PREGUNTA === 20, "20 s de espera tras fallar una pregunta");
+  console.log("3) Preguntas (todas las combinaciones), tarjetas, botón de resolver y bloqueos");
 }
 
 // 4) La llave de la solución descifra el audio y el resumen del caso
@@ -105,7 +112,7 @@ const esperado = (e) => ["quien", "como", "cuando"].filter((c) => e[c] === SOLUC
   const textos = archivos.filter((p) => /\.(js|html|css|json|txt)$/.test(p));
   const prohibidas = [/pablo\W{0,5}paneles/i, /paneles\W{0,5}1430/i, /quien\s*pablo/i, /como\s*paneles/i, /cuando\s*1430/i,
     /14:32 en Espa/i, /fue Pablo/i, /solucion\s*[:=]/i, /correct[ao]\s*[:=]/i, /respuestas?\s*[:=]/i,
-    /telemetria\s*a\b/i, /radio\s*c\b/i, /camara\s*a\b/i, /accesos\s*c\b/i, /nadie vio a Pablo en la cafeter/i];
+    /telemetria\s*a\s*b\b/i, /radio\s*d\b/i, /camara\s*c\b/i, /accesos\s*b\b/i, /0957, la de Javier/i];
   for (const p of textos) {
     const t = readFileSync(p, "utf8");
     for (const r of prohibidas) comprobar(!r.test(t), `${p.slice(raiz.length + 1)} contiene ${r}`);

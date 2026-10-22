@@ -20,6 +20,7 @@ Cómo se cifran las recompensas (para que no se puedan sacar con F12)
    respuesta es incorrecta. Si funciona, descifra la recompensa.
 """
 import base64
+import itertools
 import json
 import os
 import re
@@ -69,16 +70,16 @@ RETOS = {
     "reto4": {
         "grupos": [["pablo paneles 1430"]],
         "comprobaciones": [["quien pablo"], ["como paneles"], ["cuando 1430"]],
+        # carpeta: (letras correctas, nº de opciones de cada pregunta, tarjeta). La telemetría tiene dos preguntas:
+        # para extraer su prueba hay que acertar las dos ("a b").
         "preguntas": {
-            "telemetria": ("a", "A las <b>12:32 (hora universal)</b> los paneles solares dejaron de mirar al Sol y la batería se "
-                           "vació hasta apagar el satélite. A las 08:15 hubo otro giro, pero volvió a su sitio en 2 minutos."),
-            "radio": ("c", "A las <b>12:32 (hora universal)</b> alguien envió <b>desde la estación de la azotea</b> una orden de giro "
-                      "que nadie había aprobado. Para enviarla hay que estar <b>dentro</b> de la estación."),
-            "camara": ("a", "La cámara de la azotea fotografió a las <b>12:31 (hora universal)</b> a una persona <b>con gorra roja</b> "
-                       "manejando la radio. Sobre la mesa había unos <b>auriculares verdes</b>."),
-            "accesos": ("c", "A las <b>14:25 (hora de España)</b> la tarjeta de <b>Javier</b> abrió la azotea, pero Javier estaba en "
-                        "una reunión y había dejado la tarjeta en su chaqueta. Lucía salió de la azotea a las 14:20 y cogió el "
-                        "autobús a las 14:28. Nadie vio a Pablo en la cafetería."),
+            "camara": ("c", [5], "📷 A las <b>12:31 (hora del satélite)</b> la cámara de la azotea fotografió a una persona "
+                                 "<b>con gorra roja</b> manejando la radio. Sobre la mesa había unos auriculares verdes."),
+            "telemetria": ("a b", [4, 4], "📈 A las <b>12:32 (hora del satélite)</b> el satélite se puso <b>de espaldas al Sol</b> y "
+                                          "su batería se vació hasta apagarse a las 14:10. A las 08:15 hubo un giro pequeño que volvió a su sitio."),
+            "radio": ("d", [4], "📻 La orden de las <b>12:32 (hora del satélite)</b> no estaba en el plan: puso los paneles a 180°. "
+                                "Se envió desde <b>GS2, la estación de la azotea</b>. Para enviarla hay que estar <b>dentro</b> de la estación."),
+            "accesos": ("b", [4], "🪪 A las <b>14:25 (hora de España)</b> abrió la azotea la tarjeta <b>0957, la de Javier</b> (operador de radio)."),
         },
         "archivos": {
             "audio": (RAIZ / "generado" / "mapa" / "fragmento_4_andromeda.wav", "audio/wav"),
@@ -91,13 +92,15 @@ RETOS = {
 # Resumen del caso que se ve al resolverlo (sección 7 de especificaciones/reto4_sabotaje.md).
 RESUMEN_RETO4 = """<p><b>Fue Pablo.</b> Giró el satélite para que sus paneles solares no recibieran la luz del Sol,
 entre las 14:30 y las 14:45 (hora de España).</p>
-<p><b>Cómo:</b> a las 12:32 (hora universal) alguien envió desde la azotea una orden de giro que no estaba en el plan.
-Los paneles dejaron de mirar al Sol y la batería se vació. El giro de las 08:15 era una calibración que estaba en el plan.</p>
+<p><b>Cómo:</b> a las 12:32 (hora del satélite) se envió desde la azotea una orden que no estaba en el plan: girar los
+paneles a 180°. El satélite quedó de espaldas al Sol, dejó de cargar la batería y se apagó.</p>
 <p><b>Cuándo:</b> las 12:32 en hora universal son las <b>14:32 en España</b>.</p>
-<p><b>Quién:</b> a esa hora solo estaba en la azotea la tarjeta de Javier, pero Javier estaba en la reunión: alguien cogió
-su tarjeta de la chaqueta. La cámara muestra a alguien con gorra roja: Pablo o Lucía. Lucía ya estaba en el autobús
-a las 14:28. <b>Fue Pablo</b>, que salió del laboratorio a las 14:20 y nadie le vio en la cafetería.
-Los auriculares verdes de la mesa eran una pista falsa: son de Javier y se quedan siempre en la estación.</p>
+<p><b>Quién:</b> a esa hora solo había entrado en la azotea la tarjeta 0957, la del operador de radio, Javier. Pero Javier
+estaba en la reunión (aparece en el acta) y, como es un despistado, había dejado la chaqueta en la sala común: alguien
+cogió su tarjeta. La cámara fotografió a alguien con gorra roja: Pablo o Lucía. Lucía ya estaba en el autobús a las
+14:28. Pablo dijo que estaba en la cafetería, pero la cajera no vio a ningún chico con gorra roja. Y Pablo estaba
+deseando manejar la estación de la azotea, pero su tarjeta no le dejaba subir. <b>Fue Pablo.</b></p>
+<p>Los auriculares verdes eran una pista falsa: Javier siempre los deja sobre la mesa de la azotea.</p>
 """
 
 
@@ -208,9 +211,9 @@ def recompensa(reto, cfg):
         indice["datos"] = [[cifrar(derivar(r, sal), os.urandom(32)) for r in grupo] for grupo in cfg["comprobaciones"]]
     if cfg.get("preguntas"):
         indice["preguntas"] = {}
-        for carpeta, (letra, tarjeta) in cfg["preguntas"].items():
+        for carpeta, (letras, _, tarjeta) in cfg["preguntas"].items():
             kq = AESGCM.generate_key(bit_length=256)
-            indice["preguntas"][carpeta] = {"llave": [cifrar(derivar(f"{carpeta} {letra}", sal), kq)],
+            indice["preguntas"][carpeta] = {"llave": [cifrar(derivar(f"{carpeta} {letras}", sal), kq)],
                                             "tarjeta": {**cifrar(kq, tarjeta.encode()), "tipo": "text/html"}}
     escribir_js(f"{reto}_llaves", f"{reto}_llaves", indice)
 
@@ -230,11 +233,12 @@ def recompensa(reto, cfg):
             assert all(_abre(kek, x) is None for j, g in enumerate(indice["datos"]) if j != i for x in g)
             assert all(_abre(kek, x) is None for g in indice["grupos"] for x in g)
     # Cada pregunta: solo su letra correcta abre su tarjeta (y nunca la llave del reto)
-    for carpeta, (letra, tarjeta) in cfg.get("preguntas", {}).items():
+    for carpeta, (letras, opciones, tarjeta) in cfg.get("preguntas", {}).items():
         p = indice["preguntas"][carpeta]
-        for otra in "abcd":
+        for combinacion in itertools.product(*["abcdefgh"[:n] for n in opciones]):
+            otra = " ".join(combinacion)
             kq = _abre(derivar(f"{carpeta} {otra}", sal), p["llave"][0])
-            assert (kq is not None) == (otra == letra), (carpeta, otra)
+            assert (kq is not None) == (otra == letras), (carpeta, otra)
             if kq:
                 assert kq != k and _abre(kq, p["tarjeta"]).decode() == tarjeta
 

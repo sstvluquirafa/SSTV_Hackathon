@@ -1,4 +1,4 @@
-// Reto 4 · ¿Quién saboteó el GranaSAT-II? — carpetas, preguntas, acusación y comprobaciones (sin DOM).
+// Reto 4 · ¿Quién saboteó el GranaSAT-II? (v2) — carpetas, preguntas, acusación y comprobaciones (sin DOM).
 // Las soluciones NO están aquí: la respuesta de cada pregunta abre (cifrada) su tarjeta de prueba, y la acusación
 // "quién cómo cuándo" se prueba contra las llaves del reto (assets/data/reto4_llaves.js, generadas por
 // herramientas/construir_web.py). Si una acusación falla, cada dato se prueba por separado para decir cuántos se
@@ -7,19 +7,24 @@
 (function (raiz) {
   "use strict";
 
+  // Carpetas en el orden en que conviene abrirlas. Cada una termina con una o dos preguntas de opción múltiple
+  // (ids a, b, c…); para extraer la prueba hay que acertarlas todas.
   const CARPETAS = [
-    { id: "telemetria", titulo: "Telemetría del satélite", pregunta: "¿Qué pasó justo cuando la batería empezó a vaciarse?",
-      opciones: [{ id: "a", texto: "Los paneles solares dejaron de mirar al Sol" }, { id: "b", texto: "El ordenador se reinició" },
-        { id: "c", texto: "La temperatura subió mucho" }, { id: "d", texto: "Se perdió la señal" }] },
-    { id: "radio", titulo: "Registro de radio", pregunta: "¿Qué orden no estaba en el plan del día?",
-      opciones: [{ id: "a", texto: "Girar 15° a las 08:15" }, { id: "b", texto: "Enviar las fotos a las 11:40" },
-        { id: "c", texto: "Girar 90° a las 12:32" }, { id: "d", texto: "Volver a 0° a las 08:17" }] },
-    { id: "camara", titulo: "Cámara de la azotea", pregunta: "¿Qué lleva puesto la persona que maneja la radio?",
-      opciones: [{ id: "a", texto: "Una gorra roja" }, { id: "b", texto: "Un casco amarillo" },
-        { id: "c", texto: "Unos auriculares verdes" }, { id: "d", texto: "Una bata blanca" }] },
-    { id: "accesos", titulo: "Accesos y declaraciones", pregunta: "¿De quién era la tarjeta que abrió la azotea a las 14:25?",
-      opciones: [{ id: "a", texto: "Lucía" }, { id: "b", texto: "Pablo" }, { id: "c", texto: "Javier" }, { id: "d", texto: "Marta" }] },
-  ];
+    { id: "camara", num: 1, icono: "📷", titulo: "Cámara de la azotea", preguntas: [
+      { texto: "Según lo que sabéis del equipo, ¿quién puede ser la persona de la foto?",
+        opciones: ["Solo Pablo", "Solo Lucía", "Pablo o Lucía", "Javier", "Marta"] }] },
+    { id: "telemetria", num: 2, icono: "📈", titulo: "Telemetría del satélite", preguntas: [
+      { texto: "¿Qué le pasó al satélite?",
+        opciones: ["Se puso de espaldas al Sol y se quedó sin batería", "Se calentó demasiado y se averió",
+          "Su ordenador se colgó y se reinició", "Su señal dejó de llegar a la Tierra aunque seguía teniendo batería"] },
+      { texto: "¿A qué hora empezó el problema, según el reloj del satélite?", opciones: ["08:15", "12:32", "14:10", "14:32"] }] },
+    { id: "radio", num: 3, icono: "📻", titulo: "Registro de radio", preguntas: [
+      { texto: "¿Qué orden del registro NO estaba en el plan de trabajo?",
+        opciones: ["La de las 08:15", "La de las 08:17", "La de las 11:40", "La de las 12:32"] }] },
+    { id: "accesos", num: 4, icono: "🪪", titulo: "Accesos y declaraciones", preguntas: [
+      { texto: "¿De quién era la tarjeta que abrió la azotea a las 14:25?", opciones: ["Marta", "Javier", "Lucía", "Pablo"] }] },
+  ].map((c) => ({ ...c, preguntas: c.preguntas.map((p) => ({ ...p, opciones: p.opciones.map((texto, i) => ({ id: "abcdefgh"[i], texto })) })) }));
+  const PERSONAS = ["Marta", "Javier", "Lucía", "Pablo"]; // apartados de la libreta del investigador
 
   const COLUMNAS = [
     { id: "quien", titulo: "¿Quién?" },
@@ -49,7 +54,7 @@
       { id: "1500", texto: "15:00–15:15" },
     ],
   };
-  const BLOQUEO_PREGUNTA = 15;             // s tras fallar una pregunta (para que no prueben a ciegas)
+  const BLOQUEO_PREGUNTA = 20;             // s tras fallar una pregunta (para que no prueben a ciegas)
   const BLOQUEOS_ACUSACION = [60, 180, 300]; // s tras la 1.ª, 2.ª y 3.ª acusación fallida (y 5 min en adelante)
 
   /** Segundos de bloqueo tras la acusación fallida número n (1, 2, 3…). */
@@ -61,10 +66,11 @@
     return { ok: faltan.length === 0, faltan };
   }
 
-  /** Prueba la respuesta de una carpeta. Si es la correcta devuelve el texto (HTML) de su tarjeta de prueba; si no, null. */
-  async function extraer(llaves, carpeta, opcion, Cripto) {
+  /** Prueba las respuestas de una carpeta (una letra por pregunta). Si todas son correctas devuelve el texto (HTML)
+   *  de su tarjeta de prueba; si no, null (sin decir cuál falla). */
+  async function extraer(llaves, carpeta, respuestas, Cripto) {
     const p = llaves.preguntas[carpeta];
-    const kq = await Cripto.probar({ sal: llaves.sal, iteraciones: llaves.iteraciones, grupos: [p.llave] }, `${carpeta} ${opcion}`);
+    const kq = await Cripto.probar({ sal: llaves.sal, iteraciones: llaves.iteraciones, grupos: [p.llave] }, `${carpeta} ${respuestas.join(" ")}`);
     return kq ? (await Cripto.abrir(kq, p.tarjeta)).text() : null;
   }
 
@@ -77,5 +83,5 @@
     return { resuelto: false, llave: null, aciertos: r.filter(Boolean).length };
   }
 
-  raiz.CasoSabotaje = { CARPETAS, COLUMNAS, OPCIONES, BLOQUEO_PREGUNTA, BLOQUEOS_ACUSACION, bloqueoAcusacion, puedeResolver, extraer, comprobar };
+  raiz.CasoSabotaje = { CARPETAS, PERSONAS, COLUMNAS, OPCIONES, BLOQUEO_PREGUNTA, BLOQUEOS_ACUSACION, bloqueoAcusacion, puedeResolver, extraer, comprobar };
 })(typeof window !== "undefined" ? window : globalThis);

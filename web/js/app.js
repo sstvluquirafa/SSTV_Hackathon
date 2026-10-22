@@ -21,7 +21,7 @@
       resumen: "Este expediente todavía no se ha desclasificado. Vuelve más tarde, operador.",
     },
     {
-      id: "reto4", num: 4, fragmento: "ANDRÓMEDA", base: 100, duracion: "12–15 min",
+      id: "reto4", num: 4, fragmento: "ANDRÓMEDA", base: 100, duracion: "15–18 min",
       titulo: "¿Quién saboteó el GranaSAT-II?",
       resumen: "Un caso para resolver en equipo.",
     },

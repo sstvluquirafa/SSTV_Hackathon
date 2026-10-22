@@ -1,6 +1,7 @@
-// Reto 4 · ¿Quién saboteó el GranaSAT-II? Un caso de detectives para resolver en equipo (todo el grupo junto).
-// Inicio del caso → archivo (sospechosos, 4 carpetas y tablón de pruebas) → cada carpeta se abre como un informe y al
-// final se extrae su prueba con una pregunta → con las 4 pruebas en el tablón se resuelve el caso (quién, cómo, cuándo).
+// Reto 4 · ¿Quién saboteó el GranaSAT-II? (versión 2). Un caso de detectives para resolver en equipo (todo el grupo junto).
+// Instrucciones del caso → archivo («El equipo de GranaSAT», 4 carpetas numeradas, libreta y tablón de pruebas). Cada
+// carpeta se abre como un informe y al final se extrae su prueba respondiendo preguntas que exigen cruzar documentos
+// (y lo apuntado del equipo). Con las 4 pruebas en el tablón se resuelve el caso (quién, cómo y cuándo).
 // Las respuestas solo existen cifradas (caso_sabotaje.js + reto4_llaves.js). La foto de la cámara no está en la web:
 // llega como audio SSTV y hay que decodificarla.
 (function () {
@@ -10,84 +11,63 @@
   const estado = () => Progreso.reto(ID);
   const guardar = (fn) => Progreso.cambiar(ID, fn);
 
-  const SOSPECHOSOS = [
-    { id: "marta", nombre: "Marta", cargo: "Ingeniera de software", rasgo: "Siempre lleva <b>bata blanca</b>", acceso: "Tarjeta: <b>laboratorio</b>" },
-    { id: "javier", nombre: "Javier", cargo: "Operador de radio", rasgo: "Nunca se quita sus <b>auriculares verdes</b>", acceso: "Tarjeta: <b>laboratorio y azotea</b>" },
-    { id: "lucia", nombre: "Lucía", cargo: "Técnica de antenas", rasgo: "Trabaja con <b>casco amarillo</b>; sin él, lleva su <b>gorra roja</b>", acceso: "Tarjeta: <b>azotea</b>" },
-    { id: "pablo", nombre: "Pablo", cargo: "Becario", rasgo: "Siempre va con su <b>gorra roja</b>", acceso: "Tarjeta: <b>laboratorio</b>" },
-    { id: "hacker", nombre: "Hacker externo", cargo: "Podría atacar el satélite a distancia", rasgo: "Rasgo desconocido", acceso: "<b>Sin tarjeta</b>" },
-  ];
   const PISTAS = [
-    { id: "p1", titulo: "Pista 1 · Los relojes", texto: "¿Las horas del tablón no os cuadran? Fijaos en qué reloj usa cada prueba: hora universal u hora de España." },
-    { id: "p2", titulo: "Pista 2 · La tarjeta", texto: "Si Javier estaba en la reunión, ¿quién pudo usar su tarjeta? Mirad quién lleva gorra roja en las fichas." },
-    { id: "p3", titulo: "Pista 3 · Las gorras", texto: "Dos sospechosos llevan gorra roja. ¿Dónde estaba cada uno a las 14:32, hora de España?" },
+    { id: "p1", titulo: "Pista 1 · Los relojes", texto: "¿El registro de radio y el plan de trabajo no coinciden en nada? Fijaos en qué reloj usa cada uno." },
+    { id: "p2", titulo: "Pista 2 · Las tarjetas", texto: "En el registro de tarjetas solo hay números. ¿Dónde se dice de quién es cada puesto?" },
+    { id: "p3", titulo: "Pista 3 · Las gorras", texto: "Dos personas del equipo llevan gorra roja. ¿Dónde estaba cada una a las 14:32, hora de España? Leed las comprobaciones." },
   ];
   const GIROS = [-3, 2.5, -1.5, 3]; // las tarjetas se clavan un poco torcidas
   const mmss = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  const carpeta = (id) => Caso.CARPETAS.find((c) => c.id === id);
 
   // ===================================== Vista =====================================
   function vista(el) {
     guardar((r) => {
       r.empezado = true;
       if (!r.pruebas) { r.pruebas = {}; r.abiertas = []; r.bloqueoPregunta = {}; r.acusaciones = []; r.bloqueoAcusarHasta = 0; }
+      if (!r.libreta) r.libreta = {};
     });
     const e = estado();
     if (e.completado) pintarResuelto(el);
-    else if (!e.abierto) pintarInicio(el);
-    else pintarArchivo(el);
+    else {
+      pintarArchivo(el);
+      if (!e.abierto) abrirCapa("r4-briefing");
+    }
     App.cadaSegundo(() => { App.comprobarBloqueo(ID); pintarResolver(); pintarBloqueoPregunta(); });
     App.comprobarBloqueo(ID);
   }
 
-  // ---------- Inicio del caso ----------
-  function pintarInicio(el) {
-    el.innerHTML = `
-      <a class="volver" href="#/panel">${ICONO.volver} Volver a los retos</a>
-      <section class="panel r4-inicio">
-        <div class="expediente-num">EXPEDIENTE #04 · EL SILENCIO DEL GRANASAT-II</div>
-        <div class="ventana informe"><div class="ventana-barra"><i></i><i></i><i></i><b>caso_granasat2.txt</b></div>
-          <div class="ventana-cuerpo r4-relato" id="r4-relato">
-            <p>El pasado 15 de julio por la tarde, el GranaSAT-II, el pequeño satélite que el equipo de GranaSAT tiene en órbita,
-              dejó de responder. Por la mañana todo iba bien: había enviado sus fotos, la batería estaba llena y contestaba a cada
-              orden. Pero al llegar la tarde se quedó en silencio, y desde entonces nadie ha conseguido comunicarse con él.</p>
-            <p>Al revisar los datos, el equipo descubrió que no fue una avería: alguien lo hizo a propósito.</p>
-            <p><b>Sois el equipo de investigación.</b> Abrid las carpetas del caso, leed los documentos entre todos y extraed las
-              pruebas. Cuando las tengáis todas, descubrid <b>quién</b> saboteó el satélite, <b>cómo</b> lo hizo y <b>a qué hora</b>.</p>
-          </div></div>
-        <p class="r4-consejo">💡 <i>Consejo: la foto de la cámara tarda 2 minutos en llegar. Ponedla a recibir primero y, mientras llega, leed las demás carpetas.</i></p>
-        <button class="btn btn-ambar r4-abrir" id="r4-abrir">${ICONO.expediente} Abrir el archivo del caso</button>
-      </section>`;
-    App.escribir($("#r4-relato"));
-    $("#r4-abrir").addEventListener("click", () => {
-      guardar((r) => { r.abierto = true; });
-      Progreso.anotar("Reto 4: archivo del caso abierto");
-      Sonido.tic();
-      pintarArchivo($("#vista"));
-    });
-  }
+  // ===================================== Archivo del caso =====================================
+  const botonesCaso = () => `
+    <button class="btn btn-oscuro btn-peq" data-capa="r4-briefing">📋 Instrucciones del caso</button>
+    <button class="btn btn-oscuro btn-peq" data-libreta>📓 Libreta</button>`;
 
-  // ---------- Archivo del caso: sospechosos, carpetas y tablón ----------
   function pintarArchivo(el) {
+    document.body.classList.remove("r4-con-libreta");
     el.innerHTML = `
       <div class="r4-barra">
         <div class="expediente-num">EXPEDIENTE #04 · ¿QUIÉN SABOTEÓ EL GRANASAT-II?</div>
-        <span class="r4-barra-ayuda">Abrid las carpetas · extraed las pruebas · resolved el caso</span>
-        <button class="btn btn-oscuro btn-peq" id="r4-ver-pistas">${ICONO.bombilla} Pistas</button>
-        <a class="volver r4-volver" href="#/panel">${ICONO.volver} Retos</a>
+        <div class="r4-barra-botones">${botonesCaso()}
+          <button class="btn btn-oscuro btn-peq" id="r4-ver-pistas">${ICONO.bombilla} Pistas</button>
+          <a class="volver r4-volver" href="#/panel">${ICONO.volver} Retos</a></div>
       </div>
       <div class="r4-pistas-caja oculto" id="r4-pistas"></div>
-      <section class="r4-sospechosos" aria-label="Sospechosos">${SOSPECHOSOS.map((s) => `
-        <article class="r4-sospechoso">${silueta(s.id)}
-          <div><h3>${s.nombre}</h3><p class="r4-cargo">${s.cargo}</p><p>${s.rasgo}</p><p>${s.acceso}</p></div>
-        </article>`).join("")}</section>
+      <div class="r4-aviso-equipo" id="r4-aviso-equipo"></div>
       <div class="r4-archivo">
-        <section class="r4-carpetas" aria-label="Carpetas del caso">${Caso.CARPETAS.map((c, i) => `
-          <button class="r4-carpeta" id="r4-carpeta-${c.id}" data-abrir="${c.id}">
-            <span class="r4-pestana mono">CARPETA ${i + 1}</span>
-            <span class="r4-etiqueta">${c.titulo}</span>
-            <span class="r4-estado mono"></span>
-            ${c.id === "camara" ? `<span class="r4-vivo oculto" id="r4-tx-archivo">● RECIBIENDO LA FOTO</span>` : ""}
-          </button>`).join("")}</section>
+        <section class="r4-izquierda" aria-label="Documentos del caso">
+          <button class="r4-revista" data-capa="r4-doc-equipo">
+            <span class="r4-revista-kicker mono">REVISTA DE LA ESCUELA · REPORTAJE</span>
+            <span class="r4-revista-tit">El equipo de GranaSAT</span>
+            <span class="r4-revista-sub">Conoce al equipo que construyó el GranaSAT-II · <b>los sospechosos están aquí</b></span>
+          </button>
+          <div class="r4-carpetas">${Caso.CARPETAS.map((c) => `
+            <button class="r4-carpeta" id="r4-carpeta-${c.id}" data-capa="r4-doc-${c.id}">
+              <span class="r4-pestana mono">CARPETA ${c.num}</span>
+              <span class="r4-etiqueta"><span class="r4-icono" aria-hidden="true">${c.icono}</span> ${c.num} · ${c.titulo}</span>
+              <span class="r4-estado mono"></span>
+              ${c.id === "camara" ? `<span class="r4-vivo oculto" id="r4-tx-archivo">● RECIBIENDO LA FOTO</span>` : ""}
+            </button>`).join("")}</div>
+        </section>
         <section class="r4-tablon" aria-label="Tablón de pruebas">
           <h2>Tablón de pruebas</h2>
           <div class="r4-corcho" id="r4-corcho"></div>
@@ -95,48 +75,88 @@
             <button class="btn btn-ambar" id="r4-resolver">${ICONO.candado} Resolver el caso</button></div>
         </section>
       </div>
-      ${Caso.CARPETAS.map((c, i) => `
-        <div class="r4-documento" id="r4-doc-${c.id}" role="dialog" aria-label="${c.titulo}" hidden>
-          <div class="r4-doc-barra"><span class="mono">CARPETA ${i + 1} · ${c.titulo.toUpperCase()}</span>
-            <button class="btn btn-borde btn-peq r4-ir-extraer" data-ir-extraer>${ICONO.abajo} Al final: extraer la prueba</button>
-            <button class="btn btn-ambar r4-cerrar" data-cerrar>${ICONO.volver} Volver al archivo</button></div>
-          <div class="r4-doc-hoja">
-            <header class="r4-membrete"><img src="assets/img/logo.jpg" alt=""><div><b>GranaSAT · Universidad de Granada</b>
-              <span class="mono">Expediente #04-${i + 1} · 15 de julio</span></div><span class="r4-confidencial">CONFIDENCIAL</span></header>
-            <h2>${c.titulo}</h2>
-            ${CONTENIDO[c.id]()}
-            <section class="r4-extraer" aria-label="Extraer prueba">
-              <h3>${ICONO.lupa} Extraer prueba</h3>
-              <p class="r4-pregunta">${c.pregunta}</p>
-              <div class="r4-opciones">${c.opciones.map((o) => `<button class="r4-opcion" data-carpeta="${c.id}" data-op="${o.id}">${o.texto}</button>`).join("")}</div>
-              <div class="r4-extraer-res" id="r4-res-${c.id}" aria-live="polite"></div>
-            </section>
-          </div>
-        </div>`).join("")}`;
-    $$("[data-abrir]", el).forEach((b) => b.addEventListener("click", () => abrirCarpeta(b.dataset.abrir)));
-    $$("[data-cerrar]", el).forEach((b) => b.addEventListener("click", cerrarDocumento));
+      ${htmlBriefing()}
+      ${htmlDocumento("r4-doc-equipo", "EL EQUIPO DE GRANASAT · REVISTA DE LA ESCUELA", htmlEquipo(), "r4-doc-revista")}
+      ${Caso.CARPETAS.map((c) => htmlDocumento(`r4-doc-${c.id}`, `CARPETA ${c.num} · ${c.titulo.toUpperCase()}`, `
+        <header class="r4-membrete"><img src="assets/img/logo.jpg" alt=""><div><b>GranaSAT · Universidad de Granada</b>
+          <span class="mono">Expediente #04-${c.num} · 15 de julio</span></div><span class="r4-confidencial">CONFIDENCIAL</span></header>
+        <h2>${c.icono} ${c.titulo}</h2>
+        ${CONTENIDO[c.id]()}
+        ${htmlExtraer(c)}`, "", true)).join("")}
+      ${htmlLibreta()}`;
+    $$("[data-capa]", el).forEach((b) => b.addEventListener("click", () => abrirCapa(b.dataset.capa)));
+    $$("[data-cerrar]", el).forEach((b) => b.addEventListener("click", volverAlArchivo));
+    $$("[data-libreta]", el).forEach((b) => b.addEventListener("click", alternarLibreta));
     $$("[data-ir-extraer]", el).forEach((b) => b.addEventListener("click", () => $(".r4-extraer", b.closest(".r4-documento")).scrollIntoView({ behavior: "smooth" })));
-    $$(".r4-opcion", el).forEach((b) => b.addEventListener("click", () => responder(b.dataset.carpeta, b.dataset.op)));
+    $("#r4-ir-camara").addEventListener("click", () => { marcarAbierto(); abrirCapa("r4-doc-camara"); });
+    $("#r4-ir-archivo").addEventListener("click", volverAlArchivo);
+    $$(".r4-opcion", el).forEach((b) => b.addEventListener("click", () => elegir(b)));
+    $$("[data-extraer]", el).forEach((b) => b.addEventListener("click", () => extraer(b.dataset.extraer)));
     $("#r4-resolver").addEventListener("click", abrirAcusacion);
     $("#r4-ver-pistas").addEventListener("click", () => { $("#r4-pistas").classList.toggle("oculto"); pintarPistas(); });
     $("#r4-recibir").addEventListener("click", recibirCamara);
     $$(".r4-grafica").forEach(lectorGrafica);
+    enlazarLibreta();
+    pintarAvisoEquipo();
     pintarCarpetas();
     pintarTablon();
     pintarResolver();
     pintarBloqueoPregunta();
   }
 
+  /** Capa a casi pantalla completa (instrucciones, reportaje o carpeta) con su barra y el botón de volver. */
+  function htmlDocumento(id, etiqueta, contenido, clase = "", conExtraer = false) {
+    return `<div class="r4-documento ${clase}" id="${id}" role="dialog" aria-label="${escapar(etiqueta)}" hidden>
+      <div class="r4-doc-barra"><span class="mono">${etiqueta}</span>
+        <span class="r4-doc-botones">${conExtraer ? `<button class="btn btn-borde btn-peq" data-ir-extraer>${ICONO.abajo} Al final: extraer la prueba</button>` : ""}
+          ${botonesCaso()}<button class="btn btn-ambar r4-cerrar" data-cerrar>${ICONO.volver} Volver al archivo</button></span></div>
+      <div class="r4-doc-hoja">${contenido}</div>
+    </div>`;
+  }
+
+  function abrirCapa(id) {
+    cerrarCapas();
+    const d = $(`#${id}`);
+    if (!d) return;
+    d.hidden = false;
+    $(".r4-doc-hoja", d).scrollTop = 0;
+    $(".r4-cerrar", d).focus({ preventScroll: true });
+    const c = Caso.CARPETAS.find((x) => `r4-doc-${x.id}` === id);
+    if (c && !estado().abiertas.includes(c.id)) guardar((r) => { r.abiertas.push(c.id); });
+    if (id === "r4-doc-equipo" && !estado().equipoLeido) { guardar((r) => { r.equipoLeido = true; }); pintarAvisoEquipo(); }
+    pintarCarpetas();
+    Sonido.tic();
+  }
+  function cerrarCapas() { $$(".r4-documento").forEach((d) => { d.hidden = true; }); }
+  function volverAlArchivo() { marcarAbierto(); cerrarCapas(); }
+  function marcarAbierto() { if (!estado().abierto) { guardar((r) => { r.abierto = true; }); Progreso.anotar("Reto 4: archivo del caso abierto"); } }
+  document.addEventListener("keydown", (ev) => { if (ev.key === "Escape" && !$(".r4-modal") && $(".r4-documento")) volverAlArchivo(); });
+
+  function pintarAvisoEquipo() {
+    const caja = $("#r4-aviso-equipo");
+    if (!caja) return;
+    const leido = estado().equipoLeido;
+    caja.className = `r4-aviso-equipo ${leido ? "discreto" : ""}`;
+    caja.innerHTML = leido
+      ? `🔎 Los sospechosos son las personas del equipo. <button class="r4-enlace" data-capa="r4-doc-equipo">Releer «El equipo de GranaSAT»</button>`
+      : `<span class="r4-aviso-icono" aria-hidden="true">🔎</span><p><b>Los sospechosos son las personas del equipo.</b> Leed su historia con atención y
+         apuntad lo importante: sin esos apuntes no podréis resolver el caso.</p>
+         <button class="btn btn-ambar" data-capa="r4-doc-equipo">Leer «El equipo de GranaSAT»</button>`;
+    $$("[data-capa]", caja).forEach((b) => b.addEventListener("click", () => abrirCapa(b.dataset.capa)));
+  }
+
   function pintarCarpetas() {
     const e = estado();
     for (const c of Caso.CARPETAS) {
-      const b = $(`#r4-carpeta-${c.id}`), hecha = !!e.pruebas[c.id], abierta = e.abiertas.includes(c.id);
+      const b = $(`#r4-carpeta-${c.id}`);
+      if (!b) continue;
+      const hecha = !!e.pruebas[c.id], abierta = e.abiertas.includes(c.id);
       b.dataset.estado = hecha ? "hecha" : abierta ? "abierta" : "cerrada";
       $(".r4-estado", b).textContent = hecha ? "✓ PRUEBA EXTRAÍDA" : abierta ? "ABIERTA" : "CERRADA";
-      const doc = $(`#r4-doc-${c.id}`);
       if (hecha) {
-        $$(".r4-opcion", doc).forEach((o) => { o.disabled = true; });
-        $(`#r4-res-${c.id}`, doc).innerHTML = `<div class="r4-ok">✓ Prueba extraída y clavada en el tablón.</div>`;
+        const doc = $(`#r4-doc-${c.id}`);
+        $$(".r4-opcion, [data-extraer]", doc).forEach((o) => { o.disabled = true; });
+        $(`#r4-res-${c.id}`).innerHTML = `<div class="r4-ok">✓ Prueba extraída y clavada en el tablón.</div>`;
       }
     }
   }
@@ -145,25 +165,117 @@
     const e = estado(), caja = $("#r4-corcho");
     const pruebas = Caso.CARPETAS.filter((c) => e.pruebas[c.id]);
     caja.innerHTML = pruebas.length ? pruebas.map((c) => `
-      <article class="r4-prueba ${c.id === nueva ? "nueva" : ""}" style="--giro:${GIROS[Caso.CARPETAS.indexOf(c)]}deg">
-        <i class="r4-chincheta" aria-hidden="true"></i><span class="mono">${c.titulo.toUpperCase()}</span><p>${e.pruebas[c.id]}</p></article>`).join("")
+      <article class="r4-prueba ${c.id === nueva ? "nueva" : ""}" style="--giro:${GIROS[c.num - 1]}deg">
+        <i class="r4-chincheta" aria-hidden="true"></i><span class="mono">${c.num} · ${c.titulo.toUpperCase()}</span><p>${e.pruebas[c.id]}</p></article>`).join("")
       : `<p class="r4-vacio">Aún no tenéis pruebas. Abrid las carpetas.</p>`;
   }
 
-  function abrirCarpeta(id) {
-    cerrarDocumento();
-    if (!estado().abiertas.includes(id)) guardar((r) => { r.abiertas.push(id); });
-    const d = $(`#r4-doc-${id}`);
-    d.hidden = false;
-    $(".r4-doc-hoja", d).scrollTop = 0;
-    $(".r4-cerrar", d).focus({ preventScroll: true });
-    pintarCarpetas();
+  // ===================================== Instrucciones y «El equipo de GranaSAT» =====================================
+  function htmlBriefing() {
+    return `<div class="r4-documento r4-doc-briefing" id="r4-briefing" role="dialog" aria-label="Instrucciones del caso" hidden>
+      <div class="r4-doc-barra"><span class="mono">EXPEDIENTE #04 · INSTRUCCIONES DEL CASO</span>
+        <span class="r4-doc-botones"><button class="btn btn-oscuro btn-peq" data-libreta>📓 Libreta</button>
+          <button class="btn btn-ambar r4-cerrar" data-cerrar>${ICONO.volver} Ir al archivo</button></span></div>
+      <div class="r4-doc-hoja r4-briefing">
+        <div class="expediente-num">EXPEDIENTE #04 · EL SILENCIO DEL GRANASAT-II</div>
+        <p>El pasado 15 de julio por la tarde, el GranaSAT-II, el pequeño satélite que el equipo de GranaSAT tiene en órbita,
+          dejó de responder. Por la mañana todo iba bien, pero al llegar la tarde se quedó en silencio. Al revisar los datos,
+          el equipo descubrió que no fue una avería: <b>alguien lo hizo a propósito.</b></p>
+        <p>Sois el equipo de investigación. Tenéis que descubrir <b>quién</b> saboteó el satélite, <b>cómo</b> lo hizo y <b>a qué hora</b>.</p>
+        <h3>Cómo empezar</h3>
+        <ol class="r4-pasos-caso">
+          <li><b>Abrid la carpeta 📷 «1 · Cámara de la azotea» y poned a recibir la foto.</b> Tarda unos 2 minutos en llegar, así que hacedlo lo primero.</li>
+          <li><b>Mientras llega, leed «El equipo de GranaSAT»</b> y apuntad en la libreta todo lo que os parezca importante de cada persona: <b>los sospechosos están entre ellos.</b></li>
+          <li><b>Abrid el resto de carpetas</b>, estudiad los documentos y extraed una prueba de cada una.</li>
+          <li><b>Cuando tengáis las 4 pruebas, resolved el caso.</b></li>
+        </ol>
+        <div class="botonera"><button class="btn btn-ambar" id="r4-ir-camara">📷 Ir a la carpeta de la cámara</button>
+          <button class="btn btn-borde" id="r4-ir-archivo">Ir al archivo del caso</button></div>
+      </div></div>`;
+  }
+
+  function htmlEquipo() {
+    return `<article class="r4-reportaje">
+      <span class="r4-revista-kicker mono">REVISTA DE LA ESCUELA · REPORTAJE</span>
+      <h1>Conoce al equipo que construyó el GranaSAT-II</h1>
+      <p class="r4-entradilla">En un rincón del laboratorio de la escuela, entre placas electrónicas y tazas de café, trabaja el pequeño equipo que
+        puso en órbita el GranaSAT-II.</p>
+      <div class="r4-columnas-texto">
+        <p><b>Marta Sánchez</b> es la ingeniera de software y la que más horas pasa allí. Llega cada día a las nueve en punto, se
+          pone su bata blanca y no se mueve de su mesa hasta la tarde. Ha escrito casi todo el programa que lleva el satélite.
+          Lo que nunca hace es subir a la azotea: tiene vértigo, y su tarjeta, de todas formas, solo le abre el laboratorio.</p>
+        <p><b>Javier Ortega</b> es el operador de radio. Es imposible verle sin sus auriculares verdes colgados del cuello, aunque
+          en la estación de la azotea siempre los deja sobre la mesa, junto a la radio, «para que no se pierdan». Es el único
+          del equipo cuya tarjeta abre tanto el laboratorio como la azotea. Sus compañeros bromean con que es un despistado:
+          deja la chaqueta en cualquier silla, con la cartera y todo dentro.</p>
+        <p><b>Lucía Martín</b> es la técnica de antenas. Pasa las mañanas en la azotea, donde el casco amarillo es obligatorio,
+          así que es raro verla allí sin él. En cuanto termina, se lo quita y se pone la gorra roja de su equipo de baloncesto.
+          Su tarjeta solo abre la azotea: dice que el laboratorio «huele a soldador».</p>
+        <p><b>Pablo Ruiz</b> es el becario, recién llegado este curso. Siempre lleva una gorra roja, hasta en las fotos oficiales.
+          Está deseando aprender a manejar la estación de radio de la azotea, pero como becario todavía no tiene permiso para
+          subir: su tarjeta solo abre el laboratorio. «Algún día», dice cada vez que alguien sube.</p>
+        <p>Las cuatro tarjetas tienen un número, pero en el equipo nadie se los sabe de memoria. Lo que sí saben es para qué
+          sirve cada una: la del operador de radio es la única que abre las dos puertas.</p>
+      </div>
+      <p class="r4-consejo-libreta">📓 Apuntad en la libreta lo importante de cada persona.</p>
+    </article>`;
+  }
+
+  // ===================================== Libreta del investigador =====================================
+  function htmlLibreta() {
+    const apartados = [...Caso.PERSONAS, "General"];
+    return `<aside class="r4-libreta" id="r4-libreta" aria-label="Libreta del investigador" inert>
+      <div class="r4-libreta-cab"><b>📓 Libreta del investigador</b><button class="mini" data-libreta aria-label="Cerrar la libreta">${ICONO.cerrar}</button></div>
+      <p class="r4-libreta-ayuda">Apuntad aquí lo importante. Se guarda solo.</p>
+      <div class="r4-libreta-hojas">${apartados.map((p) => `
+        <label class="r4-apunte"><span>${p === "General" ? "General (horas, pistas, ideas…)" : p}</span>
+          <textarea data-apunte="${p}" rows="${p === "General" ? 4 : 3}" spellcheck="false"></textarea></label>`).join("")}</div>
+      <p class="r4-guardado mono" id="r4-guardado"></p>
+    </aside>`;
+  }
+  function enlazarLibreta() {
+    const e = estado();
+    $$("[data-apunte]").forEach((t) => {
+      let espera = 0; // un temporizador por apartado: escribir en otro no cancela el guardado de este
+      const anotar = () => {
+        clearTimeout(espera);
+        guardar((r) => { r.libreta[t.dataset.apunte] = t.value; });
+        const g = $("#r4-guardado"); if (g) g.textContent = "✓ Guardado";
+      };
+      t.value = e.libreta[t.dataset.apunte] || "";
+      t.addEventListener("input", () => { clearTimeout(espera); espera = setTimeout(anotar, 300); });
+      t.addEventListener("blur", anotar);
+    });
+  }
+  function alternarLibreta() {
+    const l = $("#r4-libreta"), abrir = !l.classList.contains("abierta");
+    l.classList.toggle("abierta", abrir);
+    l.inert = !abrir;
+    document.body.classList.toggle("r4-con-libreta", abrir); // los documentos se estrechan para leer y apuntar a la vez
+    if (abrir) $("textarea", l).focus({ preventScroll: true });
     Sonido.tic();
   }
-  function cerrarDocumento() { $$(".r4-documento").forEach((d) => { d.hidden = true; }); }
-  document.addEventListener("keydown", (ev) => { if (ev.key === "Escape" && !$(".r4-modal")) cerrarDocumento(); });
 
-  // ---------- Extraer prueba ----------
+  // ===================================== Extraer prueba =====================================
+  function htmlExtraer(c) {
+    return `<section class="r4-extraer" aria-label="Extraer prueba">
+      <h3>${ICONO.lupa} Extraer prueba</h3>
+      ${c.preguntas.map((p, i) => `
+        <p class="r4-pregunta">${c.preguntas.length > 1 ? `${i + 1}. ` : ""}${p.texto}</p>
+        <div class="r4-opciones" role="radiogroup" aria-label="${escapar(p.texto)}" style="--n:${Math.min(p.opciones.length, 5)}">${p.opciones.map((o) => `
+          <button class="r4-opcion" role="radio" aria-checked="false" data-carpeta="${c.id}" data-pregunta="${i}" data-op="${o.id}">${o.texto}</button>`).join("")}</div>`).join("")}
+      <div class="r4-extraer-pie"><button class="btn btn-ambar" data-extraer="${c.id}" disabled>${ICONO.lupa} Extraer la prueba</button>
+        <div class="r4-extraer-res" id="r4-res-${c.id}" aria-live="polite"></div></div>
+    </section>`;
+  }
+  const elegidas = {}; // carpeta → [letra de cada pregunta]
+  function elegir(b) {
+    const c = b.dataset.carpeta, i = Number(b.dataset.pregunta);
+    (elegidas[c] = elegidas[c] || [])[i] = b.dataset.op;
+    $$(`.r4-opcion[data-carpeta='${c}'][data-pregunta='${i}']`).forEach((o) => { o.classList.toggle("elegida", o === b); o.setAttribute("aria-checked", String(o === b)); });
+    Sonido.tic();
+    pintarBloqueoPregunta();
+  }
   const segundosPregunta = (id) => Math.max(0, Math.ceil((((estado().bloqueoPregunta || {})[id] || 0) - Date.now()) / 1000));
   function pintarBloqueoPregunta() {
     const e = estado();
@@ -171,41 +283,45 @@
     for (const c of Caso.CARPETAS) {
       const res = $(`#r4-res-${c.id}`);
       if (!res || e.pruebas[c.id]) continue;
-      const s = segundosPregunta(c.id);
-      $$(`.r4-opcion[data-carpeta='${c.id}']`).forEach((o) => { if (!o.classList.contains("comprobando")) o.disabled = s > 0; });
+      const s = segundosPregunta(c.id), boton = $(`[data-extraer='${c.id}']`);
+      if (boton.classList.contains("comprobando")) continue;
+      $$(`.r4-opcion[data-carpeta='${c.id}']`).forEach((o) => { o.disabled = s > 0; });
+      const completas = (elegidas[c.id] || []).filter(Boolean).length === c.preguntas.length;
+      boton.disabled = s > 0 || !completas;
       const espera = $(".r4-espera", res);
-      if (espera) espera.textContent = s ? `Podréis volver a responder en ${s} s.` : "Ya podéis volver a responder.";
+      if (espera) espera.textContent = s ? `Podréis volver a intentarlo en ${s} s.` : "Ya podéis volver a intentarlo.";
     }
   }
 
-  async function responder(carpeta, op) {
-    if (estado().pruebas[carpeta] || segundosPregunta(carpeta)) return;
-    const res = $(`#r4-res-${carpeta}`), opciones = $$(`.r4-opcion[data-carpeta='${carpeta}']`);
-    opciones.forEach((o) => { o.disabled = true; o.classList.add("comprobando"); o.classList.toggle("elegida", o.dataset.op === op); });
+  async function extraer(id) {
+    const c = carpeta(id), resp = elegidas[id] || [];
+    if (estado().pruebas[id] || segundosPregunta(id) || resp.filter(Boolean).length < c.preguntas.length) return;
+    const boton = $(`[data-extraer='${id}']`), res = $(`#r4-res-${id}`);
+    boton.disabled = true; boton.classList.add("comprobando");
     res.innerHTML = App.htmlCarga("Comprobando…");
-    const tarjeta = await Caso.extraer(window.DATOS.reto4_llaves, carpeta, op, Cripto);
-    opciones.forEach((o) => o.classList.remove("comprobando"));
+    const tarjeta = await Caso.extraer(window.DATOS.reto4_llaves, id, resp, Cripto);
+    boton.classList.remove("comprobando");
     if (tarjeta) {
-      guardar((r) => { r.pruebas[carpeta] = tarjeta; });
-      Progreso.anotar(`Reto 4: prueba extraída (${Caso.CARPETAS.find((c) => c.id === carpeta).titulo})`);
+      guardar((r) => { r.pruebas[id] = tarjeta; });
+      Progreso.anotar(`Reto 4: prueba extraída (${c.titulo})`);
       Sonido.exito();
       pintarCarpetas();
       setTimeout(() => {
         if (!$("#r4-corcho")) return;
-        cerrarDocumento();
-        pintarTablon(carpeta);
+        cerrarCapas();
+        pintarTablon(id);
         pintarResolver();
       }, 1300);
     } else {
-      guardar((r) => { r.fallos++; r.bloqueoPregunta[carpeta] = Date.now() + Caso.BLOQUEO_PREGUNTA * 1000; });
+      guardar((r) => { r.fallos++; r.bloqueoPregunta[id] = Date.now() + Caso.BLOQUEO_PREGUNTA * 1000; });
       Progreso.anotar("Reto 4: pregunta fallada");
       Sonido.error();
-      res.innerHTML = `<div class="r4-no">✗ No es eso. Volved a leer el documento. <span class="r4-espera mono"></span></div>`;
+      res.innerHTML = `<div class="r4-no">✗ No es eso. Volved a estudiar los documentos (y vuestros apuntes del equipo). <span class="r4-espera mono"></span></div>`;
       pintarBloqueoPregunta();
     }
   }
 
-  // ---------- Resolver el caso (acusación) ----------
+  // ===================================== Resolver el caso (acusación) =====================================
   const segundosAcusar = () => Math.max(0, Math.ceil(((estado().bloqueoAcusarHasta || 0) - Date.now()) / 1000));
   function pintarResolver() {
     const b = $("#r4-resolver");
@@ -336,27 +452,28 @@
 
   // ===================================== Documentos de las carpetas =====================================
   const HORA_UNIVERSAL = `<div class="r4-utc" role="note"><span class="r4-utc-icono" aria-hidden="true">🕐</span><div>
-    <b class="r4-utc-tit">Atención: la hora de los satélites es distinta.</b>
+    <b class="r4-utc-tit">Atención: la hora del satélite es distinta.</b>
     <p>Los satélites y los radioaficionados de todo el mundo usan el mismo reloj, llamado <b>hora universal</b> (UTC),
       para no liarse con los husos horarios de cada país. <b>Todas las horas de este documento están en hora universal.</b></p>
     <p class="r4-utc-regla"><b>Para saber qué hora era en España, suma 2 horas.</b> Ejemplo: las 10:00 en hora universal son las 12:00 en España.</p></div></div>`;
   const HORA_UNIVERSAL_CORTA = `<div class="r4-utc corta" role="note"><span class="r4-utc-icono" aria-hidden="true">🕐</span><p>
-    <b class="r4-utc-tit">Hora universal:</b> <b>para saber qué hora era en España, suma 2 horas.</b></p></div>`;
+    <b class="r4-utc-tit">Hora del satélite = hora universal (UTC).</b> <b>Para saber qué hora era en España, suma 2 horas.</b></p></div>`;
 
   // Gráficas de la telemetría: [hora universal en minutos, valor]; terminan a las 14:10, cuando se apaga el satélite
   const h = (t) => { const [a, b] = t.split(":").map(Number); return a * 60 + b; };
   const FIN = h("14:10"), GIRO = h("12:32");
   const serie = (f, paso = 2) => { const p = []; for (let t = h("06:00"); t <= FIN; t += paso) p.push([t, f(t)]); return p; };
   const GRAFICAS = [
-    { titulo: "¿Hacia dónde miran los paneles solares?", nota: "0° = mirando al Sol", min: 0, max: 90, marcas: [0, 45, 90], unidad: "°",
-      puntos: [[h("06:00"), 0], [h("08:15"), 0], [h("08:15"), 15], [h("08:17"), 15], [h("08:17"), 0], [GIRO, 0], [GIRO, 90], [FIN, 90]] },
-    { titulo: "¿Cuánta batería le queda?", min: 0, max: 100, marcas: [0, 50, 100], unidad: " %",
+    { titulo: "Orientación de los paneles solares respecto al Sol", nota: "0° = de frente al Sol · 180° = de espaldas al Sol",
+      min: 0, max: 180, marcas: [0, 90, 180], unidad: "°",
+      puntos: [[h("06:00"), 0], [h("08:15"), 0], [h("08:15"), 15], [h("08:17"), 15], [h("08:17"), 0], [GIRO, 0], [GIRO, 180], [FIN, 180]] },
+    { titulo: "Batería (%)", min: 0, max: 100, marcas: [0, 50, 100], unidad: " %",
       puntos: [[h("06:00"), 100], [GIRO, 100], [FIN, 0]] },
-    { titulo: "¿Cuántas veces se ha reiniciado su ordenador?", min: 0, max: 5, marcas: [0, 1, 2, 3, 4, 5], unidad: "",
+    { titulo: "Reinicios del ordenador de a bordo", min: 0, max: 5, marcas: [0, 1, 2, 3, 4, 5], unidad: "",
       puntos: [[h("06:00"), 0], [FIN, 0]] },
-    { titulo: "¿Qué temperatura tiene?", min: 0, max: 40, marcas: [0, 20, 40], unidad: " °C",
-      puntos: serie((t) => 20 + 0.6 * Math.sin(t / 23) + 0.3 * Math.sin(t / 7) - (t > GIRO ? (t - GIRO) * 0.05 : 0)) },
-    { titulo: "¿Llega bien su señal a la Tierra?", min: 0, max: 2, marcas: [0, 1, 2], nombres: ["Mala", "Regular", "Buena"], unidad: "",
+    { titulo: "Temperatura interior (°C)", min: 0, max: 40, marcas: [0, 20, 40], unidad: " °C",
+      puntos: serie((t) => (t <= GIRO ? 20 + 0.6 * Math.sin(t / 23) + 0.3 * Math.sin(t / 7) : 20 - 15 * Math.min(1, (t - GIRO) / (FIN - GIRO)) + 0.3 * Math.sin(t / 7))) },
+    { titulo: "Intensidad de la señal recibida en tierra", min: 0, max: 2, marcas: [0, 1, 2], nombres: ["Mala", "Regular", "Buena"], unidad: "",
       puntos: [[h("06:00"), 2], [FIN, 2]] },
   ];
   const X0 = h("06:00"), X1 = h("16:00"), AN = 340, AL = 90, IZQ = 50, ARR = 10;
@@ -374,7 +491,6 @@
         ${ys.join("")}${eje.join("")}
         <polyline points="${linea}" class="g-linea"/>
         <line x1="${px(FIN)}" y1="${ARR}" x2="${px(FIN)}" y2="${ARR + AL}" class="g-fin"/>
-        <text x="${px(FIN) + 4}" y="${ARR + 12}" class="g-fin-t">se apagó</text>
         <text x="${IZQ + AN / 2}" y="${ARR + AL + 31}" class="g-eje">hora universal</text>
         <g class="g-cursor" visibility="hidden"><line y1="${ARR}" y2="${ARR + AL}"/><rect y="${ARR - 2}" width="98" height="18" rx="4"/><text y="${ARR + 11}"></text></g>
       </svg></figure>`;
@@ -405,51 +521,67 @@
   }
 
   const CONTENIDO = {
-    telemetria: () => `${HORA_UNIVERSAL}
-      <p class="r4-texto">El satélite envía a la Tierra datos sobre su estado. Estas son sus gráficas del 15 de julio.
-        <small>(Pasad el ratón por una gráfica para leer la hora exacta.)</small></p>
-      <div class="r4-graficas">${GRAFICAS.map(htmlGrafica).join("")}
-        <p class="r4-nota">Del manual del satélite: <i>si los paneles solares dejan de mirar al Sol, la batería deja de cargarse.</i></p></div>`,
-    radio: () => `${HORA_UNIVERSAL}
-      <p class="r4-texto">El satélite solo obedece órdenes que le llegan por radio, y todas quedan apuntadas. Estas son las del 15 de julio.</p>
-      <table class="chuleta r4-tabla"><thead><tr><th>Hora (universal)</th><th>Desde</th><th>Orden</th><th>¿Estaba en el plan del día?</th></tr></thead><tbody>
-        <tr><td class="mono">08:15</td><td>Estación del laboratorio</td><td>Girar 15° para calibrar los sensores</td><td>✅ Sí</td></tr>
-        <tr><td class="mono">08:17</td><td>Estación del laboratorio</td><td>Volver a 0°</td><td>✅ Sí</td></tr>
-        <tr><td class="mono">11:40</td><td>Estación del laboratorio</td><td>Enviar las fotos</td><td>✅ Sí</td></tr>
-        <tr><td class="mono">12:32</td><td><b>Estación de la azotea</b></td><td><b>Girar 90°</b></td><td>❌ <b>No. Nadie la aprobó.</b></td></tr>
-      </tbody></table>
-      <div class="r4-norma" role="note"><span aria-hidden="true">🔐</span><p>El satélite solo acepta órdenes firmadas con una <b>llave física</b>
-        que está guardada <b>dentro</b> de cada estación. Para enviarle una orden hay que estar <b>dentro de la estación</b>. Desde fuera es imposible.</p></div>`,
-    camara: () => `${HORA_UNIVERSAL_CORTA}
+    camara: () => `
       <p class="r4-texto">La estación de radio de la azotea tiene una cámara de seguridad que transmite sus fotos por radio, en SSTV.
-        Su última foto se envió a las <b>12:31 en hora universal</b> (la cámara usa el reloj de la estación de radio).
-        La foto llega como sonido: tendréis que decodificarla con Black Cat SSTV, como en los otros retos.</p>
+        Su última foto se envió el 15 de julio a las <b>12:31, hora del satélite</b> (la cámara usa el reloj de la estación de
+        radio, que funciona con la hora universal: ver el recuadro). La foto llega como sonido: decodificadla con Black Cat SSTV.</p>
+      ${HORA_UNIVERSAL_CORTA}
       <div class="r4-recordatorio">${ICONO.info}<span>Abrid Black Cat SSTV escuchando del cable antes de pulsar.</span></div>
       <button class="btn btn-ambar r4-recibir" id="r4-recibir">${ICONO.antena} Recibir la foto de la cámara</button>
       <div id="r4-camara"></div>
-      <p class="r4-mientras oculto" id="r4-mientras">${ICONO.reloj}<span>La foto tarda unos 2 minutos en llegar. Mientras, podéis leer las otras carpetas.</span></p>`,
+      <p class="r4-mientras oculto" id="r4-mientras">${ICONO.reloj}<span>La foto tarda unos 2 minutos. Mientras, leed
+        <button class="r4-enlace" data-capa="r4-doc-equipo">«El equipo de GranaSAT»</button>.</span></p>`,
+    telemetria: () => `${HORA_UNIVERSAL}
+      <p class="r4-texto">Datos que envió el satélite el 15 de julio. <small>(Pasad el ratón por una gráfica para leer la hora exacta.)</small></p>
+      <div class="r4-graficas">${GRAFICAS.map(htmlGrafica).join("")}</div>`,
+    radio: () => `${HORA_UNIVERSAL}
+      <div class="r4-dos">
+        <div class="r4-subdoc"><h3>Documento A · Registro automático de órdenes</h3>
+          <table class="chuleta r4-tabla mono-tabla"><thead><tr><th>Hora</th><th>Estación</th><th>Orden</th></tr></thead><tbody>
+            <tr><td>08:15</td><td>GS1</td><td>ROT +015</td></tr>
+            <tr><td>08:17</td><td>GS1</td><td>ROT 000</td></tr>
+            <tr><td>11:40</td><td>GS1</td><td>DL IMG</td></tr>
+            <tr><td>12:32</td><td>GS2</td><td>ROT +180</td></tr>
+          </tbody></table>
+          <p class="r4-leyenda-doc"><b>GS1</b> = estación del laboratorio · <b>GS2</b> = estación de la azotea · <b>ROT</b> = girar los
+            paneles a los grados indicados · <b>DL IMG</b> = enviar las fotos a tierra.</p>
+          <div class="r4-norma" role="note"><span aria-hidden="true">🔐</span><p>El satélite solo acepta órdenes firmadas con una <b>llave física</b>
+            que está guardada <b>dentro</b> de cada estación. Para enviarle una orden hay que estar <b>dentro de la estación</b>. Desde fuera es imposible.</p></div></div>
+        <div class="r4-subdoc r4-nota-papel"><h3>Documento B · Plan de trabajo · 15 de julio <small>(horas de España)</small></h3>
+          <ul>
+            <li><b>10:15</b> · Marta: calibración de los sensores desde el laboratorio. Girar el satélite un poco y volver a dejarlo como estaba.</li>
+            <li><b>13:40</b> · Marta: descarga de las fotos de la mañana (laboratorio).</li>
+            <li><s><b>16:30</b> · Javier: pruebas de la radio en la azotea.</s> <i>Aplazado al lunes: Javier tiene la reunión de proyecto.</i></li>
+            <li>Recordatorio: <b>nadie toca la orientación del satélite sin avisar.</b></li>
+          </ul></div>
+      </div>`,
     accesos: () => `
       <p class="r4-aviso-hora">${ICONO.reloj}<span>Estas horas son <b>las de España</b>: son los relojes del edificio.</span></p>
-      <div class="r4-dos">
-        <div><h3>Registro de tarjetas del 15 de julio</h3>
-          <table class="chuleta r4-tabla"><thead><tr><th>Hora</th><th>Tarjeta de</th><th>Qué hizo</th></tr></thead><tbody>
-            <tr><td class="mono">09:00</td><td>Marta</td><td>Entró al laboratorio (no salió hasta las 18:00)</td></tr>
-            <tr><td class="mono">13:50</td><td>Lucía</td><td>Entró a la azotea</td></tr>
-            <tr><td class="mono">14:00</td><td>Pablo</td><td>Entró al laboratorio</td></tr>
-            <tr><td class="mono">14:20</td><td>Lucía</td><td>Salió de la azotea</td></tr>
-            <tr><td class="mono">14:20</td><td>Pablo</td><td>Salió del laboratorio</td></tr>
-            <tr><td class="mono">14:25</td><td>Javier</td><td>Entró a la azotea</td></tr>
-            <tr><td class="mono">14:45</td><td>Javier</td><td>Salió de la azotea</td></tr>
+      <div class="r4-tres">
+        <div class="r4-subdoc"><h3>Documento A · Registro de tarjetas del 15 de julio</h3>
+          <table class="chuleta r4-tabla mono-tabla"><thead><tr><th>Hora</th><th>Tarjeta</th><th>Puerta</th><th></th></tr></thead><tbody>
+            ${[["09:00", "0412", "L", "entrada"], ["13:50", "1133", "A", "entrada"], ["14:00", "1580", "L", "entrada"], ["14:20", "1133", "A", "salida"],
+              ["14:20", "1580", "L", "salida"], ["14:25", "0957", "A", "entrada"], ["14:45", "0957", "A", "salida"], ["18:00", "0412", "L", "salida"]]
+              .map(([hh, t, p, x]) => `<tr><td>${hh}</td><td>${t}</td><td>${p}</td><td>${x}</td></tr>`).join("")}
+          </tbody></table>
+          <p class="r4-leyenda-doc"><b>L</b> = laboratorio · <b>A</b> = azotea</p></div>
+        <div class="r4-subdoc"><h3>Documento B · Listado de tarjetas <small>(administración)</small></h3>
+          <table class="chuleta r4-tabla"><thead><tr><th>Tarjeta</th><th>Puesto</th><th>Puertas que abre</th></tr></thead><tbody>
+            <tr><td class="mono">0412</td><td>Ingeniería de software</td><td>L</td></tr>
+            <tr><td class="mono">0957</td><td>Operación de radio</td><td>L y A</td></tr>
+            <tr><td class="mono">1133</td><td>Técnica de antenas</td><td>A</td></tr>
+            <tr><td class="mono">1580</td><td>Becario/a</td><td>L</td></tr>
           </tbody></table></div>
-        <div><h3>Declaraciones</h3>
-          <blockquote><b>Javier:</b> «De 14:00 a 15:00 estuve en la reunión de proyecto. Dejé la chaqueta en la sala común, con la tarjeta en el bolsillo.»
-            <span class="r4-sello si">✔ Comprobado: el acta de la reunión, firmada por 6 personas, confirma que estuvo allí todo el rato.</span></blockquote>
-          <blockquote><b>Lucía:</b> «Terminé de revisar las antenas a las 14:20, me quité el casco y me fui a coger el autobús.»
-            <span class="r4-sello si">✔ Comprobado: su tarjeta de transporte la registra subiendo al autobús a las 14:28.</span></blockquote>
-          <blockquote><b>Pablo:</b> «A las 14:20 salí del laboratorio y me fui a la cafetería.»
-            <span class="r4-sello no">✘ Sin comprobar: nadie en la cafetería recuerda haberle visto.</span></blockquote>
-          <blockquote><b>Marta:</b> «Estuve todo el día en el laboratorio.»
-            <span class="r4-sello si">✔ Comprobado: el registro de tarjetas no la muestra saliendo hasta las 18:00.</span></blockquote></div>
+        <div class="r4-subdoc r4-declaraciones"><h3>Documento C · Declaraciones y comprobaciones</h3>
+          <blockquote><b>Javier:</b> «De 14:00 a 15:00 estuve en la reunión de proyecto. Dejé la chaqueta en la sala común.»</blockquote>
+          <blockquote><b>Lucía:</b> «Terminé en la azotea a las 14:20, me quité el casco y me fui a casa en autobús.»</blockquote>
+          <blockquote><b>Pablo:</b> «A las 14:20 salí del laboratorio y me fui a la cafetería hasta las tres.»</blockquote>
+          <blockquote><b>Marta:</b> «Estuve todo el día en mi mesa del laboratorio.»</blockquote>
+          <div class="r4-comprobacion"><i>Acta de la reunión de proyecto, 15 de julio, 14:00–15:00.</i> Asistentes: J. Ortega, R. Carrillo,
+            A. Gómez, S. Díaz, M. López, E. Navarro. <i>(6 firmas)</i></div>
+          <div class="r4-comprobacion"><i>Registro de la tarjeta de transporte a nombre de L. Martín:</i> subida al autobús línea 4, 14:28.</div>
+          <div class="r4-comprobacion"><i>Nota de la cajera de la cafetería:</i> «Ese día, entre las dos y las tres, no vino ningún chico con
+            gorra roja. Me acuerdo porque solo vinieron dos profesores.»</div></div>
       </div>`,
   };
 
@@ -472,22 +604,6 @@
       boton.disabled = false;
       caja.innerHTML = `<div class="aviso aviso-error">No se ha podido cargar la transmisión. Avisad a la organización.</div>`;
     }
-  }
-
-  // ---------- Siluetas de los sospechosos (dibujos sencillos, no fotos) ----------
-  function silueta(id) {
-    const cuerpo = { marta: "#f1f5f9", javier: "#334155", lucia: "#475569", pablo: "#334155", hacker: "#1e293b" }[id];
-    const extra = {
-      marta: `<path d="M20 52 L24 40 L30 46 L36 40 L40 52" fill="none" stroke="#94a3b8" stroke-width="1.5"/>`,
-      javier: `<path d="M17 25 Q30 6 43 25" fill="none" stroke="#22c55e" stroke-width="3.5"/><rect x="13" y="22" width="7" height="10" rx="3" fill="#22c55e"/><rect x="40" y="22" width="7" height="10" rx="3" fill="#22c55e"/>`,
-      lucia: `<path d="M17 22 Q30 4 43 22 Z" fill="#facc15"/><rect x="15" y="20" width="30" height="4" rx="2" fill="#eab308"/>
-        <g transform="translate(44 44) scale(.42)"><path d="M-12 2 Q0 -14 12 2 Z" fill="#ef4444"/><path d="M10 1 L20 4 L10 4 Z" fill="#dc2626"/></g>`,
-      pablo: `<path d="M18 21 Q30 6 42 21 Z" fill="#ef4444"/><path d="M40 20 L52 23 L40 23 Z" fill="#dc2626"/>`,
-      hacker: `<path d="M14 34 Q14 8 30 8 Q46 8 46 34 L42 30 Q30 18 18 30 Z" fill="#0f172a"/><text x="30" y="31" text-anchor="middle" font-size="14" font-weight="900" fill="#fbbf24">?</text>`,
-    }[id];
-    const cara = id === "hacker" ? "#0b1120" : "#cbd5e1";
-    return `<svg class="r4-silueta" viewBox="0 0 60 60" aria-hidden="true"><rect width="60" height="60" rx="12" fill="#0b1120"/>
-      <path d="M8 60 Q8 40 30 40 Q52 40 52 60 Z" fill="${cuerpo}"/><circle cx="30" cy="25" r="11" fill="${cara}"/>${extra}</svg>`;
   }
 
   App.VISTAS[ID] = vista;
