@@ -62,12 +62,24 @@ RETOS = {
         },
     },
     # Reto 4 (¿Quién saboteó el GranaSAT-II?): la respuesta es la acusación "quién cómo cuándo" con los
-    # identificadores de las opciones de la web (js/reto4.js). Abre el audio y el resumen del caso, que también
-    # va cifrado porque cuenta la solución. "comprobaciones" permite decir cuántos de los 3 datos se han acertado
-    # sin escribir ninguno en la web: cada dato envuelve una llave aleatoria que no abre nada.
+    # identificadores de las opciones de la web (js/caso_sabotaje.js). Abre el audio y el resumen del caso, que
+    # también va cifrado porque cuenta la solución. "comprobaciones" permite decir cuántos de los 3 datos se han
+    # acertado sin escribir ninguno en la web: cada dato envuelve una llave aleatoria que no abre nada.
+    # "preguntas": la opción correcta de cada carpeta ("carpeta letra") abre la llave de su tarjeta de prueba.
     "reto4": {
-        "grupos": [["pablo paneles 1415"]],
-        "comprobaciones": [["quien pablo"], ["como paneles"], ["cuando 1415"]],
+        "grupos": [["pablo paneles 1430"]],
+        "comprobaciones": [["quien pablo"], ["como paneles"], ["cuando 1430"]],
+        "preguntas": {
+            "telemetria": ("a", "A las <b>12:32 (hora universal)</b> los paneles solares dejaron de mirar al Sol y la batería se "
+                           "vació hasta apagar el satélite. A las 08:15 hubo otro giro, pero volvió a su sitio en 2 minutos."),
+            "radio": ("c", "A las <b>12:32 (hora universal)</b> alguien envió <b>desde la estación de la azotea</b> una orden de giro "
+                      "que nadie había aprobado. Para enviarla hay que estar <b>dentro</b> de la estación."),
+            "camara": ("a", "La cámara de la azotea fotografió a las <b>12:31 (hora universal)</b> a una persona <b>con gorra roja</b> "
+                       "manejando la radio. Sobre la mesa había unos <b>auriculares verdes</b>."),
+            "accesos": ("c", "A las <b>14:25 (hora de España)</b> la tarjeta de <b>Javier</b> abrió la azotea, pero Javier estaba en "
+                        "una reunión y había dejado la tarjeta en su chaqueta. Lucía salió de la azotea a las 14:20 y cogió el "
+                        "autobús a las 14:28. Nadie vio a Pablo en la cafetería."),
+        },
         "archivos": {
             "audio": (RAIZ / "generado" / "mapa" / "fragmento_4_andromeda.wav", "audio/wav"),
             "resumen": (RAIZ / "generado" / "reto4" / "resumen_caso.html", "text/html"),
@@ -77,14 +89,15 @@ RETOS = {
 
 
 # Resumen del caso que se ve al resolverlo (sección 7 de especificaciones/reto4_sabotaje.md).
-RESUMEN_RETO4 = """<p><b>Quién:</b> Pablo, el becario. <b>Cómo:</b> giró el satélite para que sus paneles solares no recibieran
-la luz del Sol. <b>Cuándo:</b> entre las 14:15 y las 14:45 (hora de España).</p>
+RESUMEN_RETO4 = """<p><b>Fue Pablo.</b> Giró el satélite para que sus paneles solares no recibieran la luz del Sol,
+entre las 14:30 y las 14:45 (hora de España).</p>
 <p><b>Cómo:</b> a las 12:32 (hora universal) alguien envió desde la azotea una orden de giro que no estaba en el plan.
-Los paneles dejaron de mirar al Sol y la batería se vació hasta apagar el satélite.</p>
-<p><b>Cuándo:</b> las 12:32 en hora universal son las <b>14:32 en España</b>. La cámara fotografió al saboteador a las 14:31.</p>
+Los paneles dejaron de mirar al Sol y la batería se vació. El giro de las 08:15 era una calibración que estaba en el plan.</p>
+<p><b>Cuándo:</b> las 12:32 en hora universal son las <b>14:32 en España</b>.</p>
 <p><b>Quién:</b> a esa hora solo estaba en la azotea la tarjeta de Javier, pero Javier estaba en la reunión: alguien cogió
-su tarjeta de la chaqueta. La cámara muestra a alguien con <b>gorra roja</b>: Pablo, que salió del laboratorio a las
-14:20, cinco minutos antes. Los auriculares verdes de la mesa eran una pista falsa: son de Javier y se quedan en la estación.</p>
+su tarjeta de la chaqueta. La cámara muestra a alguien con gorra roja: Pablo o Lucía. Lucía ya estaba en el autobús
+a las 14:28. <b>Fue Pablo</b>, que salió del laboratorio a las 14:20 y nadie le vio en la cafetería.
+Los auriculares verdes de la mesa eran una pista falsa: son de Javier y se quedan siempre en la estación.</p>
 """
 
 
@@ -193,6 +206,12 @@ def recompensa(reto, cfg):
             print(f"{clave_js + '.js':<25} {tam / 1e6:5.2f} MB  (cifrado, índice {dificultad:.1f})")
     if cfg.get("comprobaciones"):
         indice["datos"] = [[cifrar(derivar(r, sal), os.urandom(32)) for r in grupo] for grupo in cfg["comprobaciones"]]
+    if cfg.get("preguntas"):
+        indice["preguntas"] = {}
+        for carpeta, (letra, tarjeta) in cfg["preguntas"].items():
+            kq = AESGCM.generate_key(bit_length=256)
+            indice["preguntas"][carpeta] = {"llave": [cifrar(derivar(f"{carpeta} {letra}", sal), kq)],
+                                            "tarjeta": {**cifrar(kq, tarjeta.encode()), "tipo": "text/html"}}
     escribir_js(f"{reto}_llaves", f"{reto}_llaves", indice)
 
     # Comprobación: cada respuesta abre la llave SOLO en su grupo, y una incorrecta no abre nada
@@ -210,6 +229,14 @@ def recompensa(reto, cfg):
             assert all(_abre(kek, x) not in (None, k) for x in indice["datos"][i])
             assert all(_abre(kek, x) is None for j, g in enumerate(indice["datos"]) if j != i for x in g)
             assert all(_abre(kek, x) is None for g in indice["grupos"] for x in g)
+    # Cada pregunta: solo su letra correcta abre su tarjeta (y nunca la llave del reto)
+    for carpeta, (letra, tarjeta) in cfg.get("preguntas", {}).items():
+        p = indice["preguntas"][carpeta]
+        for otra in "abcd":
+            kq = _abre(derivar(f"{carpeta} {otra}", sal), p["llave"][0])
+            assert (kq is not None) == (otra == letra), (carpeta, otra)
+            if kq:
+                assert kq != k and _abre(kq, p["tarjeta"]).decode() == tarjeta
 
 
 def _abre(kek, envuelta):

@@ -26,7 +26,8 @@ Web_Hackathon/
 │   ├── generar_fragmentos_mapa.py  corta mapa.png en 4 fragmentos y crea sus WAV
 │   ├── reto2_generador.py          genera y verifica las cadenas del reto 2 (--exportar: banco para la web)
 │   ├── probar_reto2_js.mjs         comprueba que web/js/operaciones.js da lo mismo que el script de Python
-│   ├── probar_reto4_sabotaje.mjs   pruebas del reto 4: solo la solución abre el caso y el contador de datos acertados
+│   ├── probar_reto4_sabotaje.mjs   pruebas del reto 4: solución, contador de datos acertados, preguntas y botón de resolver
+│   ├── generar_camara_reto4.py     recorta la foto de la cámara del reto 4, crea su WAV PD120 y verifica la ida y vuelta
 │   ├── medir_fotos_puzle.py        mide la dificultad de las fotos del puzle del reto 1
 │   └── construir_web.py            copia imágenes, prepara las pistas y cifra las recompensas (`construir_web.py reto4`: solo ese reto)
 ├── generado/
@@ -98,7 +99,7 @@ y después `python herramientas/construir_web.py` para volver a cifrar las recom
   así se conserva un 35 % más de detalle). Cabecera con nombre de constelación (LYRA, ORIÓN, CYGNUS, ANDRÓMEDA)
   que no revela el orden. Al montar el mapa hay que girar y ordenar las piezas.
 - **Retos:** los retos 1, 2 y 4 están en la web. El reto 4 es «¿Quién saboteó el GranaSAT-II?»
-  (`especificaciones/reto4_sabotaje.md`), un caso tipo Cluedo para 4. Sustituye a «Contacto con la ISS» (v1–v3) y a
+  (`especificaciones/reto4_sabotaje.md`), un caso de detectives para resolver en equipo. Sustituye a «Contacto con la ISS» (v1–v3) y a
   «SSTV a mano», que están en `especificaciones/descartadas/`; su código queda en el historial de git.
   El reto 3 (con el SDR) sigue como «PRÓXIMAMENTE».
   Reto 3 «La baliza» (Morse; primero en la web y después por SDR con walkie PMR446): pendiente de especificar.
@@ -160,33 +161,38 @@ cada uso bloquea el reto 30 s más que el anterior (ver «Web local»).
 La web no lleva la frase: elige una de las 760 cadenas posibles (10 variantes × 76) del banco que genera `reto2_generador.py --exportar`,
 que incluye huellas SHA-256 de cada etapa para que las pistas sepan por dónde va el grupo.
 
-## Reto 4 · "¿Quién saboteó el GranaSAT-II?" → ANDRÓMEDA (duración objetivo: 10–12 min)
+## Reto 4 · "¿Quién saboteó el GranaSAT-II?" → ANDRÓMEDA (duración objetivo: 12–15 min)
 
-Especificación: `especificaciones/reto4_sabotaje.md`. Un misterio tipo Cluedo para **grupos de 4**: el satélite del
-equipo dejó de responder el 15 de julio y el grupo investiga con **cuatro expedientes**, uno por persona. Dificultad
-media-baja (decidido así): la foto de la cámara da el culpable y la hora; los demás expedientes confirman y explican.
+Especificación: `especificaciones/reto4_sabotaje.md`. Un caso de detectives para un grupo de 4 alrededor de **un solo PC**:
+**todo el grupo investiga junto** (sin roles). Abren las carpetas, leen los documentos entre todos, **extraen pruebas**
+que se clavan en un tablón y, con las 4, discuten **quién** saboteó el satélite, **cómo** y **cuándo**. Dificultad media:
+ninguna carpeta da la respuesta sola; hay que cruzar pruebas.
 
-- **Inicio del caso:** expediente con texto tipo terminal y «Abrir la investigación».
-- **Mesa de investigación** (sin scroll a 1366×768, letra grande): arriba las 5 fichas de sospechosos (siluetas
-  dibujadas, no fotos), en el centro los 4 expedientes con su color y su rol, y abajo la **pizarra de deducción**
-  (quién · cómo · cuándo, se tacha y destacha con un clic y se guarda) con «Hacer la acusación».
-  Cada expediente se **amplía** a casi pantalla completa y se vuelve a la mesa con un botón o con Esc.
-  1. **Telemetría** (analista): recuadro de la **hora universal** (suma 2 horas) y 5 gráficas con preguntas
-     sencillas; al pasar el ratón se lee la hora exacta y el valor.
-  2. **Registro de radio** (operador): el mismo recuadro, la tabla de órdenes y la norma de la llave física.
-  3. **Cámara de la azotea** (imagen): «Recibir la transmisión de la cámara» reproduce `reto4_camara.js`
-     (el WAV PD120 de `generado/reto4/`, sin cifrar) con el reproductor común, y se puede descargar.
-     **La foto no está en la web**: solo se ve decodificándola con Black Cat SSTV. Mientras suena, la mesa lo indica.
-  4. **Accesos y declaraciones** (seguridad): horas de España, registro de tarjetas y declaraciones (la de Javier, comprobada).
-- **Acusación:** una opción de cada columna. 3 acusaciones por ronda; el fallo dice cuántos de los 3 datos se han
-  acertado, sin decir cuáles. Tras 3 fallos, 1 minuto sin acusar y 3 acusaciones más (la solución nunca se revela).
-  **Puntos:** 100 − 5 por acusación fallida (mínimo 10); las pistas penalizan con tiempo bloqueado, como en todos.
-- **Sin la solución en el código:** la acusación «quién cómo cuándo» se prueba contra las llaves cifradas
-  (`reto4_llaves.js`): si abre la llave del reto, descifra el audio de ANDRÓMEDA y el **resumen del caso** (que también va
-  cifrado porque cuenta la solución). Para contar los datos acertados, cada dato envuelve una llave aleatoria que no
-  abre nada (`comprobaciones` en `construir_web.py`). La lógica está en `web/js/caso_sabotaje.js`.
-- **Recargar:** se conservan la pizarra, las acusaciones usadas y el bloqueo.
-- **Pruebas:** `node herramientas/probar_reto4_sabotaje.mjs` (las 80 combinaciones: solo la solución abre el caso y el
-  contador de aciertos es el real; el audio y el resumen se descifran; la solución no aparece en claro en `web/`).
-  El WAV de la cámara se decodifica con `sstv_pd120.py` con un error medio de 3,4/255 frente a `camara_azotea_pd120.png`.
+- **Inicio del caso:** texto tipo terminal, consejo («poned la foto a recibir primero») y «Abrir el archivo del caso».
+- **Archivo del caso** (sin scroll a 1366×768): franja de los 5 sospechosos (siluetas dibujadas; Lucía lleva casco
+  amarillo y, sin él, gorra roja), **4 carpetas** con aspecto de carpeta de archivo (cerrada · abierta · ✓ prueba
+  extraída) y el **tablón de corcho** con las tarjetas clavadas. «Resolver el caso» está bloqueado hasta tener las 4
+  pruebas («Os faltan pruebas de: …»).
+- **Documentos:** cada carpeta se abre como un informe (membrete de GranaSAT, 15 de julio, sello «CONFIDENCIAL») y se
+  vuelve al archivo con un botón o con Esc. Telemetría (recuadro de la hora universal y 5 gráficas que se leen con el
+  ratón), registro de radio (mismo recuadro y la norma de la llave física), cámara de la azotea (recuadro corto,
+  «Recibir la foto de la cámara» con el reproductor común y descarga) y accesos y declaraciones (horas de España,
+  cada declaración con su comprobación ✔/✘).
+- **Extraer prueba:** al final de cada documento, una pregunta de 4 opciones. Si aciertan, la tarjeta (hechos con el
+  reloj de cada hora) se clava en el tablón; si fallan, «No es eso. Volved a leer el documento.» y 15 s de espera.
+- **Resolver el caso:** quién · cómo · cuándo (6 franjas en hora de España). El fallo dice cuántos de los 3 datos se
+  han acertado; bloqueos crecientes de 1, 3 y 5 min (y 5 en adelante) con cuenta atrás. Nunca se revela la solución.
+- **Puntos:** 100 − 5 por cada pregunta fallada y cada acusación fallada (mínimo 10); las pistas penalizan con tiempo.
+- **La foto de la cámara:** `python herramientas/generar_camara_reto4.py` recorta `recursos/imagenes/camara_azotea.jpg`
+  (conservando la gorra roja y los auriculares verdes), crea `generado/reto4/camara_azotea.wav` (PD120, 11 025 Hz) y
+  verifica la ida y vuelta; después `python herramientas/construir_web.py reto4`. **La foto no está en la web**: solo
+  su audio (`reto4_camara.js`, sin cifrar), que hay que decodificar con Black Cat SSTV.
+- **Sin las respuestas en el código:** la acusación abre la llave del reto (audio de ANDRÓMEDA y resumen del caso,
+  ambos cifrados); cada dato de la acusación envuelve una llave aleatoria para contar aciertos sin decir cuáles, y
+  la opción correcta de cada pregunta abre la llave de su tarjeta de prueba (también cifrada). Todo se define en
+  `construir_web.py`; la lógica de la web está en `web/js/caso_sabotaje.js`.
+- **Recargar:** se conservan las carpetas abiertas, las pruebas extraídas, las acusaciones usadas y los bloqueos.
+- **Pruebas:** `node herramientas/probar_reto4_sabotaje.mjs` (las 120 combinaciones: solo la solución abre el caso y
+  el contador de aciertos es el real, incluidas las trampas; cada pregunta solo da su tarjeta con la opción correcta;
+  sin las 4 pruebas no se resuelve; nada de la solución en claro en `web/`).
 - **Para más adelante:** más casos (otro culpable, método, hora y foto) para repartir uno por grupo.

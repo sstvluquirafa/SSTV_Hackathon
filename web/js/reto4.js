@@ -1,7 +1,8 @@
-// Reto 4 · ¿Quién saboteó el GranaSAT-II? Un caso tipo Cluedo para 4 investigadores.
-// Inicio del caso → mesa de investigación (5 sospechosos, 4 expedientes que se amplían, pizarra de deducción)
-// → acusación (quién, cómo y cuándo). La comprobación está en caso_sabotaje.js y la solución solo existe cifrada.
-// La foto de la cámara de la azotea no está en la web: llega como audio SSTV y hay que decodificarla.
+// Reto 4 · ¿Quién saboteó el GranaSAT-II? Un caso de detectives para resolver en equipo (todo el grupo junto).
+// Inicio del caso → archivo (sospechosos, 4 carpetas y tablón de pruebas) → cada carpeta se abre como un informe y al
+// final se extrae su prueba con una pregunta → con las 4 pruebas en el tablón se resuelve el caso (quién, cómo, cuándo).
+// Las respuestas solo existen cifradas (caso_sabotaje.js + reto4_llaves.js). La foto de la cámara no está en la web:
+// llega como audio SSTV y hay que decodificarla.
 (function () {
   "use strict";
   const { $, $$, escapar, Progreso, Cripto, cargarDatos, urlDe, blobDesdeB64, Sonido } = App;
@@ -12,33 +13,29 @@
   const SOSPECHOSOS = [
     { id: "marta", nombre: "Marta", cargo: "Ingeniera de software", rasgo: "Siempre lleva <b>bata blanca</b>", acceso: "Tarjeta: <b>laboratorio</b>" },
     { id: "javier", nombre: "Javier", cargo: "Operador de radio", rasgo: "Nunca se quita sus <b>auriculares verdes</b>", acceso: "Tarjeta: <b>laboratorio y azotea</b>" },
-    { id: "lucia", nombre: "Lucía", cargo: "Técnica de antenas", rasgo: "Trabaja con <b>casco amarillo</b>", acceso: "Tarjeta: <b>azotea</b>" },
+    { id: "lucia", nombre: "Lucía", cargo: "Técnica de antenas", rasgo: "Trabaja con <b>casco amarillo</b>; sin él, lleva su <b>gorra roja</b>", acceso: "Tarjeta: <b>azotea</b>" },
     { id: "pablo", nombre: "Pablo", cargo: "Becario", rasgo: "Siempre va con su <b>gorra roja</b>", acceso: "Tarjeta: <b>laboratorio</b>" },
-    { id: "hacker", nombre: "Hacker externo", cargo: "Podría atacar el satélite a distancia", rasgo: "Rasgo desconocido", acceso: "<b>Sin tarjeta</b> para ninguna instalación" },
-  ];
-  const EXPEDIENTES = [
-    { id: "telemetria", num: 1, rol: "Analista de telemetría", titulo: "Telemetría del satélite", resumen: "Las gráficas del satélite el 15 de julio" },
-    { id: "radio", num: 2, rol: "Operador de radio", titulo: "Registro de radio", resumen: "Todas las órdenes que recibió el satélite" },
-    { id: "camara", num: 3, rol: "Especialista en imagen", titulo: "Cámara de seguridad de la azotea", resumen: "La última foto de la cámara, por SSTV" },
-    { id: "accesos", num: 4, rol: "Jefe de seguridad", titulo: "Accesos y declaraciones", resumen: "Tarjetas del edificio y lo que dice cada uno" },
+    { id: "hacker", nombre: "Hacker externo", cargo: "Podría atacar el satélite a distancia", rasgo: "Rasgo desconocido", acceso: "<b>Sin tarjeta</b>" },
   ];
   const PISTAS = [
-    { id: "p1", titulo: "Pista 1 · El cómo", texto: "Empezad por el <b>cómo</b>: ¿qué gráfica de la telemetría cambia de golpe? ¿Hay alguna orden de radio a esa misma hora?" },
-    { id: "p2", titulo: "Pista 2 · Las horas", texto: "¿Las horas no os cuadran? Releed el recuadro de la <b>hora universal</b> en los expedientes del satélite." },
-    { id: "p3", titulo: "Pista 3 · El quién", texto: "A esa hora, ¿de quién era la tarjeta que abrió la azotea? ¿Pudo usarla su dueño? Comparad con la foto de la cámara." },
+    { id: "p1", titulo: "Pista 1 · Los relojes", texto: "¿Las horas del tablón no os cuadran? Fijaos en qué reloj usa cada prueba: hora universal u hora de España." },
+    { id: "p2", titulo: "Pista 2 · La tarjeta", texto: "Si Javier estaba en la reunión, ¿quién pudo usar su tarjeta? Mirad quién lleva gorra roja en las fichas." },
+    { id: "p3", titulo: "Pista 3 · Las gorras", texto: "Dos sospechosos llevan gorra roja. ¿Dónde estaba cada uno a las 14:32, hora de España?" },
   ];
+  const GIROS = [-3, 2.5, -1.5, 3]; // las tarjetas se clavan un poco torcidas
+  const mmss = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
   // ===================================== Vista =====================================
   function vista(el) {
     guardar((r) => {
       r.empezado = true;
-      if (!r.tachadas) { r.tachadas = { quien: [], como: [], cuando: [] }; r.acusaciones = []; r.ronda = 0; r.bloqueoAcusarHasta = 0; }
+      if (!r.pruebas) { r.pruebas = {}; r.abiertas = []; r.bloqueoPregunta = {}; r.acusaciones = []; r.bloqueoAcusarHasta = 0; }
     });
     const e = estado();
     if (e.completado) pintarResuelto(el);
     else if (!e.abierto) pintarInicio(el);
-    else pintarMesa(el);
-    App.cadaSegundo(() => { App.comprobarBloqueo(ID); pintarBotonAcusar(); });
+    else pintarArchivo(el);
+    App.cadaSegundo(() => { App.comprobarBloqueo(ID); pintarResolver(); pintarBloqueoPregunta(); });
     App.comprobarBloqueo(ID);
   }
 
@@ -54,27 +51,27 @@
               dejó de responder. Por la mañana todo iba bien: había enviado sus fotos, la batería estaba llena y contestaba a cada
               orden. Pero al llegar la tarde se quedó en silencio, y desde entonces nadie ha conseguido comunicarse con él.</p>
             <p>Al revisar los datos, el equipo descubrió que no fue una avería: alguien lo hizo a propósito.</p>
-            <p><b>Sois el equipo de investigación.</b> Tenéis cuatro expedientes con pruebas. <b>Repartíoslos: cada uno será el
-              experto en el suyo.</b> Después, poned en común lo que descubráis y averiguad <b>quién</b> saboteó el satélite,
-              <b>cómo</b> lo hizo y <b>a qué hora</b>.</p>
+            <p><b>Sois el equipo de investigación.</b> Abrid las carpetas del caso, leed los documentos entre todos y extraed las
+              pruebas. Cuando las tengáis todas, descubrid <b>quién</b> saboteó el satélite, <b>cómo</b> lo hizo y <b>a qué hora</b>.</p>
           </div></div>
-        <button class="btn btn-ambar r4-abrir" id="r4-abrir">${ICONO.lupa} Abrir la investigación</button>
+        <p class="r4-consejo">💡 <i>Consejo: la foto de la cámara tarda 2 minutos en llegar. Ponedla a recibir primero y, mientras llega, leed las demás carpetas.</i></p>
+        <button class="btn btn-ambar r4-abrir" id="r4-abrir">${ICONO.expediente} Abrir el archivo del caso</button>
       </section>`;
     App.escribir($("#r4-relato"));
     $("#r4-abrir").addEventListener("click", () => {
       guardar((r) => { r.abierto = true; });
-      Progreso.anotar("Reto 4: investigación abierta");
+      Progreso.anotar("Reto 4: archivo del caso abierto");
       Sonido.tic();
-      pintarMesa($("#vista"));
+      pintarArchivo($("#vista"));
     });
   }
 
-  // ---------- Mesa de investigación ----------
-  function pintarMesa(el) {
+  // ---------- Archivo del caso: sospechosos, carpetas y tablón ----------
+  function pintarArchivo(el) {
     el.innerHTML = `
       <div class="r4-barra">
         <div class="expediente-num">EXPEDIENTE #04 · ¿QUIÉN SABOTEÓ EL GRANASAT-II?</div>
-        <span class="r4-barra-ayuda">Repartíos los 4 expedientes · poned en común · acusad</span>
+        <span class="r4-barra-ayuda">Abrid las carpetas · extraed las pruebas · resolved el caso</span>
         <button class="btn btn-oscuro btn-peq" id="r4-ver-pistas">${ICONO.bombilla} Pistas</button>
         <a class="volver r4-volver" href="#/panel">${ICONO.volver} Retos</a>
       </div>
@@ -83,111 +80,169 @@
         <article class="r4-sospechoso">${silueta(s.id)}
           <div><h3>${s.nombre}</h3><p class="r4-cargo">${s.cargo}</p><p>${s.rasgo}</p><p>${s.acceso}</p></div>
         </article>`).join("")}</section>
-      <section class="r4-expedientes" aria-label="Expedientes">${EXPEDIENTES.map((x) => `
-        <button class="r4-exp r4-exp-${x.id}" data-abrir="${x.id}">
-          <span class="r4-exp-num mono">EXPEDIENTE ${x.num}</span>
-          <span class="r4-exp-rol">${x.rol}</span>
-          <span class="r4-exp-tit">${x.titulo} · <small>${x.resumen}</small></span>
-          <span class="r4-exp-ampliar">${ICONO.lupa} Ampliar</span>
-          ${x.id === "camara" ? `<span class="r4-exp-vivo oculto" id="r4-tx-mesa">● TRANSMITIENDO</span>` : ""}
-        </button>`).join("")}</section>
-      <section class="panel r4-pizarra" aria-label="Pizarra de deducción">
-        <div class="r4-pizarra-cab"><h2>Pizarra de deducción <small>· tachad lo que descartéis (clic para tachar o destachar)</small></h2>
-          <div class="r4-acusar-caja"><span class="mono" id="r4-quedan"></span>
-            <button class="btn btn-ambar" id="r4-acusar">${ICONO.candado} Hacer la acusación</button></div></div>
-        <div class="r4-columnas">${Caso.COLUMNAS.map((c) => `
-          <div class="r4-col r4-col-${c.id}"><h3>${c.titulo}${c.nota ? ` <small>(${c.nota})</small>` : ""}</h3>
-            <div class="r4-fichas">${Caso.OPCIONES[c.id].map((o) => `<button class="r4-ficha" data-col="${c.id}" data-op="${o.id}" aria-pressed="false">${o.texto}</button>`).join("")}</div>
-          </div>`).join("")}</div>
-        <p class="r4-ultima" id="r4-ultima"></p>
-      </section>
-      ${EXPEDIENTES.map((x) => `
-        <div class="r4-ampliado r4-exp-${x.id}" id="r4-amp-${x.id}" role="dialog" aria-label="${x.titulo}" hidden>
-          <div class="r4-amp-cab"><span class="r4-exp-num mono">EXPEDIENTE ${x.num} · ${x.rol.toUpperCase()}</span>
-            <h2>${x.titulo}</h2><button class="btn btn-ambar r4-cerrar" data-cerrar>${ICONO.volver} Volver a la mesa</button></div>
-          <div class="r4-amp-cuerpo">${CONTENIDO[x.id]()}</div>
+      <div class="r4-archivo">
+        <section class="r4-carpetas" aria-label="Carpetas del caso">${Caso.CARPETAS.map((c, i) => `
+          <button class="r4-carpeta" id="r4-carpeta-${c.id}" data-abrir="${c.id}">
+            <span class="r4-pestana mono">CARPETA ${i + 1}</span>
+            <span class="r4-etiqueta">${c.titulo}</span>
+            <span class="r4-estado mono"></span>
+            ${c.id === "camara" ? `<span class="r4-vivo oculto" id="r4-tx-archivo">● RECIBIENDO LA FOTO</span>` : ""}
+          </button>`).join("")}</section>
+        <section class="r4-tablon" aria-label="Tablón de pruebas">
+          <h2>Tablón de pruebas</h2>
+          <div class="r4-corcho" id="r4-corcho"></div>
+          <div class="r4-resolver-caja"><p id="r4-faltan"></p>
+            <button class="btn btn-ambar" id="r4-resolver">${ICONO.candado} Resolver el caso</button></div>
+        </section>
+      </div>
+      ${Caso.CARPETAS.map((c, i) => `
+        <div class="r4-documento" id="r4-doc-${c.id}" role="dialog" aria-label="${c.titulo}" hidden>
+          <div class="r4-doc-barra"><span class="mono">CARPETA ${i + 1} · ${c.titulo.toUpperCase()}</span>
+            <button class="btn btn-borde btn-peq r4-ir-extraer" data-ir-extraer>${ICONO.abajo} Al final: extraer la prueba</button>
+            <button class="btn btn-ambar r4-cerrar" data-cerrar>${ICONO.volver} Volver al archivo</button></div>
+          <div class="r4-doc-hoja">
+            <header class="r4-membrete"><img src="assets/img/logo.jpg" alt=""><div><b>GranaSAT · Universidad de Granada</b>
+              <span class="mono">Expediente #04-${i + 1} · 15 de julio</span></div><span class="r4-confidencial">CONFIDENCIAL</span></header>
+            <h2>${c.titulo}</h2>
+            ${CONTENIDO[c.id]()}
+            <section class="r4-extraer" aria-label="Extraer prueba">
+              <h3>${ICONO.lupa} Extraer prueba</h3>
+              <p class="r4-pregunta">${c.pregunta}</p>
+              <div class="r4-opciones">${c.opciones.map((o) => `<button class="r4-opcion" data-carpeta="${c.id}" data-op="${o.id}">${o.texto}</button>`).join("")}</div>
+              <div class="r4-extraer-res" id="r4-res-${c.id}" aria-live="polite"></div>
+            </section>
+          </div>
         </div>`).join("")}`;
-    $$("[data-abrir]", el).forEach((b) => b.addEventListener("click", () => ampliar(b.dataset.abrir)));
-    $$("[data-cerrar]", el).forEach((b) => b.addEventListener("click", cerrarAmpliado));
-    $$(".r4-pizarra .r4-ficha", el).forEach((b) => b.addEventListener("click", () => tachar(b.dataset.col, b.dataset.op)));
-    $("#r4-acusar").addEventListener("click", abrirAcusacion);
+    $$("[data-abrir]", el).forEach((b) => b.addEventListener("click", () => abrirCarpeta(b.dataset.abrir)));
+    $$("[data-cerrar]", el).forEach((b) => b.addEventListener("click", cerrarDocumento));
+    $$("[data-ir-extraer]", el).forEach((b) => b.addEventListener("click", () => $(".r4-extraer", b.closest(".r4-documento")).scrollIntoView({ behavior: "smooth" })));
+    $$(".r4-opcion", el).forEach((b) => b.addEventListener("click", () => responder(b.dataset.carpeta, b.dataset.op)));
+    $("#r4-resolver").addEventListener("click", abrirAcusacion);
     $("#r4-ver-pistas").addEventListener("click", () => { $("#r4-pistas").classList.toggle("oculto"); pintarPistas(); });
     $("#r4-recibir").addEventListener("click", recibirCamara);
     $$(".r4-grafica").forEach(lectorGrafica);
-    pintarPizarra();
-    pintarBotonAcusar();
+    pintarCarpetas();
+    pintarTablon();
+    pintarResolver();
+    pintarBloqueoPregunta();
   }
 
-  function ampliar(id) {
-    cerrarAmpliado();
-    const a = $(`#r4-amp-${id}`);
-    a.hidden = false;
-    $(".r4-cerrar", a).focus({ preventScroll: true });
-    Sonido.tic();
-  }
-  function cerrarAmpliado() { $$(".r4-ampliado").forEach((a) => { a.hidden = true; }); }
-  document.addEventListener("keydown", (ev) => { if (ev.key === "Escape" && !$(".r4-modal")) cerrarAmpliado(); });
-
-  // ---------- Pizarra ----------
-  function tachar(col, op) {
-    guardar((r) => {
-      const l = r.tachadas[col];
-      r.tachadas[col] = l.includes(op) ? l.filter((x) => x !== op) : [...l, op];
-    });
-    Sonido.tic();
-    pintarPizarra();
-  }
-  function pintarPizarra() {
+  function pintarCarpetas() {
     const e = estado();
-    $$(".r4-pizarra .r4-ficha").forEach((b) => {
-      const t = e.tachadas[b.dataset.col].includes(b.dataset.op);
-      b.classList.toggle("tachada", t);
-      b.setAttribute("aria-pressed", String(t));
-    });
-    const u = e.acusaciones[e.acusaciones.length - 1];
-    $("#r4-ultima").innerHTML = u ? `Última acusación: ${textoAcusacion(u)} → <b>${u.aciertos} de 3 datos</b>` : "";
+    for (const c of Caso.CARPETAS) {
+      const b = $(`#r4-carpeta-${c.id}`), hecha = !!e.pruebas[c.id], abierta = e.abiertas.includes(c.id);
+      b.dataset.estado = hecha ? "hecha" : abierta ? "abierta" : "cerrada";
+      $(".r4-estado", b).textContent = hecha ? "✓ PRUEBA EXTRAÍDA" : abierta ? "ABIERTA" : "CERRADA";
+      const doc = $(`#r4-doc-${c.id}`);
+      if (hecha) {
+        $$(".r4-opcion", doc).forEach((o) => { o.disabled = true; });
+        $(`#r4-res-${c.id}`, doc).innerHTML = `<div class="r4-ok">✓ Prueba extraída y clavada en el tablón.</div>`;
+      }
+    }
   }
-  const textoOpcion = (col, id) => Caso.OPCIONES[col].find((o) => o.id === id).texto;
-  const textoAcusacion = (a) => Caso.COLUMNAS.map((c) => {
-    const t = textoOpcion(c.id, a[c.id]);
-    return escapar(c.id === "como" ? t.split(" ").slice(0, 4).join(" ") + "…" : t);
-  }).join(" · ");
 
-  // ---------- Acusación ----------
-  const segundosBloqueo = () => Math.max(0, Math.ceil(((estado().bloqueoAcusarHasta || 0) - Date.now()) / 1000));
-  function pintarBotonAcusar() {
-    const b = $("#r4-acusar");
+  function pintarTablon(nueva) {
+    const e = estado(), caja = $("#r4-corcho");
+    const pruebas = Caso.CARPETAS.filter((c) => e.pruebas[c.id]);
+    caja.innerHTML = pruebas.length ? pruebas.map((c) => `
+      <article class="r4-prueba ${c.id === nueva ? "nueva" : ""}" style="--giro:${GIROS[Caso.CARPETAS.indexOf(c)]}deg">
+        <i class="r4-chincheta" aria-hidden="true"></i><span class="mono">${c.titulo.toUpperCase()}</span><p>${e.pruebas[c.id]}</p></article>`).join("")
+      : `<p class="r4-vacio">Aún no tenéis pruebas. Abrid las carpetas.</p>`;
+  }
+
+  function abrirCarpeta(id) {
+    cerrarDocumento();
+    if (!estado().abiertas.includes(id)) guardar((r) => { r.abiertas.push(id); });
+    const d = $(`#r4-doc-${id}`);
+    d.hidden = false;
+    $(".r4-doc-hoja", d).scrollTop = 0;
+    $(".r4-cerrar", d).focus({ preventScroll: true });
+    pintarCarpetas();
+    Sonido.tic();
+  }
+  function cerrarDocumento() { $$(".r4-documento").forEach((d) => { d.hidden = true; }); }
+  document.addEventListener("keydown", (ev) => { if (ev.key === "Escape" && !$(".r4-modal")) cerrarDocumento(); });
+
+  // ---------- Extraer prueba ----------
+  const segundosPregunta = (id) => Math.max(0, Math.ceil((((estado().bloqueoPregunta || {})[id] || 0) - Date.now()) / 1000));
+  function pintarBloqueoPregunta() {
+    const e = estado();
+    if (!e.pruebas) return;
+    for (const c of Caso.CARPETAS) {
+      const res = $(`#r4-res-${c.id}`);
+      if (!res || e.pruebas[c.id]) continue;
+      const s = segundosPregunta(c.id);
+      $$(`.r4-opcion[data-carpeta='${c.id}']`).forEach((o) => { if (!o.classList.contains("comprobando")) o.disabled = s > 0; });
+      const espera = $(".r4-espera", res);
+      if (espera) espera.textContent = s ? `Podréis volver a responder en ${s} s.` : "Ya podéis volver a responder.";
+    }
+  }
+
+  async function responder(carpeta, op) {
+    if (estado().pruebas[carpeta] || segundosPregunta(carpeta)) return;
+    const res = $(`#r4-res-${carpeta}`), opciones = $$(`.r4-opcion[data-carpeta='${carpeta}']`);
+    opciones.forEach((o) => { o.disabled = true; o.classList.add("comprobando"); o.classList.toggle("elegida", o.dataset.op === op); });
+    res.innerHTML = App.htmlCarga("Comprobando…");
+    const tarjeta = await Caso.extraer(window.DATOS.reto4_llaves, carpeta, op, Cripto);
+    opciones.forEach((o) => o.classList.remove("comprobando"));
+    if (tarjeta) {
+      guardar((r) => { r.pruebas[carpeta] = tarjeta; });
+      Progreso.anotar(`Reto 4: prueba extraída (${Caso.CARPETAS.find((c) => c.id === carpeta).titulo})`);
+      Sonido.exito();
+      pintarCarpetas();
+      setTimeout(() => {
+        if (!$("#r4-corcho")) return;
+        cerrarDocumento();
+        pintarTablon(carpeta);
+        pintarResolver();
+      }, 1300);
+    } else {
+      guardar((r) => { r.fallos++; r.bloqueoPregunta[carpeta] = Date.now() + Caso.BLOQUEO_PREGUNTA * 1000; });
+      Progreso.anotar("Reto 4: pregunta fallada");
+      Sonido.error();
+      res.innerHTML = `<div class="r4-no">✗ No es eso. Volved a leer el documento. <span class="r4-espera mono"></span></div>`;
+      pintarBloqueoPregunta();
+    }
+  }
+
+  // ---------- Resolver el caso (acusación) ----------
+  const segundosAcusar = () => Math.max(0, Math.ceil(((estado().bloqueoAcusarHasta || 0) - Date.now()) / 1000));
+  function pintarResolver() {
+    const b = $("#r4-resolver");
     if (!b) return;
-    const s = segundosBloqueo();
-    if (!s && estado().ronda >= Caso.ACUSACIONES_POR_RONDA) guardar((r) => { r.ronda = 0; }); // tras el minuto: 3 acusaciones más
-    b.disabled = s > 0;
-    b.innerHTML = s ? `${ICONO.reloj} Podréis acusar de nuevo en ${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}` : `${ICONO.candado} Hacer la acusación`;
-    $("#r4-quedan").textContent = s ? "" : `Acusaciones: quedan ${Caso.ACUSACIONES_POR_RONDA - estado().ronda} de ${Caso.ACUSACIONES_POR_RONDA}`;
+    const e = estado(), r = Caso.puedeResolver(e.pruebas), s = segundosAcusar(), faltan = $("#r4-faltan");
+    b.disabled = !r.ok || s > 0;
+    b.innerHTML = s ? `${ICONO.reloj} Podréis acusar de nuevo en ${mmss(s)}` : `${ICONO.candado} Resolver el caso`;
+    const u = e.acusaciones[e.acusaciones.length - 1];
+    if (!r.ok) faltan.innerHTML = `Os faltan pruebas de: <b>${r.faltan.join(", ")}</b>.`;
+    else if (s) faltan.innerHTML = `✗ La última acusación acertó <b>${u.aciertos} de 3 datos</b>. Aprovechad para repasar el tablón.`;
+    else faltan.innerHTML = u ? `La última acusación acertó <b>${u.aciertos} de 3 datos</b>. ¡Ya podéis volver a intentarlo!` : "¡Tenéis todas las pruebas! Discutidlas y resolved el caso.";
+    faltan.className = s ? "bloqueado" : r.ok ? "listo" : "";
   }
 
   function abrirAcusacion() {
-    if (segundosBloqueo()) return;
+    if (!Caso.puedeResolver(estado().pruebas).ok || segundosAcusar()) return;
     const eleccion = {};
     const m = document.createElement("div");
     m.className = "modal r4-modal";
     m.setAttribute("role", "dialog");
-    m.setAttribute("aria-label", "Hacer la acusación");
-    const e = estado(), anteriores = e.acusaciones;
+    m.setAttribute("aria-label", "Resolver el caso");
+    const anteriores = estado().acusaciones;
     m.innerHTML = `<div class="panel r4-acusacion">
-        <h2>Hacer la acusación</h2>
-        <p class="texto-2">Elegid una opción de cada columna. Quedan <b>${Caso.ACUSACIONES_POR_RONDA - e.ronda} de ${Caso.ACUSACIONES_POR_RONDA}</b> acusaciones.</p>
+        <h2>Resolver el caso</h2>
+        <p class="texto-2">Elegid una opción de cada columna y confirmad. Si os equivocáis, tendréis que esperar antes de volver a acusar.</p>
         <div class="r4-columnas">${Caso.COLUMNAS.map((c) => `
           <div class="r4-col r4-col-${c.id}"><h3>${c.titulo}${c.nota ? ` <small>(${c.nota})</small>` : ""}</h3>
             <div class="r4-fichas" role="radiogroup" aria-label="${c.titulo}">${Caso.OPCIONES[c.id].map((o) => `
-              <button class="r4-ficha ${e.tachadas[c.id].includes(o.id) ? "tachada" : ""}" role="radio" aria-checked="false" data-col="${c.id}" data-op="${o.id}">${o.texto}</button>`).join("")}</div>
+              <button class="r4-ficha" role="radio" aria-checked="false" data-col="${c.id}" data-op="${o.id}">${o.texto}</button>`).join("")}</div>
           </div>`).join("")}</div>
-        <div class="r4-resultado-acusacion" id="r4-res" aria-live="polite"></div>
+        <div id="r4-res" aria-live="polite"></div>
         ${anteriores.length ? `<details class="r4-anteriores"><summary>Acusaciones anteriores (${anteriores.length})</summary>
           <ul>${anteriores.map((a) => `<li>${textoAcusacion(a)} → ${a.aciertos} de 3</li>`).join("")}</ul></details>` : ""}
         <div class="botonera"><button class="btn btn-oscuro" data-a="cerrar">${ICONO.cerrar} Cancelar</button>
           <button class="btn btn-ambar" data-a="acusar" disabled>${ICONO.candado} Confirmar la acusación</button></div>
       </div>`;
-    const cerrar = () => { m.remove(); document.removeEventListener("keydown", tecla); pintarPizarra(); pintarBotonAcusar(); };
+    const cerrar = () => { m.remove(); document.removeEventListener("keydown", tecla); pintarResolver(); };
     const tecla = (ev) => { if (ev.key === "Escape") cerrar(); };
     const botonAcusar = $("[data-a='acusar']", m);
     $$(".r4-ficha", m).forEach((b) => b.addEventListener("click", () => {
@@ -205,22 +260,26 @@
       const r = await Caso.comprobar(window.DATOS.reto4_llaves, eleccion, Cripto);
       if (r.resuelto) { cerrar(); resolver(r.llave, eleccion); return; }
       guardar((x) => {
-        x.fallos++; x.ronda++;
+        x.fallos++;
         x.acusaciones.push({ ...eleccion, aciertos: r.aciertos });
-        if (x.ronda >= Caso.ACUSACIONES_POR_RONDA) x.bloqueoAcusarHasta = Date.now() + Caso.BLOQUEO_RONDA * 1000;
+        x.bloqueoAcusarHasta = Date.now() + Caso.bloqueoAcusacion(x.acusaciones.length) * 1000;
       });
       Progreso.anotar(`Reto 4: acusación fallida (${r.aciertos} de 3 datos)`);
       Sonido.error();
-      const agotadas = estado().ronda >= Caso.ACUSACIONES_POR_RONDA;
-      $("#r4-res", m).innerHTML = `<div class="aviso aviso-error r4-fallo">✗ No es correcto. <b>Habéis acertado ${r.aciertos} de los 3 datos.</b>
-        ${agotadas ? "<br>Habéis gastado las 3 acusaciones: dentro de 1 minuto tendréis 3 más. Mientras, repasad los expedientes." : `<br>Os quedan ${Caso.ACUSACIONES_POR_RONDA - estado().ronda}.`}</div>`;
+      $("#r4-res", m).innerHTML = `<div class="aviso aviso-error r4-fallo">✗ No es correcto. <b>Habéis acertado ${r.aciertos} de los 3 datos.</b><br>
+        Podréis volver a acusar dentro de ${mmss(segundosAcusar())}. Aprovechad para repasar el tablón.</div>`;
       $$(".r4-ficha", m).forEach((b) => { b.disabled = true; });
       botonAcusar.remove();
-      $("[data-a='cerrar']", m).innerHTML = `${ICONO.volver} Volver a la mesa`;
+      $("[data-a='cerrar']", m).innerHTML = `${ICONO.volver} Volver al tablón`;
     });
     document.addEventListener("keydown", tecla);
     document.body.appendChild(m);
   }
+  const textoOpcion = (col, id) => Caso.OPCIONES[col].find((o) => o.id === id).texto;
+  const textoAcusacion = (a) => Caso.COLUMNAS.map((c) => {
+    const t = textoOpcion(c.id, a[c.id]);
+    return escapar(c.id === "como" ? t.split(" ").slice(0, 4).join(" ") + "…" : t);
+  }).join(" · ");
 
   function resolver(llave, eleccion) {
     const puntos = Math.max(App.PUNTOS_MINIMOS, 100 - App.PENALIZACION_FALLO * estado().fallos);
@@ -245,7 +304,7 @@
         <h2>Fragmento ANDRÓMEDA</h2>
         <p class="texto-2">Decodificad el audio con Black Cat SSTV y guardad la imagen para el montaje del mapa.</p>
         <div id="r4-audio">${App.htmlCarga("Descifrando la transmisión del fragmento ANDRÓMEDA…")}</div>
-        <div class="marcador"><span class="chip chip-ambar">${ICONO.estrella} ${e.puntos} PTS</span><span class="chip">ACUSACIONES FALLIDAS: ${e.fallos}</span>
+        <div class="marcador"><span class="chip chip-ambar">${ICONO.estrella} ${e.puntos} PTS</span><span class="chip">FALLOS: ${e.fallos}</span>
           <a class="btn btn-borde btn-peq" href="#/panel">${ICONO.volver} Volver a los retos</a></div>
       </section>`;
     try {
@@ -275,26 +334,28 @@
     }));
   }
 
-  // ===================================== Expedientes =====================================
+  // ===================================== Documentos de las carpetas =====================================
   const HORA_UNIVERSAL = `<div class="r4-utc" role="note"><span class="r4-utc-icono" aria-hidden="true">🕐</span><div>
     <b class="r4-utc-tit">Atención: la hora de los satélites es distinta.</b>
     <p>Los satélites y los radioaficionados de todo el mundo usan el mismo reloj, llamado <b>hora universal</b> (UTC),
-      para no liarse con los husos horarios de cada país. <b>Todas las horas de este expediente están en hora universal.</b></p>
+      para no liarse con los husos horarios de cada país. <b>Todas las horas de este documento están en hora universal.</b></p>
     <p class="r4-utc-regla"><b>Para saber qué hora era en España, suma 2 horas.</b> Ejemplo: las 10:00 en hora universal son las 12:00 en España.</p></div></div>`;
+  const HORA_UNIVERSAL_CORTA = `<div class="r4-utc corta" role="note"><span class="r4-utc-icono" aria-hidden="true">🕐</span><p>
+    <b class="r4-utc-tit">Hora universal:</b> <b>para saber qué hora era en España, suma 2 horas.</b></p></div>`;
 
   // Gráficas de la telemetría: [hora universal en minutos, valor]; terminan a las 14:10, cuando se apaga el satélite
   const h = (t) => { const [a, b] = t.split(":").map(Number); return a * 60 + b; };
-  const FIN = h("14:10"), SABOTAJE = h("12:32");
+  const FIN = h("14:10"), GIRO = h("12:32");
   const serie = (f, paso = 2) => { const p = []; for (let t = h("06:00"); t <= FIN; t += paso) p.push([t, f(t)]); return p; };
   const GRAFICAS = [
     { titulo: "¿Hacia dónde miran los paneles solares?", nota: "0° = mirando al Sol", min: 0, max: 90, marcas: [0, 45, 90], unidad: "°",
-      puntos: [[h("06:00"), 0], [h("08:15"), 0], [h("08:15"), 15], [h("08:17"), 15], [h("08:17"), 0], [SABOTAJE, 0], [SABOTAJE, 90], [FIN, 90]] },
+      puntos: [[h("06:00"), 0], [h("08:15"), 0], [h("08:15"), 15], [h("08:17"), 15], [h("08:17"), 0], [GIRO, 0], [GIRO, 90], [FIN, 90]] },
     { titulo: "¿Cuánta batería le queda?", min: 0, max: 100, marcas: [0, 50, 100], unidad: " %",
-      puntos: [[h("06:00"), 100], [SABOTAJE, 100], [FIN, 0]] },
+      puntos: [[h("06:00"), 100], [GIRO, 100], [FIN, 0]] },
     { titulo: "¿Cuántas veces se ha reiniciado su ordenador?", min: 0, max: 5, marcas: [0, 1, 2, 3, 4, 5], unidad: "",
       puntos: [[h("06:00"), 0], [FIN, 0]] },
     { titulo: "¿Qué temperatura tiene?", min: 0, max: 40, marcas: [0, 20, 40], unidad: " °C",
-      puntos: serie((t) => 20 + 0.6 * Math.sin(t / 23) + 0.3 * Math.sin(t / 7) - (t > SABOTAJE ? (t - SABOTAJE) * 0.05 : 0)) },
+      puntos: serie((t) => 20 + 0.6 * Math.sin(t / 23) + 0.3 * Math.sin(t / 7) - (t > GIRO ? (t - GIRO) * 0.05 : 0)) },
     { titulo: "¿Llega bien su señal a la Tierra?", min: 0, max: 2, marcas: [0, 1, 2], nombres: ["Mala", "Regular", "Buena"], unidad: "",
       puntos: [[h("06:00"), 2], [FIN, 2]] },
   ];
@@ -355,18 +416,18 @@
         <tr><td class="mono">08:15</td><td>Estación del laboratorio</td><td>Girar 15° para calibrar los sensores</td><td>✅ Sí</td></tr>
         <tr><td class="mono">08:17</td><td>Estación del laboratorio</td><td>Volver a 0°</td><td>✅ Sí</td></tr>
         <tr><td class="mono">11:40</td><td>Estación del laboratorio</td><td>Enviar las fotos</td><td>✅ Sí</td></tr>
-        <tr class="r4-fila-mala"><td class="mono">12:32</td><td><b>Estación de la azotea</b></td><td><b>Girar 90°</b></td><td>❌ <b>No. Nadie la aprobó.</b></td></tr>
+        <tr><td class="mono">12:32</td><td><b>Estación de la azotea</b></td><td><b>Girar 90°</b></td><td>❌ <b>No. Nadie la aprobó.</b></td></tr>
       </tbody></table>
       <div class="r4-norma" role="note"><span aria-hidden="true">🔐</span><p>El satélite solo acepta órdenes firmadas con una <b>llave física</b>
         que está guardada <b>dentro</b> de cada estación. Para enviarle una orden hay que estar <b>dentro de la estación</b>. Desde fuera es imposible.</p></div>`,
-    camara: () => `
-      <p class="r4-texto">La estación de la azotea tiene una cámara de seguridad que transmite sus fotos por radio en SSTV. Hemos
-        recuperado la última foto que envió el 15 de julio, pero llega como sonido: tendréis que decodificarla con
-        Black Cat SSTV, como en los otros retos.</p>
+    camara: () => `${HORA_UNIVERSAL_CORTA}
+      <p class="r4-texto">La estación de radio de la azotea tiene una cámara de seguridad que transmite sus fotos por radio, en SSTV.
+        Su última foto se envió a las <b>12:31 en hora universal</b> (la cámara usa el reloj de la estación de radio).
+        La foto llega como sonido: tendréis que decodificarla con Black Cat SSTV, como en los otros retos.</p>
       <div class="r4-recordatorio">${ICONO.info}<span>Abrid Black Cat SSTV escuchando del cable antes de pulsar.</span></div>
-      <button class="btn btn-ambar r4-recibir" id="r4-recibir">${ICONO.antena} Recibir la transmisión de la cámara</button>
+      <button class="btn btn-ambar r4-recibir" id="r4-recibir">${ICONO.antena} Recibir la foto de la cámara</button>
       <div id="r4-camara"></div>
-      <p class="r4-mientras oculto" id="r4-mientras">${ICONO.reloj}<span>La foto tarda unos 2 minutos en llegar. Mientras, el resto del equipo puede estudiar sus expedientes.</span></p>`,
+      <p class="r4-mientras oculto" id="r4-mientras">${ICONO.reloj}<span>La foto tarda unos 2 minutos en llegar. Mientras, podéis leer las otras carpetas.</span></p>`,
     accesos: () => `
       <p class="r4-aviso-hora">${ICONO.reloj}<span>Estas horas son <b>las de España</b>: son los relojes del edificio.</span></p>
       <div class="r4-dos">
@@ -382,10 +443,13 @@
           </tbody></table></div>
         <div><h3>Declaraciones</h3>
           <blockquote><b>Javier:</b> «De 14:00 a 15:00 estuve en la reunión de proyecto. Dejé la chaqueta en la sala común, con la tarjeta en el bolsillo.»
-            <span class="r4-sello">✔ Comprobado: el acta de la reunión, firmada por 6 personas, confirma que estuvo allí todo el rato.</span></blockquote>
-          <blockquote><b>Pablo:</b> «A las 14:20 salí del laboratorio y me fui a la cafetería.»</blockquote>
-          <blockquote><b>Lucía:</b> «Terminé de revisar las antenas a las 14:20 y me fui.»</blockquote>
-          <blockquote><b>Marta:</b> «Estuve todo el día en el laboratorio.»</blockquote></div>
+            <span class="r4-sello si">✔ Comprobado: el acta de la reunión, firmada por 6 personas, confirma que estuvo allí todo el rato.</span></blockquote>
+          <blockquote><b>Lucía:</b> «Terminé de revisar las antenas a las 14:20, me quité el casco y me fui a coger el autobús.»
+            <span class="r4-sello si">✔ Comprobado: su tarjeta de transporte la registra subiendo al autobús a las 14:28.</span></blockquote>
+          <blockquote><b>Pablo:</b> «A las 14:20 salí del laboratorio y me fui a la cafetería.»
+            <span class="r4-sello no">✘ Sin comprobar: nadie en la cafetería recuerda haberle visto.</span></blockquote>
+          <blockquote><b>Marta:</b> «Estuve todo el día en el laboratorio.»
+            <span class="r4-sello si">✔ Comprobado: el registro de tarjetas no la muestra saliendo hasta las 18:00.</span></blockquote></div>
       </div>`,
   };
 
@@ -399,7 +463,7 @@
       App.reproductor(caja, url, "camara_azotea.wav", "CÁMARA AZOTEA · camara_azotea.wav");
       boton.classList.add("oculto");
       const audio = $("audio", caja);
-      const aviso = (vivo) => { $("#r4-mientras").classList.toggle("oculto", !vivo); const m = $("#r4-tx-mesa"); if (m) m.classList.toggle("oculto", !vivo); };
+      const aviso = (vivo) => { $("#r4-mientras").classList.toggle("oculto", !vivo); const m = $("#r4-tx-archivo"); if (m) m.classList.toggle("oculto", !vivo); };
       audio.addEventListener("play", () => aviso(true));
       audio.addEventListener("pause", () => aviso(false));
       audio.addEventListener("ended", () => aviso(false));
@@ -416,7 +480,8 @@
     const extra = {
       marta: `<path d="M20 52 L24 40 L30 46 L36 40 L40 52" fill="none" stroke="#94a3b8" stroke-width="1.5"/>`,
       javier: `<path d="M17 25 Q30 6 43 25" fill="none" stroke="#22c55e" stroke-width="3.5"/><rect x="13" y="22" width="7" height="10" rx="3" fill="#22c55e"/><rect x="40" y="22" width="7" height="10" rx="3" fill="#22c55e"/>`,
-      lucia: `<path d="M17 22 Q30 4 43 22 Z" fill="#facc15"/><rect x="15" y="20" width="30" height="4" rx="2" fill="#eab308"/>`,
+      lucia: `<path d="M17 22 Q30 4 43 22 Z" fill="#facc15"/><rect x="15" y="20" width="30" height="4" rx="2" fill="#eab308"/>
+        <g transform="translate(44 44) scale(.42)"><path d="M-12 2 Q0 -14 12 2 Z" fill="#ef4444"/><path d="M10 1 L20 4 L10 4 Z" fill="#dc2626"/></g>`,
       pablo: `<path d="M18 21 Q30 6 42 21 Z" fill="#ef4444"/><path d="M40 20 L52 23 L40 23 Z" fill="#dc2626"/>`,
       hacker: `<path d="M14 34 Q14 8 30 8 Q46 8 46 34 L42 30 Q30 18 18 30 Z" fill="#0f172a"/><text x="30" y="31" text-anchor="middle" font-size="14" font-weight="900" fill="#fbbf24">?</text>`,
     }[id];
