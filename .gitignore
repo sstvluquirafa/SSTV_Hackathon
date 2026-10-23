@@ -21,3 +21,6 @@ desktop.ini
 
 # Secretos locales
 .env
+
+# Capturas de Playwright (revisiones visuales)
+.playwright-mcp/

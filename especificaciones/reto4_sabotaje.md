@@ -1,5 +1,7 @@
 # Reto 4 · "¿Quién saboteó el GranaSAT-II?" (versión 2) → fragmento ANDRÓMEDA
 
+> Estética: `especificaciones/reto4_estetica_cuaderno.md` (el cuaderno del detective, sin emoticonos).
+
 > **Modifica la implementación actual del reto 4** (la versión 1 de este caso; su especificación está en
 > `descartadas/reto4_sabotaje_v1.md`). Tras probarla, el problema es que **las pruebas se resolvían sin leer ni pensar**:
 > la respuesta estaba escrita, era evidente por un símbolo, o bastaba con mirar nombres y horas. En esta versión
@@ -22,7 +24,7 @@ Duración objetivo: **15–18 minutos**. Dificultad: **media**.
 
 ## 1. Pantalla de instrucciones (briefing)
 
-**Siempre se puede volver a ella** con un botón fijo «📋 Instrucciones del caso» en la cabecera del reto.
+**Siempre se puede volver a ella** con un botón fijo «Instrucciones» en la cabecera del reto.
 
 > **EXPEDIENTE #04 · EL SILENCIO DEL GRANASAT-II**
 >
@@ -33,25 +35,25 @@ Duración objetivo: **15–18 minutos**. Dificultad: **media**.
 > Sois el equipo de investigación. Tenéis que descubrir **quién** saboteó el satélite, **cómo** lo hizo y **a qué hora**.
 >
 > **Cómo empezar:**
-> **① Abrid la carpeta 📷 «1 · Cámara de la azotea» y poned a recibir la foto.** Tarda unos 2 minutos en llegar,
+> **1. Abrid la carpeta I, «Cámara de la azotea» y poned a recibir la foto.** Tarda unos 2 minutos en llegar,
 > así que hacedlo lo primero.
-> **② Mientras llega, leed «El equipo de GranaSAT»** y apuntad en la libreta todo lo que os parezca importante de
+> **2. Mientras llega, leed «El equipo de GranaSAT»** y apuntad en la libreta todo lo que os parezca importante de
 > cada persona: **los sospechosos están entre ellos.**
-> **③ Abrid el resto de carpetas**, estudiad los documentos y extraed una prueba de cada una.
-> **④ Cuando tengáis las 4 pruebas, resolved el caso.**
+> **3. Abrid el resto de carpetas**, estudiad los documentos y extraed una prueba de cada una.
+> **4. Cuando tengáis las 4 pruebas, resolved el caso.**
 >
-> [ 📷 Ir a la carpeta de la cámara ]  [ Ir al archivo del caso ]
+> [ Abrir la carpeta de la cámara ]  [ Ir al archivo del caso ]
 
 ## 2. Archivo del caso (pantalla principal)
 
 - **Aviso destacado arriba** (hasta que se abra «El equipo» por primera vez, y después más discreto):
-  > 🔎 **Los sospechosos son las personas del equipo.** Leed su historia con atención y apuntad lo importante:
+  > **Los sospechosos son las personas del equipo.** Leed su historia con atención y apuntad lo importante:
   > sin esos apuntes no podréis resolver el caso.  [ Leer «El equipo de GranaSAT» ]
 - **«El equipo de GranaSAT»**: un documento especial (no es una carpeta de pruebas) con aspecto de artículo o reportaje.
   Siempre accesible.
-- **Cuatro carpetas numeradas, con icono**, en este orden:
-  **1 · 📷 Cámara de la azotea** · **2 · 📈 Telemetría del satélite** · **3 · 📻 Registro de radio** · **4 · 🪪 Accesos y declaraciones**.
-  Estado de cada una: cerrada, abierta o ✓ prueba extraída.
+- **Cuatro carpetas numeradas (números romanos)**, en este orden:
+  **I · Cámara de la azotea** · **II · Telemetría del satélite** · **III · Registro de radio** · **IV · Accesos y declaraciones**.
+  Estado de cada una: cerrada, abierta o revisada (sello «REVISADO»).
 - **Libreta del investigador** (panel lateral desplegable, siempre accesible): un apartado de texto libre para cada persona
   del equipo (Marta, Javier, Lucía, Pablo) y uno general. Se guarda en el progreso. La web no rellena nada.
 - **Tablón de pruebas** (corcho) y botón **«Resolver el caso»**, bloqueado hasta tener las 4 pruebas.
@@ -89,13 +91,13 @@ importantes (aspecto, permisos de las tarjetas, costumbres) están dentro de la 
 
 Notas para la implementación:
 - El **hacker externo** no está en el texto del equipo: aparece como opción en la acusación y se descarta con la norma
-  de la llave física (carpeta 3).
+  de la llave física (carpeta III).
 - Comprueba que **ningún otro sitio de la web** repite estos datos en forma de ficha o lista (excepto la libreta, que
   rellena el grupo).
 
 ## 4. Las cuatro carpetas
 
-### 4.1 Carpeta 1 · 📷 Cámara de la azotea
+### 4.1 Carpeta I · Cámara de la azotea
 
 > La estación de radio de la azotea tiene una cámara de seguridad que transmite sus fotos por radio, en SSTV.
 > Su última foto se envió el 15 de julio a las **12:31, hora del satélite** (la cámara usa el reloj de la estación de
@@ -115,14 +117,14 @@ Notas para la implementación:
 - Explicación de la trampa (no se muestra): los auriculares verdes son de Javier, pero el texto dice que siempre los deja
   sobre la mesa de la azotea; la gorra roja la llevan Pablo y Lucía (cuando no tiene el casco).
 
-**Tarjeta:** «📷 A las **12:31 (hora del satélite)** la cámara de la azotea fotografió a una persona **con gorra roja**
+**Tarjeta:** «A las **12:31 (hora del satélite)** la cámara de la azotea fotografió a una persona **con gorra roja**
 manejando la radio. Sobre la mesa había unos auriculares verdes.»
 
-### 4.2 Carpeta 2 · 📈 Telemetría del satélite
+### 4.2 Carpeta II · Telemetría del satélite
 
 Recuadro destacado, imposible de pasar por alto:
 
-> 🕐 **Atención: la hora del satélite es distinta.**
+> **Atención: la hora del satélite es distinta.**
 > Los satélites y los radioaficionados de todo el mundo usan el mismo reloj, llamado **hora universal** (UTC),
 > para no liarse con los husos horarios de cada país. **Todas las horas de este documento están en hora universal.**
 > **Para saber qué hora era en España, suma 2 horas.** Ejemplo: las 10:00 en hora universal son las 12:00 en España.
@@ -144,10 +146,10 @@ Texto: «Datos que envió el satélite el 15 de julio.» **Sin ninguna explicaci
   reinició · Su señal dejó de llegar a la Tierra aunque seguía teniendo batería
 - «**¿A qué hora empezó el problema, según el reloj del satélite?**» 08:15 · **12:32** · 14:10 · 14:32
 
-**Tarjeta:** «📈 A las **12:32 (hora del satélite)** el satélite se puso **de espaldas al Sol** y su batería se vació
+**Tarjeta:** «A las **12:32 (hora del satélite)** el satélite se puso **de espaldas al Sol** y su batería se vació
 hasta apagarse a las 14:10. A las 08:15 hubo un giro pequeño que volvió a su sitio.»
 
-### 4.3 Carpeta 3 · 📻 Registro de radio
+### 4.3 Carpeta III · Registro de radio
 
 El mismo recuadro de la hora universal. **Ya no hay columna «¿estaba en el plan?»**: el grupo tiene que comparar
 **dos documentos** de la misma carpeta.
@@ -164,7 +166,7 @@ El mismo recuadro de la hora universal. **Ya no hay columna «¿estaba en el pla
 Leyenda: «**GS1** = estación del laboratorio · **GS2** = estación de la azotea · **ROT** = girar los paneles a los
 grados indicados · **DL IMG** = enviar las fotos a tierra.»
 
-Norma de seguridad (recuadro): «🔐 El satélite solo acepta órdenes firmadas con una **llave física** que está guardada
+Norma de seguridad (recuadro): «El satélite solo acepta órdenes firmadas con una **llave física** que está guardada
 **dentro** de cada estación. Para enviarle una orden hay que estar **dentro de la estación**. Desde fuera es imposible.»
 
 **Documento B · Plan de trabajo del 15 de julio** (nota interna escrita por el equipo, en **hora de España**, en prosa
@@ -184,10 +186,10 @@ Así:
 **Extraer prueba:** «**¿Qué orden del registro NO estaba en el plan de trabajo?**»
 - La de las 08:15 · La de las 08:17 · La de las 11:40 · **La de las 12:32**
 
-**Tarjeta:** «📻 La orden de las **12:32 (hora del satélite)** no estaba en el plan: puso los paneles a 180°. Se envió
+**Tarjeta:** «La orden de las **12:32 (hora del satélite)** no estaba en el plan: puso los paneles a 180°. Se envió
 desde **GS2, la estación de la azotea**. Para enviarla hay que estar **dentro** de la estación.»
 
-### 4.4 Carpeta 4 · 🪪 Accesos y declaraciones
+### 4.4 Carpeta IV · Accesos y declaraciones
 
 Aviso: «Estas horas son **las de España**: son los relojes del edificio.»
 
@@ -235,7 +237,7 @@ grupo tiene que relacionar):
 **Extraer prueba:** «**¿De quién era la tarjeta que abrió la azotea a las 14:25?**»
 - Marta · **Javier** · Lucía · Pablo
 
-**Tarjeta:** «🪪 A las **14:25 (hora de España)** abrió la azotea la tarjeta **0957, la de Javier** (operador de radio).»
+**Tarjeta:** «A las **14:25 (hora de España)** abrió la azotea la tarjeta **0957, la de Javier** (operador de radio).»
 (La tarjeta **no** resume las coartadas: el grupo tiene que leerlas y relacionarlas.)
 
 ## 5. Extraer pruebas (reglas comunes)

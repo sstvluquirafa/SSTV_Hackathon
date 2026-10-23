@@ -241,21 +241,26 @@ que incluye huellas SHA-256 de cada etapa para que las pistas sepan por dónde v
 
 ## Reto 4 · "¿Quién saboteó el GranaSAT-II?" (versión 2) → ANDRÓMEDA (duración objetivo: 15–18 min)
 
-Especificación: `especificaciones/reto4_sabotaje.md` (la v1 está en `especificaciones/descartadas/`). Un caso de
-detectives para un grupo de 4 alrededor de **un solo PC**, todos juntos (sin roles). Dificultad media. La v1 se resolvía
+Especificación: `especificaciones/reto4_sabotaje.md` (la v1 está en `especificaciones/descartadas/`).
+Estética «el cuaderno del detective» (`especificaciones/reto4_estetica_cuaderno.md`, estilos en `web/css/reto4.css`): al
+entrar, la escena pasa al escritorio de un detective (madera, carpetas de cartulina, papel mecanografiado, sellos de tinta,
+libreta manuscrita y corcho), sin emoticonos, iconos, degradados ni insignias. Fuentes: Courier Prime, Special Elite,
+Libre Baskerville y Caveat (en `web/assets/fonts/`).
+
+Un caso de detectives para un grupo de 4 alrededor de **un solo PC**, todos juntos (sin roles). Dificultad media. La v1 se resolvía
 sin leer: en esta versión **los documentos dan datos, no conclusiones**, cada pregunta obliga a **cruzar al menos dos
 fuentes** y los rasgos de los sospechosos solo están **dentro de un texto** que el grupo tiene que leer y apuntar.
 
-- **Instrucciones del caso:** se abren solas la primera vez y siempre se puede volver con «📋 Instrucciones del caso»
-  (en el archivo y en cada documento). Dicen el orden: ① poner a recibir la foto de la cámara, ② leer «El equipo de
-  GranaSAT» y apuntar, ③ estudiar las carpetas y extraer las pruebas, ④ resolver.
-- **Archivo del caso** (sin scroll a 1366×768): aviso destacado «Los sospechosos son las personas del equipo» (discreto
-  cuando ya se ha leído), el reportaje **«El equipo de GranaSAT»**, las carpetas **1 · 📷 Cámara · 2 · 📈 Telemetría ·
-  3 · 📻 Radio · 4 · 🪪 Accesos** (cerrada · abierta · ✓ prueba extraída), el tablón de corcho y «Resolver el caso»
+- **Instrucciones del caso:** se abren solas la primera vez y siempre se puede volver con la solapa «Instrucciones»
+  (en el archivo y en cada documento). Es una carta con el orden: primero, poner a recibir la foto de la cámara; mientras,
+  leer «El equipo de GranaSAT» y apuntar; después, estudiar las carpetas y extraer las pruebas; por último, el informe final.
+- **Archivo del caso** (sin scroll a 1366×768, también con la ventana del navegador): nota clavada «Los sospechosos están aquí» (más
+  pequeña cuando ya se ha leído), el reportaje **«El equipo de GranaSAT»**, las carpetas **I · Cámara · II · Telemetría ·
+  III · Radio · IV · Accesos** (cerrada, abierta o con el sello «REVISADO»), el tablón de corcho y «Informe final»
   (bloqueado hasta tener las 4 pruebas). **No hay fichas de sospechosos** en ningún sitio.
 - **«El equipo de GranaSAT»:** reportaje de la revista de la escuela, a dos columnas, con el texto exacto de la
   especificación (aspecto, tarjetas y costumbres escondidos en la narración).
-- **Libreta del investigador** («📓 Libreta», siempre accesible): un apartado de texto libre por persona y uno general.
+- **Libreta del investigador** (solapa «Libreta», siempre accesible, con una pestaña por persona y «Notas»): un apartado de texto libre por persona y uno general.
   Se guarda en el progreso; la web no rellena nada. Con la libreta abierta, los documentos se estrechan para leer y
   apuntar a la vez.
 - **Carpetas** (informes con membrete y sello «CONFIDENCIAL»):

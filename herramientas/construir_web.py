@@ -73,13 +73,13 @@ RETOS = {
         # carpeta: (letras correctas, nº de opciones de cada pregunta, tarjeta). La telemetría tiene dos preguntas:
         # para extraer su prueba hay que acertar las dos ("a b").
         "preguntas": {
-            "camara": ("c", [5], "📷 A las <b>12:31 (hora del satélite)</b> la cámara de la azotea fotografió a una persona "
+            "camara": ("c", [5], "A las <b>12:31 (hora del satélite)</b> la cámara de la azotea fotografió a una persona "
                                  "<b>con gorra roja</b> manejando la radio. Sobre la mesa había unos auriculares verdes."),
-            "telemetria": ("a b", [4, 4], "📈 A las <b>12:32 (hora del satélite)</b> el satélite se puso <b>de espaldas al Sol</b> y "
+            "telemetria": ("a b", [4, 4], "A las <b>12:32 (hora del satélite)</b> el satélite se puso <b>de espaldas al Sol</b> y "
                                           "su batería se vació hasta apagarse a las 14:10. A las 08:15 hubo un giro pequeño que volvió a su sitio."),
-            "radio": ("d", [4], "📻 La orden de las <b>12:32 (hora del satélite)</b> no estaba en el plan: puso los paneles a 180°. "
+            "radio": ("d", [4], "La orden de las <b>12:32 (hora del satélite)</b> no estaba en el plan: puso los paneles a 180°. "
                                 "Se envió desde <b>GS2, la estación de la azotea</b>. Para enviarla hay que estar <b>dentro</b> de la estación."),
-            "accesos": ("b", [4], "🪪 A las <b>14:25 (hora de España)</b> abrió la azotea la tarjeta <b>0957, la de Javier</b> (operador de radio)."),
+            "accesos": ("b", [4], "A las <b>14:25 (hora de España)</b> abrió la azotea la tarjeta <b>0957, la de Javier</b> (operador de radio)."),
         },
         "archivos": {
             "audio": (RAIZ / "generado" / "mapa" / "fragmento_4_andromeda.wav", "audio/wav"),

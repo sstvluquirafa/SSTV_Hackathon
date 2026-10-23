@@ -1,7 +1,9 @@
 // Reto 4 · ¿Quién saboteó el GranaSAT-II? (versión 2). Un caso de detectives para resolver en equipo (todo el grupo junto).
 // Instrucciones del caso → archivo («El equipo de GranaSAT», 4 carpetas numeradas, libreta y tablón de pruebas). Cada
 // carpeta se abre como un informe y al final se extrae su prueba respondiendo preguntas que exigen cruzar documentos
-// (y lo apuntado del equipo). Con las 4 pruebas en el tablón se resuelve el caso (quién, cómo y cuándo).
+// (y lo apuntado del equipo). Con las 4 pruebas en el tablón se redacta el informe final (quién, cómo y cuándo).
+// Estética: el escritorio de un detective (especificaciones/reto4_estetica_cuaderno.md): papel, tinta, sellos y corcho,
+// sin emoticonos ni iconos. Los estilos están en css/reto4.css.
 // Las respuestas solo existen cifradas (caso_sabotaje.js + reto4_llaves.js). La foto de la cámara no está en la web:
 // llega como audio SSTV y hay que decodificarla.
 (function () {
@@ -16,9 +18,62 @@
     { id: "p2", titulo: "Pista 2 · Las tarjetas", texto: "En el registro de tarjetas solo hay números. ¿Dónde se dice de quién es cada puesto?" },
     { id: "p3", titulo: "Pista 3 · Las gorras", texto: "Dos personas del equipo llevan gorra roja. ¿Dónde estaba cada una a las 14:32, hora de España? Leed las comprobaciones." },
   ];
-  const GIROS = [-3, 2.5, -1.5, 3]; // las tarjetas se clavan un poco torcidas
+  // Apartados del informe final (las columnas de la acusación)
+  const APARTADOS = { quien: "Culpable", como: "Método", cuando: "Hora" };
+  // Nada está recto en una mesa: cada carpeta y cada ficha tiene su giro y su desplazamiento
+  const CARPETA_POSE = [
+    { giro: -1.6, x: 0, y: 4 }, { giro: 1.2, x: 10, y: -2 },
+    { giro: 0.5, x: 6, y: 2 }, { giro: -2.2, x: -4, y: 8 },
+  ];
+  const FICHA_POSE = [
+    { giro: -2.4, x: 6, y: 4 }, { giro: 1.8, x: -4, y: 14 },
+    { giro: 1.1, x: 14, y: -2 }, { giro: -1.4, x: 0, y: 8 },
+  ];
   const mmss = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
   const carpeta = (id) => Caso.CARPETAS.find((c) => c.id === id);
+  const datosCorrectos = (n) => (n === 1 ? "1 de 3 datos es correcto" : `${n} de 3 datos son correctos`);
+  const cargando = (texto) => `<p class="r4-cargando" role="status">${escapar(texto)}</p>`;
+
+  // ---------- Dibujos a mano (SVG con pequeñas imperfecciones, sin iconos) ----------
+  /** Números pseudoaleatorios repetibles: el mismo dibujo en cada visita. */
+  const azar = (semilla) => () => ((semilla = (semilla * 16807) % 2147483647) / 2147483647);
+  /** Borde rasgado (clip-path) para recortes de periódico. */
+  function rasgado(semilla) {
+    const r = azar(semilla), p = [];
+    for (let x = 0; x <= 100; x += 5) p.push(`${x}% ${(r() * 4).toFixed(1)}px`);
+    for (let y = 4; y <= 96; y += 4) p.push(`calc(100% - ${(r() * 7).toFixed(1)}px) ${y}%`);
+    for (let x = 100; x >= 0; x -= 4) p.push(`${x}% calc(100% - ${(r() * 8).toFixed(1)}px)`);
+    for (let y = 96; y >= 4; y -= 6) p.push(`${(r() * 3).toFixed(1)}px ${y}%`);
+    return `polygon(${p.join(",")})`;
+  }
+  /** Una firma: un garabato que avanza de izquierda a derecha. */
+  function firma(semilla) {
+    const r = azar(semilla);
+    let x = 4, d = `M4 ${(20 + r() * 6).toFixed(1)}`;
+    while (x < 96) {
+      const nx = x + 7 + r() * 13;
+      d += ` Q${(x + (nx - x) * r()).toFixed(1)} ${(r() * 34).toFixed(1)} ${nx.toFixed(1)} ${(6 + r() * 22).toFixed(1)}`;
+      x = nx;
+    }
+    d += ` M${(10 + r() * 20).toFixed(1)} ${(28 + r() * 3).toFixed(1)} l${(50 + r() * 30).toFixed(1)} ${(-2 + r() * 4).toFixed(1)}`;
+    return `<svg class="r4-firma" viewBox="0 0 110 34" aria-hidden="true"><path d="${d}"/></svg>`;
+  }
+  /** Casilla dibujada a mano; la aspa solo se ve cuando la opción está marcada. */
+  function casilla(semilla) {
+    const r = azar(semilla), v = () => (r() * 2.4 - 1.2).toFixed(1);
+    return `<svg class="r4-casilla" viewBox="0 0 26 26" aria-hidden="true">
+      <path class="r4-casilla-borde" d="M${3 + +v()} ${4 + +v()} L${22 + +v()} ${3 + +v()} L${22 + +v()} ${22 + +v()} L${3 + +v()} ${22 + +v()} Z"/>
+      <path class="r4-aspa" d="M6 6.5 C10 11 14 15.5 20.5 20 M19.5 5.5 C15 10.5 11 15 5.5 20.5"/></svg>`;
+  }
+  const CHINCHETA = `<svg class="r4-chincheta" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"/><circle class="r4-brillo" cx="7.6" cy="7.4" r="2"/></svg>`;
+  const CLIP = `<svg class="r4-clip" viewBox="0 0 22 64" aria-hidden="true"><path d="M7 56 V13 a5.5 5.5 0 0 1 11 0 V48 a3.4 3.4 0 0 1 -6.8 0 V17"/></svg>`;
+  const SUBRAYADO = `<svg class="r4-subrayado" viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2 6 C40 2 90 8.5 130 4.5 S185 6 198 3.5"/></svg>`;
+  // Filtros compartidos: trazo de tinta irregular (gráficas) y papel milimetrado
+  const DEFINICIONES = `<svg class="r4-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs>
+    <filter id="r4-trazo"><feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="2.4"/></filter>
+    <pattern id="r4-mm" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M10 0 H0 V10" fill="none" stroke="rgba(48,118,92,0.2)" stroke-width="0.5"/></pattern>
+    <pattern id="r4-cm" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M50 0 H0 V50" fill="none" stroke="rgba(48,118,92,0.42)" stroke-width="0.9"/></pattern>
+  </defs></svg>`;
 
   // ===================================== Vista =====================================
   function vista(el) {
@@ -28,7 +83,7 @@
       if (!r.libreta) r.libreta = {};
     });
     const e = estado();
-    if (e.completado) pintarResuelto(el);
+    if (e.completado) pintarResuelto(el, false);
     else {
       pintarArchivo(el);
       if (!e.abierto) abrirCapa("r4-briefing");
@@ -37,63 +92,82 @@
     App.comprobarBloqueo(ID);
   }
 
-  // ===================================== Archivo del caso =====================================
-  const botonesCaso = () => `
-    <button class="btn btn-oscuro btn-peq" data-capa="r4-briefing">📋 Instrucciones del caso</button>
-    <button class="btn btn-oscuro btn-peq" data-libreta>📓 Libreta</button>`;
+  // ===================================== Archivo del caso (la mesa vista desde arriba) =====================================
+  const cabecera = (derecha) => `
+    <header class="r4-cab">
+      <h1 class="r4-titulo"><span class="r4-titulo-exp">Expediente n.º 04</span> ¿Quién saboteó el GranaSAT-II?</h1>
+      <nav class="r4-cab-der" aria-label="Caso">${derecha}</nav>
+    </header>`;
 
   function pintarArchivo(el) {
     document.body.classList.remove("r4-con-libreta");
-    el.innerHTML = `
-      <div class="r4-barra">
-        <div class="expediente-num">EXPEDIENTE #04 · ¿QUIÉN SABOTEÓ EL GRANASAT-II?</div>
-        <div class="r4-barra-botones">${botonesCaso()}
-          <button class="btn btn-oscuro btn-peq" id="r4-ver-pistas">${ICONO.bombilla} Pistas</button>
-          <a class="volver r4-volver" href="#/panel">${ICONO.volver} Retos</a></div>
+    el.innerHTML = `${DEFINICIONES}
+      <div class="r4-mesa">
+        ${cabecera(`<button class="r4-palabra" id="r4-ver-pistas" aria-expanded="false">Pistas</button>
+          <a class="r4-palabra" href="#/panel">Volver a los retos</a>`)}
+        <div class="r4-pistas oculto" id="r4-pistas"></div>
+        <div class="r4-archivo">
+          <section class="r4-izquierda" aria-label="Documentos del caso">
+            <div class="r4-recorte-zona">
+              <button class="r4-recorte" data-capa="r4-doc-equipo" style="clip-path:${rasgado(11)}">
+                <span class="r4-recorte-cab">Revista de la escuela <span>Reportaje</span></span>
+                <span class="r4-recorte-sec">El equipo de GranaSAT</span>
+                <span class="r4-recorte-tit">Conoce al equipo que construyó el GranaSAT-II</span>
+                <span class="r4-recorte-cols" aria-hidden="true">En un rincón del laboratorio de la escuela, entre placas electrónicas y tazas de café,
+                  trabaja el pequeño equipo que puso en órbita el GranaSAT-II. Marta Sánchez es la ingeniera de software y la que más
+                  horas pasa allí. Javier Ortega es el operador de radio. Lucía Martín es la técnica de antenas. Pablo Ruiz es el becario,
+                  recién llegado este curso.</span>
+                <span class="r4-recorte-leer">Leer el reportaje</span>
+              </button>
+              <div class="r4-nota-clavada" id="r4-aviso-equipo">${CHINCHETA}<p>Los sospechosos están aquí. Leedlo bien y apuntadlo todo.</p></div>
+            </div>
+            <div class="r4-carpetas">${Caso.CARPETAS.map((c, i) => `
+              <button class="r4-carpeta r4-carpeta-${c.num}" id="r4-carpeta-${c.id}" data-capa="r4-doc-${c.id}"
+                style="--giro:${CARPETA_POSE[i].giro}deg;--x:${CARPETA_POSE[i].x}px;--y:${CARPETA_POSE[i].y}px">
+                <span class="r4-carpeta-pestana">${c.romano}</span>
+                <span class="r4-carpeta-etiqueta">${c.romano} · ${c.titulo}</span>
+                <span class="r4-carpeta-abrir">Abrir carpeta</span>
+                <span class="r4-sello r4-sello-revisado" aria-hidden="true">Revisado</span>
+                ${i === 0 ? CLIP : ""}${i === 2 ? `<span class="r4-goma" aria-hidden="true"></span>` : ""}
+                ${c.id === "camara" ? `<span class="r4-carpeta-vivo oculto" id="r4-tx-archivo">Recibiendo la foto…</span>` : ""}
+              </button>`).join("")}</div>
+          </section>
+          <section class="r4-tablon" aria-label="Tablón de pruebas">
+            <h2 class="r4-tablon-tit">Tablón de pruebas</h2>
+            <div class="r4-corcho" id="r4-corcho"></div>
+            <div class="r4-informe-caja">
+              <button class="r4-boton-sello" id="r4-resolver">Informe final</button>
+              <p id="r4-faltan"></p>
+            </div>
+          </section>
+        </div>
       </div>
-      <div class="r4-pistas-caja oculto" id="r4-pistas"></div>
-      <div class="r4-aviso-equipo" id="r4-aviso-equipo"></div>
-      <div class="r4-archivo">
-        <section class="r4-izquierda" aria-label="Documentos del caso">
-          <button class="r4-revista" data-capa="r4-doc-equipo">
-            <span class="r4-revista-kicker mono">REVISTA DE LA ESCUELA · REPORTAJE</span>
-            <span class="r4-revista-tit">El equipo de GranaSAT</span>
-            <span class="r4-revista-sub">Conoce al equipo que construyó el GranaSAT-II · <b>los sospechosos están aquí</b></span>
-          </button>
-          <div class="r4-carpetas">${Caso.CARPETAS.map((c) => `
-            <button class="r4-carpeta" id="r4-carpeta-${c.id}" data-capa="r4-doc-${c.id}">
-              <span class="r4-pestana mono">CARPETA ${c.num}</span>
-              <span class="r4-etiqueta"><span class="r4-icono" aria-hidden="true">${c.icono}</span> ${c.num} · ${c.titulo}</span>
-              <span class="r4-estado mono"></span>
-              ${c.id === "camara" ? `<span class="r4-vivo oculto" id="r4-tx-archivo">● RECIBIENDO LA FOTO</span>` : ""}
-            </button>`).join("")}</div>
-        </section>
-        <section class="r4-tablon" aria-label="Tablón de pruebas">
-          <h2>Tablón de pruebas</h2>
-          <div class="r4-corcho" id="r4-corcho"></div>
-          <div class="r4-resolver-caja"><p id="r4-faltan"></p>
-            <button class="btn btn-ambar" id="r4-resolver">${ICONO.candado} Resolver el caso</button></div>
-        </section>
-      </div>
+      <button class="r4-solapa r4-solapa-instr" data-capa="r4-briefing">Instrucciones</button>
+      <button class="r4-solapa r4-solapa-libreta" data-libreta aria-controls="r4-libreta">Libreta</button>
       ${htmlBriefing()}
-      ${htmlDocumento("r4-doc-equipo", "EL EQUIPO DE GRANASAT · REVISTA DE LA ESCUELA", htmlEquipo(), "r4-doc-revista")}
-      ${Caso.CARPETAS.map((c) => htmlDocumento(`r4-doc-${c.id}`, `CARPETA ${c.num} · ${c.titulo.toUpperCase()}`, `
-        <header class="r4-membrete"><img src="assets/img/logo.jpg" alt=""><div><b>GranaSAT · Universidad de Granada</b>
-          <span class="mono">Expediente #04-${c.num} · 15 de julio</span></div><span class="r4-confidencial">CONFIDENCIAL</span></header>
-        <h2>${c.icono} ${c.titulo}</h2>
+      ${htmlDocumento("r4-doc-equipo", "El equipo de GranaSAT", htmlEquipo(), "r4-hoja-revista")}
+      ${Caso.CARPETAS.map((c) => htmlDocumento(`r4-doc-${c.id}`, `Carpeta ${c.romano}: ${c.titulo}`, `
+        <header class="r4-membrete"><img src="assets/img/logo.jpg" alt="">
+          <div><b>GranaSAT · Universidad de Granada</b><span>Expediente 04-${c.romano} · 15 de julio</span></div>
+          <span class="r4-sello r4-sello-conf">Confidencial</span></header>
+        <h2 class="r4-doc-tit">${c.romano} · ${c.titulo}</h2>
         ${CONTENIDO[c.id]()}
-        ${htmlExtraer(c)}`, "", true)).join("")}
+        ${htmlExtraer(c)}`, `r4-hoja-${c.id}`, true)).join("")}
       ${htmlLibreta()}`;
     $$("[data-capa]", el).forEach((b) => b.addEventListener("click", () => abrirCapa(b.dataset.capa)));
     $$("[data-cerrar]", el).forEach((b) => b.addEventListener("click", volverAlArchivo));
     $$("[data-libreta]", el).forEach((b) => b.addEventListener("click", alternarLibreta));
-    $$("[data-ir-extraer]", el).forEach((b) => b.addEventListener("click", () => $(".r4-extraer", b.closest(".r4-documento")).scrollIntoView({ behavior: "smooth" })));
+    $$("[data-ir-extraer]", el).forEach((b) => b.addEventListener("click", () => $(".r4-formulario", b.closest(".r4-documento")).scrollIntoView({ behavior: "smooth" })));
     $("#r4-ir-camara").addEventListener("click", () => { marcarAbierto(); abrirCapa("r4-doc-camara"); });
     $("#r4-ir-archivo").addEventListener("click", volverAlArchivo);
     $$(".r4-opcion", el).forEach((b) => b.addEventListener("click", () => elegir(b)));
     $$("[data-extraer]", el).forEach((b) => b.addEventListener("click", () => extraer(b.dataset.extraer)));
     $("#r4-resolver").addEventListener("click", abrirAcusacion);
-    $("#r4-ver-pistas").addEventListener("click", () => { $("#r4-pistas").classList.toggle("oculto"); pintarPistas(); });
+    $("#r4-ver-pistas").addEventListener("click", (ev) => {
+      const caja = $("#r4-pistas"), ver = caja.classList.toggle("oculto") === false;
+      ev.currentTarget.setAttribute("aria-expanded", String(ver));
+      pintarPistas();
+    });
     $("#r4-recibir").addEventListener("click", recibirCamara);
     $$(".r4-grafica").forEach(lectorGrafica);
     enlazarLibreta();
@@ -104,13 +178,14 @@
     pintarBloqueoPregunta();
   }
 
-  /** Capa a casi pantalla completa (instrucciones, reportaje o carpeta) con su barra y el botón de volver. */
-  function htmlDocumento(id, etiqueta, contenido, clase = "", conExtraer = false) {
-    return `<div class="r4-documento ${clase}" id="${id}" role="dialog" aria-label="${escapar(etiqueta)}" hidden>
-      <div class="r4-doc-barra"><span class="mono">${etiqueta}</span>
-        <span class="r4-doc-botones">${conExtraer ? `<button class="btn btn-borde btn-peq" data-ir-extraer>${ICONO.abajo} Al final: extraer la prueba</button>` : ""}
-          ${botonesCaso()}<button class="btn btn-ambar r4-cerrar" data-cerrar>${ICONO.volver} Volver al archivo</button></span></div>
-      <div class="r4-doc-hoja">${contenido}</div>
+  /** Capa con un documento sobre la mesa (instrucciones, reportaje o carpeta) y la etiqueta para volver. */
+  function htmlDocumento(id, nombre, contenido, clase = "", conExtraer = false) {
+    return `<div class="r4-documento" id="${id}" role="dialog" aria-label="${escapar(nombre)}" hidden>
+      <div class="r4-doc-mando">
+        <button class="r4-etiqueta-papel r4-cerrar" data-cerrar>Volver al archivo</button>
+        ${conExtraer ? `<button class="r4-palabra" data-ir-extraer>Ir a la prueba, al pie del informe</button>` : ""}
+      </div>
+      <article class="r4-hoja ${clase}">${contenido}</article>
     </div>`;
   }
 
@@ -119,7 +194,7 @@
     const d = $(`#${id}`);
     if (!d) return;
     d.hidden = false;
-    $(".r4-doc-hoja", d).scrollTop = 0;
+    d.scrollTop = 0;
     $(".r4-cerrar", d).focus({ preventScroll: true });
     const c = Caso.CARPETAS.find((x) => `r4-doc-${x.id}` === id);
     if (c && !estado().abiertas.includes(c.id)) guardar((r) => { r.abiertas.push(c.id); });
@@ -132,17 +207,10 @@
   function marcarAbierto() { if (!estado().abierto) { guardar((r) => { r.abierto = true; }); Progreso.anotar("Reto 4: archivo del caso abierto"); } }
   document.addEventListener("keydown", (ev) => { if (ev.key === "Escape" && !$(".r4-modal") && $(".r4-documento")) volverAlArchivo(); });
 
+  /** La nota clavada junto al recorte: grande hasta que se lee el reportaje, después más pequeña. */
   function pintarAvisoEquipo() {
-    const caja = $("#r4-aviso-equipo");
-    if (!caja) return;
-    const leido = estado().equipoLeido;
-    caja.className = `r4-aviso-equipo ${leido ? "discreto" : ""}`;
-    caja.innerHTML = leido
-      ? `🔎 Los sospechosos son las personas del equipo. <button class="r4-enlace" data-capa="r4-doc-equipo">Releer «El equipo de GranaSAT»</button>`
-      : `<span class="r4-aviso-icono" aria-hidden="true">🔎</span><p><b>Los sospechosos son las personas del equipo.</b> Leed su historia con atención y
-         apuntad lo importante: sin esos apuntes no podréis resolver el caso.</p>
-         <button class="btn btn-ambar" data-capa="r4-doc-equipo">Leer «El equipo de GranaSAT»</button>`;
-    $$("[data-capa]", caja).forEach((b) => b.addEventListener("click", () => abrirCapa(b.dataset.capa)));
+    const nota = $("#r4-aviso-equipo");
+    if (nota) nota.classList.toggle("leida", !!estado().equipoLeido);
   }
 
   function pintarCarpetas() {
@@ -152,51 +220,63 @@
       if (!b) continue;
       const hecha = !!e.pruebas[c.id], abierta = e.abiertas.includes(c.id);
       b.dataset.estado = hecha ? "hecha" : abierta ? "abierta" : "cerrada";
-      $(".r4-estado", b).textContent = hecha ? "✓ PRUEBA EXTRAÍDA" : abierta ? "ABIERTA" : "CERRADA";
+      $(".r4-carpeta-abrir", b).textContent = hecha ? "Releer" : abierta ? "Seguir leyendo" : "Abrir carpeta";
+      b.setAttribute("aria-label", `Carpeta ${c.romano}, ${c.titulo}${hecha ? ": revisada, prueba en el tablón" : abierta ? ": abierta" : ""}`);
       if (hecha) {
         const doc = $(`#r4-doc-${c.id}`);
         $$(".r4-opcion, [data-extraer]", doc).forEach((o) => { o.disabled = true; });
-        $(`#r4-res-${c.id}`).innerHTML = `<div class="r4-ok">✓ Prueba extraída y clavada en el tablón.</div>`;
+        $(".r4-formulario", doc).classList.add("hecho");
+        $(`#r4-res-${c.id}`).innerHTML = `<p class="r4-nota-lapiz">Prueba extraída. Está clavada en el tablón.</p>`;
       }
     }
   }
 
+  function htmlFicha(c, texto, i, nueva = false) {
+    const p = FICHA_POSE[i];
+    return `<article class="r4-ficha${nueva ? " nueva" : ""}" style="--giro:${p.giro}deg;--x:${p.x}px;--y:${p.y}px">${CHINCHETA}
+      <h3>${c.romano} · ${c.titulo}</h3><p>${texto}</p></article>`;
+  }
   function pintarTablon(nueva) {
     const e = estado(), caja = $("#r4-corcho");
-    const pruebas = Caso.CARPETAS.filter((c) => e.pruebas[c.id]);
-    caja.innerHTML = pruebas.length ? pruebas.map((c) => `
-      <article class="r4-prueba ${c.id === nueva ? "nueva" : ""}" style="--giro:${GIROS[c.num - 1]}deg">
-        <i class="r4-chincheta" aria-hidden="true"></i><span class="mono">${c.num} · ${c.titulo.toUpperCase()}</span><p>${e.pruebas[c.id]}</p></article>`).join("")
-      : `<p class="r4-vacio">Aún no tenéis pruebas. Abrid las carpetas.</p>`;
+    caja.innerHTML = Caso.CARPETAS.map((c, i) => e.pruebas[c.id]
+      ? htmlFicha(c, e.pruebas[c.id], i, c.id === nueva)
+      : `<div class="r4-hueco" aria-hidden="true"></div>`).join("")
+      + (Object.keys(e.pruebas).length ? "" : `<p class="r4-vacio">Aquí se clavan las pruebas. Abrid las carpetas.</p>`);
   }
 
-  // ===================================== Instrucciones y «El equipo de GranaSAT» =====================================
+  // ===================================== Instrucciones (carta) y «El equipo de GranaSAT» (recorte) =====================================
   function htmlBriefing() {
-    return `<div class="r4-documento r4-doc-briefing" id="r4-briefing" role="dialog" aria-label="Instrucciones del caso" hidden>
-      <div class="r4-doc-barra"><span class="mono">EXPEDIENTE #04 · INSTRUCCIONES DEL CASO</span>
-        <span class="r4-doc-botones"><button class="btn btn-oscuro btn-peq" data-libreta>📓 Libreta</button>
-          <button class="btn btn-ambar r4-cerrar" data-cerrar>${ICONO.volver} Ir al archivo</button></span></div>
-      <div class="r4-doc-hoja r4-briefing">
-        <div class="expediente-num">EXPEDIENTE #04 · EL SILENCIO DEL GRANASAT-II</div>
+    return `<div class="r4-documento r4-capa-carta" id="r4-briefing" role="dialog" aria-label="Instrucciones del caso" hidden>
+      <div class="r4-doc-mando"><button class="r4-etiqueta-papel r4-cerrar" data-cerrar>Ir al archivo del caso</button></div>
+      <article class="r4-hoja r4-carta">
+        <span class="r4-sello r4-sello-conf r4-sello-grande" aria-hidden="true">Confidencial</span>
+        <p class="r4-carta-ref">Expediente n.º 04<br>El silencio del GranaSAT-II</p>
+        <p>Al equipo de investigación:</p>
         <p>El pasado 15 de julio por la tarde, el GranaSAT-II, el pequeño satélite que el equipo de GranaSAT tiene en órbita,
           dejó de responder. Por la mañana todo iba bien, pero al llegar la tarde se quedó en silencio. Al revisar los datos,
           el equipo descubrió que no fue una avería: <b>alguien lo hizo a propósito.</b></p>
         <p>Sois el equipo de investigación. Tenéis que descubrir <b>quién</b> saboteó el satélite, <b>cómo</b> lo hizo y <b>a qué hora</b>.</p>
-        <h3>Cómo empezar</h3>
-        <ol class="r4-pasos-caso">
-          <li><b>Abrid la carpeta 📷 «1 · Cámara de la azotea» y poned a recibir la foto.</b> Tarda unos 2 minutos en llegar, así que hacedlo lo primero.</li>
-          <li><b>Mientras llega, leed «El equipo de GranaSAT»</b> y apuntad en la libreta todo lo que os parezca importante de cada persona: <b>los sospechosos están entre ellos.</b></li>
-          <li><b>Abrid el resto de carpetas</b>, estudiad los documentos y extraed una prueba de cada una.</li>
-          <li><b>Cuando tengáis las 4 pruebas, resolved el caso.</b></li>
+        <ol class="r4-carta-pasos">
+          <li><b>Primero,</b> abrid la carpeta I, «Cámara de la azotea», y poned a recibir la foto. Tarda unos 2 minutos en llegar,
+            así que hacedlo lo primero.</li>
+          <li><b>Mientras llega,</b> leed «El equipo de GranaSAT» y apuntad en la libreta todo lo que os parezca importante de cada
+            persona: los sospechosos están entre ellos.</li>
+          <li><b>Después,</b> abrid el resto de carpetas, estudiad los documentos y extraed una prueba de cada una.</li>
+          <li><b>Por último,</b> cuando tengáis las 4 pruebas en el tablón, redactad el informe final del caso.</li>
         </ol>
-        <div class="botonera"><button class="btn btn-ambar" id="r4-ir-camara">📷 Ir a la carpeta de la cámara</button>
-          <button class="btn btn-borde" id="r4-ir-archivo">Ir al archivo del caso</button></div>
-      </div></div>`;
+        <p class="r4-carta-desp">Atentamente,</p>
+        <div class="r4-carta-firma">${firma(5)}<span>Dirección de GranaSAT</span></div>
+        <div class="r4-carta-botones">
+          <button class="r4-boton-sello" id="r4-ir-camara">Abrir la carpeta de la cámara</button>
+          <button class="r4-palabra" id="r4-ir-archivo">Ir al archivo del caso</button>
+        </div>
+      </article></div>`;
   }
 
   function htmlEquipo() {
-    return `<article class="r4-reportaje">
-      <span class="r4-revista-kicker mono">REVISTA DE LA ESCUELA · REPORTAJE</span>
+    return `<div class="r4-periodico" style="clip-path:${rasgado(23)}">
+      <p class="r4-periodico-cab"><span>Revista de la escuela</span><span>Reportaje</span></p>
+      <h2 class="r4-periodico-sec">El equipo de GranaSAT</h2>
       <h1>Conoce al equipo que construyó el GranaSAT-II</h1>
       <p class="r4-entradilla">En un rincón del laboratorio de la escuela, entre placas electrónicas y tazas de café, trabaja el pequeño equipo que
         puso en órbita el GranaSAT-II.</p>
@@ -217,54 +297,77 @@
         <p>Las cuatro tarjetas tienen un número, pero en el equipo nadie se los sabe de memoria. Lo que sí saben es para qué
           sirve cada una: la del operador de radio es la única que abre las dos puertas.</p>
       </div>
-      <p class="r4-consejo-libreta">📓 Apuntad en la libreta lo importante de cada persona.</p>
-    </article>`;
+    </div>
+    <p class="r4-nota-margen">Apuntad en la libreta lo importante de cada persona.</p>`;
   }
 
   // ===================================== Libreta del investigador =====================================
+  const nombreHoja = (p) => (p === "General" ? "Notas" : p);
   function htmlLibreta() {
     const apartados = [...Caso.PERSONAS, "General"];
     return `<aside class="r4-libreta" id="r4-libreta" aria-label="Libreta del investigador" inert>
-      <div class="r4-libreta-cab"><b>📓 Libreta del investigador</b><button class="mini" data-libreta aria-label="Cerrar la libreta">${ICONO.cerrar}</button></div>
-      <p class="r4-libreta-ayuda">Apuntad aquí lo importante. Se guarda solo.</p>
-      <div class="r4-libreta-hojas">${apartados.map((p) => `
-        <label class="r4-apunte"><span>${p === "General" ? "General (horas, pistas, ideas…)" : p}</span>
-          <textarea data-apunte="${p}" rows="${p === "General" ? 4 : 3}" spellcheck="false"></textarea></label>`).join("")}</div>
-      <p class="r4-guardado mono" id="r4-guardado"></p>
+      <div class="r4-libreta-cab"><span>Libreta del investigador</span>
+        <button class="r4-palabra r4-palabra-clara" data-libreta>Cerrar</button></div>
+      <div class="r4-libreta-pestanas" role="tablist" aria-label="Hojas de la libreta">${apartados.map((p, i) => `
+        <button class="r4-libreta-pestana" role="tab" id="r4-pestana-${i}" aria-controls="r4-hoja-${i}" aria-selected="${i === 0}" data-hoja="${i}">${nombreHoja(p)}</button>`).join("")}</div>
+      <div class="r4-libreta-papel">${apartados.map((p, i) => `
+        <label class="r4-apunte" id="r4-hoja-${i}" role="tabpanel" aria-labelledby="r4-pestana-${i}" ${i ? "hidden" : ""}>
+          <span class="r4-apunte-nombre">${nombreHoja(p)}</span>
+          <textarea data-apunte="${p}" spellcheck="false" placeholder="${p === "General" ? "Horas, pistas, ideas…" : `Lo que sabéis de ${p}…`}"></textarea></label>`).join("")}</div>
+      <p class="r4-guardado" id="r4-guardado" aria-live="polite"></p>
     </aside>`;
   }
   function enlazarLibreta() {
     const e = estado();
+    const marcar = () => $$(".r4-libreta-pestana").forEach((t) => {
+      const area = $(`#r4-hoja-${t.dataset.hoja} textarea`);
+      t.classList.toggle("con-notas", !!area.value.trim());
+    });
     $$("[data-apunte]").forEach((t) => {
       let espera = 0; // un temporizador por apartado: escribir en otro no cancela el guardado de este
       const anotar = () => {
         clearTimeout(espera);
         guardar((r) => { r.libreta[t.dataset.apunte] = t.value; });
-        const g = $("#r4-guardado"); if (g) g.textContent = "✓ Guardado";
+        const g = $("#r4-guardado"); if (g) g.textContent = "Guardado.";
+        marcar();
       };
       t.value = e.libreta[t.dataset.apunte] || "";
       t.addEventListener("input", () => { clearTimeout(espera); espera = setTimeout(anotar, 300); });
       t.addEventListener("blur", anotar);
     });
+    $$(".r4-libreta-pestana").forEach((t) => t.addEventListener("click", () => hojaLibreta(t.dataset.hoja)));
+    marcar();
+  }
+  function hojaLibreta(i) {
+    $$(".r4-libreta-pestana").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.hoja === String(i))));
+    $$(".r4-apunte").forEach((h) => { h.hidden = h.id !== `r4-hoja-${i}`; });
+    $(`#r4-hoja-${i} textarea`).focus({ preventScroll: true });
+    Sonido.tic();
   }
   function alternarLibreta() {
     const l = $("#r4-libreta"), abrir = !l.classList.contains("abierta");
     l.classList.toggle("abierta", abrir);
     l.inert = !abrir;
     document.body.classList.toggle("r4-con-libreta", abrir); // los documentos se estrechan para leer y apuntar a la vez
-    if (abrir) $("textarea", l).focus({ preventScroll: true });
+    $$(".r4-solapa-libreta").forEach((b) => b.setAttribute("aria-expanded", String(abrir)));
+    if (abrir) $(".r4-apunte:not([hidden]) textarea", l).focus({ preventScroll: true });
     Sonido.tic();
   }
 
-  // ===================================== Extraer prueba =====================================
+  // ===================================== Extraer prueba (formulario en papel al pie del informe) =====================================
   function htmlExtraer(c) {
-    return `<section class="r4-extraer" aria-label="Extraer prueba">
-      <h3>${ICONO.lupa} Extraer prueba</h3>
+    let semilla = c.num * 31;
+    return `<section class="r4-formulario" aria-label="Extraer prueba">
+      <span class="r4-sello r4-sello-revisado" aria-hidden="true">Revisado</span>
+      <h3>Extraer prueba</h3>
+      <p class="r4-form-ayuda">Marcad una casilla${c.preguntas.length > 1 ? " en cada pregunta" : ""}. Para responder tendréis que cruzar este informe con otros documentos.</p>
       ${c.preguntas.map((p, i) => `
-        <p class="r4-pregunta">${c.preguntas.length > 1 ? `${i + 1}. ` : ""}${p.texto}</p>
-        <div class="r4-opciones" role="radiogroup" aria-label="${escapar(p.texto)}" style="--n:${Math.min(p.opciones.length, 5)}">${p.opciones.map((o) => `
-          <button class="r4-opcion" role="radio" aria-checked="false" data-carpeta="${c.id}" data-pregunta="${i}" data-op="${o.id}">${o.texto}</button>`).join("")}</div>`).join("")}
-      <div class="r4-extraer-pie"><button class="btn btn-ambar" data-extraer="${c.id}" disabled>${ICONO.lupa} Extraer la prueba</button>
+        <div class="r4-pregunta-caja">
+          <p class="r4-pregunta" id="r4-preg-${c.id}-${i}">${c.preguntas.length > 1 ? `${i + 1}. ` : ""}${p.texto}</p>
+          <div class="r4-opciones" role="radiogroup" aria-labelledby="r4-preg-${c.id}-${i}">${p.opciones.map((o) => `
+            <button class="r4-opcion" role="radio" aria-checked="false" data-carpeta="${c.id}" data-pregunta="${i}" data-op="${o.id}">${casilla(semilla++)}<span>${o.texto}</span></button>`).join("")}</div>
+        </div>`).join("")}
+      <div class="r4-form-pie"><button class="r4-boton-sello" data-extraer="${c.id}" disabled>Extraer prueba</button>
         <div class="r4-extraer-res" id="r4-res-${c.id}" aria-live="polite"></div></div>
     </section>`;
   }
@@ -289,7 +392,7 @@
       const completas = (elegidas[c.id] || []).filter(Boolean).length === c.preguntas.length;
       boton.disabled = s > 0 || !completas;
       const espera = $(".r4-espera", res);
-      if (espera) espera.textContent = s ? `Podréis volver a intentarlo en ${s} s.` : "Ya podéis volver a intentarlo.";
+      if (espera) espera.textContent = s ? `Volved a intentarlo en ${mmss(s)}.` : "Ya podéis volver a intentarlo.";
     }
   }
 
@@ -298,41 +401,41 @@
     if (estado().pruebas[id] || segundosPregunta(id) || resp.filter(Boolean).length < c.preguntas.length) return;
     const boton = $(`[data-extraer='${id}']`), res = $(`#r4-res-${id}`);
     boton.disabled = true; boton.classList.add("comprobando");
-    res.innerHTML = App.htmlCarga("Comprobando…");
+    res.innerHTML = cargando("Comprobando…");
     const tarjeta = await Caso.extraer(window.DATOS.reto4_llaves, id, resp, Cripto);
     boton.classList.remove("comprobando");
     if (tarjeta) {
       guardar((r) => { r.pruebas[id] = tarjeta; });
       Progreso.anotar(`Reto 4: prueba extraída (${c.titulo})`);
       Sonido.exito();
-      pintarCarpetas();
+      res.innerHTML = `<div class="r4-ficha-sale">${htmlFicha(c, tarjeta, c.num - 1)}</div>`; // la ficha sale del informe…
       setTimeout(() => {
         if (!$("#r4-corcho")) return;
+        pintarCarpetas();
         cerrarCapas();
-        pintarTablon(id);
+        pintarTablon(id); // …y se clava en el corcho
         pintarResolver();
-      }, 1300);
+      }, 1500);
     } else {
       guardar((r) => { r.fallos++; r.bloqueoPregunta[id] = Date.now() + Caso.BLOQUEO_PREGUNTA * 1000; });
       Progreso.anotar("Reto 4: pregunta fallada");
       Sonido.error();
-      res.innerHTML = `<div class="r4-no">✗ No es eso. Volved a estudiar los documentos (y vuestros apuntes del equipo). <span class="r4-espera mono"></span></div>`;
+      res.innerHTML = `<p class="r4-margen-rojo">No es eso. Revisad el documento y vuestros apuntes.<br><span class="r4-espera"></span></p>`;
       pintarBloqueoPregunta();
     }
   }
 
-  // ===================================== Resolver el caso (acusación) =====================================
+  // ===================================== Informe final (acusación) =====================================
   const segundosAcusar = () => Math.max(0, Math.ceil(((estado().bloqueoAcusarHasta || 0) - Date.now()) / 1000));
   function pintarResolver() {
     const b = $("#r4-resolver");
     if (!b) return;
     const e = estado(), r = Caso.puedeResolver(e.pruebas), s = segundosAcusar(), faltan = $("#r4-faltan");
     b.disabled = !r.ok || s > 0;
-    b.innerHTML = s ? `${ICONO.reloj} Podréis acusar de nuevo en ${mmss(s)}` : `${ICONO.candado} Resolver el caso`;
     const u = e.acusaciones[e.acusaciones.length - 1];
-    if (!r.ok) faltan.innerHTML = `Os faltan pruebas de: <b>${r.faltan.join(", ")}</b>.`;
-    else if (s) faltan.innerHTML = `✗ La última acusación acertó <b>${u.aciertos} de 3 datos</b>. Aprovechad para repasar el tablón.`;
-    else faltan.innerHTML = u ? `La última acusación acertó <b>${u.aciertos} de 3 datos</b>. ¡Ya podéis volver a intentarlo!` : "¡Tenéis todas las pruebas! Discutidlas y resolved el caso.";
+    if (!r.ok) faltan.textContent = `Faltan pruebas de: ${r.faltan.join(", ")}.`;
+    else if (s) faltan.textContent = `El último informe tenía errores: ${datosCorrectos(u.aciertos)}. Revisad el tablón. Podréis volver a intentarlo en ${mmss(s)}.`;
+    else faltan.textContent = u ? `El último informe tenía errores: ${datosCorrectos(u.aciertos)}. Ya podéis presentar otro.` : "Las cuatro pruebas están en el tablón. Discutidlas y redactad el informe final.";
     faltan.className = s ? "bloqueado" : r.ok ? "listo" : "";
   }
 
@@ -340,30 +443,34 @@
     if (!Caso.puedeResolver(estado().pruebas).ok || segundosAcusar()) return;
     const eleccion = {};
     const m = document.createElement("div");
-    m.className = "modal r4-modal";
+    m.className = "r4-modal";
     m.setAttribute("role", "dialog");
-    m.setAttribute("aria-label", "Resolver el caso");
+    m.setAttribute("aria-modal", "true");
+    m.setAttribute("aria-label", "Informe final del caso");
     const anteriores = estado().acusaciones;
-    m.innerHTML = `<div class="panel r4-acusacion">
-        <h2>Resolver el caso</h2>
-        <p class="texto-2">Elegid una opción de cada columna y confirmad. Si os equivocáis, tendréis que esperar antes de volver a acusar.</p>
-        <div class="r4-columnas">${Caso.COLUMNAS.map((c) => `
-          <div class="r4-col r4-col-${c.id}"><h3>${c.titulo}${c.nota ? ` <small>(${c.nota})</small>` : ""}</h3>
-            <div class="r4-fichas" role="radiogroup" aria-label="${c.titulo}">${Caso.OPCIONES[c.id].map((o) => `
-              <button class="r4-ficha" role="radio" aria-checked="false" data-col="${c.id}" data-op="${o.id}">${o.texto}</button>`).join("")}</div>
+    let semilla = 200;
+    m.innerHTML = `<article class="r4-hoja r4-informe">
+        <header class="r4-membrete"><img src="assets/img/logo.jpg" alt="">
+          <div><b>GranaSAT · Universidad de Granada</b><span>Expediente n.º 04 · Informe final del caso</span></div></header>
+        <p class="r4-informe-ayuda">Marcad una casilla en cada apartado. Si el informe tiene algún error, tendréis que esperar antes de presentar otro.</p>
+        <div class="r4-apartados">${Caso.COLUMNAS.map((c) => `
+          <div class="r4-apartado r4-apartado-${c.id}">
+            <h3 id="r4-ap-${c.id}">${APARTADOS[c.id]}${c.nota ? ` <small>(${c.nota})</small>` : ""}</h3>
+            <div class="r4-opciones" role="radiogroup" aria-labelledby="r4-ap-${c.id}">${Caso.OPCIONES[c.id].map((o) => `
+              <button class="r4-opcion" role="radio" aria-checked="false" data-col="${c.id}" data-op="${o.id}">${casilla(semilla++)}<span>${o.texto}</span></button>`).join("")}</div>
           </div>`).join("")}</div>
-        <div id="r4-res" aria-live="polite"></div>
-        ${anteriores.length ? `<details class="r4-anteriores"><summary>Acusaciones anteriores (${anteriores.length})</summary>
-          <ul>${anteriores.map((a) => `<li>${textoAcusacion(a)} → ${a.aciertos} de 3</li>`).join("")}</ul></details>` : ""}
-        <div class="botonera"><button class="btn btn-oscuro" data-a="cerrar">${ICONO.cerrar} Cancelar</button>
-          <button class="btn btn-ambar" data-a="acusar" disabled>${ICONO.candado} Confirmar la acusación</button></div>
-      </div>`;
+        <div class="r4-informe-res" id="r4-res" aria-live="polite"></div>
+        ${anteriores.length ? `<details class="r4-anteriores"><summary>Informes anteriores (${anteriores.length})</summary>
+          <ul>${anteriores.map((a) => `<li>${textoAcusacion(a)}: ${datosCorrectos(a.aciertos)}</li>`).join("")}</ul></details>` : ""}
+        <div class="r4-informe-pie"><button class="r4-palabra" data-a="cerrar">Volver al tablón</button>
+          <button class="r4-boton-sello" data-a="acusar" disabled>Presentar el informe</button></div>
+      </article>`;
     const cerrar = () => { m.remove(); document.removeEventListener("keydown", tecla); pintarResolver(); };
     const tecla = (ev) => { if (ev.key === "Escape") cerrar(); };
     const botonAcusar = $("[data-a='acusar']", m);
-    $$(".r4-ficha", m).forEach((b) => b.addEventListener("click", () => {
+    $$(".r4-opcion", m).forEach((b) => b.addEventListener("click", () => {
       eleccion[b.dataset.col] = b.dataset.op;
-      $$(`.r4-ficha[data-col='${b.dataset.col}']`, m).forEach((x) => { x.classList.toggle("elegida", x === b); x.setAttribute("aria-checked", String(x === b)); });
+      $$(`.r4-opcion[data-col='${b.dataset.col}']`, m).forEach((x) => { x.classList.toggle("elegida", x === b); x.setAttribute("aria-checked", String(x === b)); });
       botonAcusar.disabled = Caso.COLUMNAS.some((c) => !eleccion[c.id]);
       Sonido.tic();
     }));
@@ -372,7 +479,7 @@
       if (a === "cerrar" || ev.target === m) cerrar();
       if (a !== "acusar") return;
       botonAcusar.disabled = true;
-      $("#r4-res", m).innerHTML = App.htmlCarga("Comprobando la acusación…");
+      $("#r4-res", m).innerHTML = cargando("Comprobando el informe…");
       const r = await Caso.comprobar(window.DATOS.reto4_llaves, eleccion, Cripto);
       if (r.resuelto) { cerrar(); resolver(r.llave, eleccion); return; }
       guardar((x) => {
@@ -382,68 +489,88 @@
       });
       Progreso.anotar(`Reto 4: acusación fallida (${r.aciertos} de 3 datos)`);
       Sonido.error();
-      $("#r4-res", m).innerHTML = `<div class="aviso aviso-error r4-fallo">✗ No es correcto. <b>Habéis acertado ${r.aciertos} de los 3 datos.</b><br>
-        Podréis volver a acusar dentro de ${mmss(segundosAcusar())}. Aprovechad para repasar el tablón.</div>`;
-      $$(".r4-ficha", m).forEach((b) => { b.disabled = true; });
+      $(".r4-informe", m).insertAdjacentHTML("beforeend", `<span class="r4-sello r4-sello-incorrecto golpe" aria-hidden="true">Incorrecto</span>`);
+      $("#r4-res", m).innerHTML = `<p class="r4-margen-rojo r4-margen-grande">${datosCorrectos(r.aciertos)}.</p>
+        <p class="r4-informe-espera">Revisad el tablón. Podréis volver a intentarlo en ${mmss(segundosAcusar())}.</p>`;
+      $$(".r4-opcion", m).forEach((b) => { b.disabled = true; });
       botonAcusar.remove();
-      $("[data-a='cerrar']", m).innerHTML = `${ICONO.volver} Volver al tablón`;
+      $("[data-a='cerrar']", m).focus();
     });
     document.addEventListener("keydown", tecla);
     document.body.appendChild(m);
+    $(".r4-opcion", m).focus();
   }
   const textoOpcion = (col, id) => Caso.OPCIONES[col].find((o) => o.id === id).texto;
   const textoAcusacion = (a) => Caso.COLUMNAS.map((c) => {
     const t = textoOpcion(c.id, a[c.id]);
     return escapar(c.id === "como" ? t.split(" ").slice(0, 4).join(" ") + "…" : t);
-  }).join(" · ");
+  }).join(", ");
 
   function resolver(llave, eleccion) {
     const puntos = Math.max(App.PUNTOS_MINIMOS, 100 - App.PENALIZACION_FALLO * estado().fallos);
-    guardar((r) => { r.completado = true; r.llave = llave; r.puntos = puntos; r.acusaciones.push({ ...eleccion, aciertos: 3 }); });
+    guardar((r) => { r.completado = true; r.llave = llave; r.puntos = puntos; r.acusaciones.push({ ...eleccion, aciertos: 3 }); r.anunciado = false; });
     Progreso.anotar(`Reto 4 superado: caso resuelto (+${puntos} pts)`, true);
+    document.body.classList.remove("r4-con-libreta");
     App.actualizarCabecera();
     Sonido.exito();
-    pintarResuelto($("#vista"));
-    App.celebrar("ANDRÓMEDA", puntos, null);
+    pintarResuelto($("#vista"), true);
   }
 
-  // ---------- Caso resuelto ----------
-  async function pintarResuelto(el) {
+  // ---------- Caso cerrado: la última página del expediente y el sobre con el audio ----------
+  async function pintarResuelto(el, recien) {
     const e = estado();
     el.innerHTML = `
-      <a class="volver" href="#/panel">${ICONO.volver} Volver a los retos</a>
-      <section class="panel r4-resuelto">
-        <div class="expediente-num">EXPEDIENTE #04 · CASO CERRADO</div>
-        <h1>✓ Caso resuelto</h1>
-        <div class="ventana informe"><div class="ventana-barra"><i></i><i></i><i></i><b>informe_final.txt</b></div>
-          <div class="ventana-cuerpo r4-relato" id="r4-resumen">${App.htmlCarga("Descifrando el informe…")}</div></div>
-        <h2>Fragmento ANDRÓMEDA</h2>
-        <p class="texto-2">Decodificad el audio con Black Cat SSTV y guardad la imagen para el montaje del mapa.</p>
-        <div id="r4-audio">${App.htmlCarga("Descifrando la transmisión del fragmento ANDRÓMEDA…")}</div>
-        <div class="marcador"><span class="chip chip-ambar">${ICONO.estrella} ${e.puntos} PTS</span><span class="chip">FALLOS: ${e.fallos}</span>
-          <a class="btn btn-borde btn-peq" href="#/panel">${ICONO.volver} Volver a los retos</a></div>
-      </section>`;
+      <div class="r4-mesa r4-mesa-cerrada">
+        ${cabecera(`<a class="r4-palabra" href="#/panel">Volver a los retos</a>`)}
+        <div class="r4-cierre">
+          <article class="r4-hoja r4-ultima">
+            <header class="r4-membrete"><img src="assets/img/logo.jpg" alt="">
+              <div><b>GranaSAT · Universidad de Granada</b><span>Expediente n.º 04 · Última página</span></div></header>
+            <div class="r4-ultima-cab"><h2 class="r4-doc-tit">Resolución del caso</h2>
+              <span class="r4-sello r4-sello-cerrado ${recien ? "golpe" : ""}">Caso cerrado</span></div>
+            <div class="r4-relato" id="r4-resumen">${cargando("Descifrando el informe…")}</div>
+            <p class="r4-ultima-pie">Puntuación del equipo: ${e.puntos} puntos. Errores durante la investigación: ${e.fallos}.</p>
+          </article>
+          <aside class="r4-sobre" aria-label="Fragmento ANDRÓMEDA">
+            <p class="r4-sobre-rotulo">Fragmento ANDRÓMEDA</p>
+            <p>Dentro del sobre, la cinta con la transmisión. Decodificad el audio con Black Cat SSTV y guardad la imagen para el montaje del mapa.</p>
+            <div id="r4-audio">${cargando("Descifrando la transmisión…")}</div>
+          </aside>
+        </div>
+      </div>`;
+    if (recien) document.title = "¿Quién saboteó el GranaSAT-II? · GranaSAT";
     try {
       const ll = window.DATOS.reto4_llaves.archivos;
       const resumen = await (await Cripto.abrir(e.llave, await cargarDatos(ll.resumen))).text();
       if ($("#r4-resumen")) $("#r4-resumen").innerHTML = resumen;
       const url = urlDe(await Cripto.abrir(e.llave, await cargarDatos(ll.audio)));
-      if ($("#r4-audio")) App.reproductor($("#r4-audio"), url, "fragmento_andromeda.wav");
+      if ($("#r4-audio")) reproductorCinta($("#r4-audio"), url, "fragmento_andromeda.wav", "Fragmento ANDRÓMEDA");
     } catch (err) {
-      if ($("#r4-audio")) $("#r4-audio").innerHTML = `<div class="aviso aviso-error">No se ha podido descifrar el audio. Avisad a la organización.</div>`;
+      if ($("#r4-audio")) $("#r4-audio").innerHTML = `<p class="r4-margen-rojo">No se ha podido descifrar el audio. Avisad a la organización.</p>`;
     }
   }
 
-  // ---------- Pistas ----------
+  /** El reproductor común, vestido de grabadora de cinta: sin iconos, con la orden escrita en la tecla. */
+  function reproductorCinta(caja, url, nombre, etiqueta) {
+    const audio = App.reproductor(caja, url, nombre, etiqueta);
+    $(".rx", caja).classList.add("r4-cinta");
+    $(".ventana-barra b", caja).textContent = etiqueta;
+    $(".rx-reposo", caja).textContent = "Pulsad «Reproducir» para emitir la señal";
+    $(".rx-controles .btn", caja).textContent = "Descargar el audio";
+    return audio;
+  }
+
+  // ---------- Pistas: un sobre con tres notas ----------
   function pintarPistas() {
     const caja = $("#r4-pistas"), e = estado();
     if (!caja) return;
-    caja.innerHTML = `<div class="pistas">${PISTAS.map((p, i) => {
-      const abierta = e.pistas.some((x) => x.id === p.id);
-      const anterior = i === 0 || e.pistas.some((x) => x.id === PISTAS[i - 1].id);
-      return `<div class="pista ${abierta ? "abierta" : ""}"><div class="pista-texto">${abierta ? `<b>${p.titulo}:</b> ${p.texto}` : `<b>${p.titulo}</b>`}</div>
-        ${abierta ? "" : `<button class="btn btn-oscuro btn-peq" data-pista="${p.id}" ${anterior ? "" : "disabled"}>${ICONO.reloj} Ver (${App.proximoBloqueo(ID)} s)</button>`}</div>`;
-    }).join("")}</div>`;
+    caja.innerHTML = `<p class="r4-pistas-aviso">Cada pista bloquea el caso un rato: ${App.SEGUNDOS_PISTA} s la primera y ${App.SEGUNDOS_PISTA} s más cada vez.</p>
+      ${PISTAS.map((p, i) => {
+        const abierta = e.pistas.some((x) => x.id === p.id);
+        const anterior = i === 0 || e.pistas.some((x) => x.id === PISTAS[i - 1].id);
+        return `<div class="r4-pista ${abierta ? "abierta" : ""}"><b>${p.titulo}.</b> ${abierta ? p.texto
+          : `<button class="r4-palabra" data-pista="${p.id}" ${anterior ? "" : "disabled"}>Abrir (bloquea ${App.proximoBloqueo(ID)} s)</button>`}</div>`;
+      }).join("")}`;
     $$("[data-pista]", caja).forEach((b) => b.addEventListener("click", () => {
       const p = PISTAS.find((x) => x.id === b.dataset.pista);
       if (App.usarPista(ID, p.id, `Vais a abrir «${p.titulo}».`, `<b>${p.titulo}:</b> ${p.texto}`)) pintarPistas();
@@ -451,13 +578,15 @@
   }
 
   // ===================================== Documentos de las carpetas =====================================
-  const HORA_UNIVERSAL = `<div class="r4-utc" role="note"><span class="r4-utc-icono" aria-hidden="true">🕐</span><div>
-    <b class="r4-utc-tit">Atención: la hora del satélite es distinta.</b>
+  // La hora universal va en una nota adhesiva pegada al informe, con «suma 2 horas» subrayado en rojo
+  const HORA_UNIVERSAL = `<aside class="r4-adhesiva" role="note">
+    <p class="r4-adhesiva-tit">Atención: la hora del satélite es distinta.</p>
     <p>Los satélites y los radioaficionados de todo el mundo usan el mismo reloj, llamado <b>hora universal</b> (UTC),
       para no liarse con los husos horarios de cada país. <b>Todas las horas de este documento están en hora universal.</b></p>
-    <p class="r4-utc-regla"><b>Para saber qué hora era en España, suma 2 horas.</b> Ejemplo: las 10:00 en hora universal son las 12:00 en España.</p></div></div>`;
-  const HORA_UNIVERSAL_CORTA = `<div class="r4-utc corta" role="note"><span class="r4-utc-icono" aria-hidden="true">🕐</span><p>
-    <b class="r4-utc-tit">Hora del satélite = hora universal (UTC).</b> <b>Para saber qué hora era en España, suma 2 horas.</b></p></div>`;
+    <p class="r4-adhesiva-regla">Para saber qué hora era en España, <span class="r4-rojo">suma 2 horas${SUBRAYADO}</span>.
+      Ejemplo: las 10:00 en hora universal son las 12:00 en España.</p></aside>`;
+  const HORA_UNIVERSAL_CORTA = `<aside class="r4-adhesiva r4-adhesiva-corta" role="note">
+    <p><b>Hora del satélite = hora universal (UTC).</b> Para saber qué hora era en España, <span class="r4-rojo">suma 2 horas${SUBRAYADO}</span>.</p></aside>`;
 
   // Gráficas de la telemetría: [hora universal en minutos, valor]; terminan a las 14:10, cuando se apaga el satélite
   const h = (t) => { const [a, b] = t.split(":").map(Number); return a * 60 + b; };
@@ -476,23 +605,24 @@
     { titulo: "Intensidad de la señal recibida en tierra", min: 0, max: 2, marcas: [0, 1, 2], nombres: ["Mala", "Regular", "Buena"], unidad: "",
       puntos: [[h("06:00"), 2], [FIN, 2]] },
   ];
-  const X0 = h("06:00"), X1 = h("16:00"), AN = 340, AL = 90, IZQ = 50, ARR = 10;
+  const X0 = h("06:00"), X1 = h("16:00"), AN = 400, AL = 110, IZQ = 62, ARR = 12;
   const px = (t) => IZQ + ((t - X0) / (X1 - X0)) * AN, py = (g, v) => ARR + AL - ((v - g.min) / (g.max - g.min)) * AL;
   const reloj = (m) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(Math.round(m % 60)).padStart(2, "0")}`;
   function htmlGrafica(g, i) {
     const eje = [];
-    for (let t = X0; t <= X1; t += 120) eje.push(`<line x1="${px(t)}" y1="${ARR}" x2="${px(t)}" y2="${ARR + AL}" class="g-rejilla"/><text x="${px(t)}" y="${ARR + AL + 15}" class="g-x">${reloj(t)}</text>`);
-    for (let t = X0 + 60; t < X1; t += 120) eje.push(`<line x1="${px(t)}" y1="${ARR}" x2="${px(t)}" y2="${ARR + AL}" class="g-rejilla fina"/>`);
-    const ys = g.marcas.map((v, k) => `<line x1="${IZQ}" y1="${py(g, v)}" x2="${IZQ + AN}" y2="${py(g, v)}" class="g-rejilla"/><text x="${IZQ - 6}" y="${py(g, v) + 4}" class="g-y">${g.nombres ? g.nombres[k] : v + g.unidad}</text>`);
+    for (let t = X0; t <= X1; t += 120) eje.push(`<text x="${px(t)}" y="${ARR + AL + 17}" class="g-x">${reloj(t)}</text>`);
+    const ys = g.marcas.map((v, k) => `<line x1="${IZQ - 4}" y1="${py(g, v)}" x2="${IZQ}" y2="${py(g, v)}" class="g-tic"/><text x="${IZQ - 7}" y="${py(g, v) + 4}" class="g-y">${g.nombres ? g.nombres[k] : v + g.unidad}</text>`);
     const linea = g.puntos.map(([t, v]) => `${px(t).toFixed(1)},${py(g, v).toFixed(1)}`).join(" ");
     return `<figure class="r4-grafica" data-g="${i}">
       <figcaption><b>${i + 1}. ${g.titulo}</b>${g.nota ? ` <small>(${g.nota})</small>` : ""}</figcaption>
-      <svg viewBox="0 0 ${IZQ + AN + 12} ${ARR + AL + 34}" role="img" aria-label="${g.titulo}">
+      <svg viewBox="0 0 ${IZQ + AN + 28} ${ARR + AL + 38}" role="img" aria-label="${g.titulo}">
+        <rect x="${IZQ}" y="${ARR}" width="${AN}" height="${AL}" fill="url(#r4-mm)"/>
+        <rect x="${IZQ}" y="${ARR}" width="${AN}" height="${AL}" fill="url(#r4-cm)" class="g-marco"/>
         ${ys.join("")}${eje.join("")}
-        <polyline points="${linea}" class="g-linea"/>
+        <polyline points="${linea}" class="g-linea" filter="url(#r4-trazo)"/>
         <line x1="${px(FIN)}" y1="${ARR}" x2="${px(FIN)}" y2="${ARR + AL}" class="g-fin"/>
-        <text x="${IZQ + AN / 2}" y="${ARR + AL + 31}" class="g-eje">hora universal</text>
-        <g class="g-cursor" visibility="hidden"><line y1="${ARR}" y2="${ARR + AL}"/><rect y="${ARR - 2}" width="98" height="18" rx="4"/><text y="${ARR + 11}"></text></g>
+        <text x="${IZQ + AN / 2}" y="${ARR + AL + 34}" class="g-eje">hora universal</text>
+        <g class="g-cursor" visibility="hidden"><line y1="${ARR}" y2="${ARR + AL}"/><rect y="${ARR - 2}" width="112" height="20"/><text y="${ARR + 12}"></text></g>
       </svg></figure>`;
   }
   /** Al pasar el ratón por una gráfica se lee la hora (universal) y el valor en ese punto. */
@@ -511,14 +641,17 @@
       if (t < X0 || t > X1) { cur.setAttribute("visibility", "hidden"); return; }
       const v = t > FIN ? null : valor(t);
       const txt = v == null ? "sin datos" : g.nombres ? g.nombres[Math.round(v)] : `${Math.round(v)}${g.unidad}`;
-      const xx = px(t), rx = Math.min(xx + 4, IZQ + AN - 94);
+      const xx = px(t), rx = Math.min(xx + 4, IZQ + AN - 108);
       $("line", cur).setAttribute("x1", xx); $("line", cur).setAttribute("x2", xx);
-      $("rect", cur).setAttribute("x", rx); $("text", cur).setAttribute("x", rx + 5);
+      $("rect", cur).setAttribute("x", rx); $("text", cur).setAttribute("x", rx + 6);
       $("text", cur).textContent = `${reloj(t)} · ${txt}`;
       cur.setAttribute("visibility", "visible");
     });
     svg.addEventListener("pointerleave", () => cur.setAttribute("visibility", "hidden"));
   }
+
+  const libro = (cabeceras, filas, clase = "") => `<table class="r4-libro ${clase}"><thead><tr>${cabeceras.map((c) => `<th>${c}</th>`).join("")}</tr></thead>
+    <tbody>${filas.map((f) => `<tr>${f.map((c) => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
 
   const CONTENIDO = {
     camara: () => `
@@ -526,62 +659,62 @@
         Su última foto se envió el 15 de julio a las <b>12:31, hora del satélite</b> (la cámara usa el reloj de la estación de
         radio, que funciona con la hora universal: ver el recuadro). La foto llega como sonido: decodificadla con Black Cat SSTV.</p>
       ${HORA_UNIVERSAL_CORTA}
-      <div class="r4-recordatorio">${ICONO.info}<span>Abrid Black Cat SSTV escuchando del cable antes de pulsar.</span></div>
-      <button class="btn btn-ambar r4-recibir" id="r4-recibir">${ICONO.antena} Recibir la foto de la cámara</button>
+      <div class="r4-camara-mesa">
+        <p class="r4-nota-margen r4-nota-recordatorio">Abrid Black Cat SSTV escuchando del cable antes de pulsar.</p>
+        <button class="r4-boton-sello r4-recibir" id="r4-recibir">Recibir la foto de la cámara</button>
+      </div>
       <div id="r4-camara"></div>
-      <p class="r4-mientras oculto" id="r4-mientras">${ICONO.reloj}<span>La foto tarda unos 2 minutos. Mientras, leed
-        <button class="r4-enlace" data-capa="r4-doc-equipo">«El equipo de GranaSAT»</button>.</span></p>`,
+      <p class="r4-mientras oculto" id="r4-mientras">La foto tarda unos 2 minutos. Mientras, leed
+        <button class="r4-palabra" data-capa="r4-doc-equipo">«El equipo de GranaSAT»</button>.</p>`,
     telemetria: () => `${HORA_UNIVERSAL}
-      <p class="r4-texto">Datos que envió el satélite el 15 de julio. <small>(Pasad el ratón por una gráfica para leer la hora exacta.)</small></p>
+      <p class="r4-texto">Datos que envió el satélite el 15 de julio. <span class="r4-lapiz">(Pasad el ratón por una gráfica para leer la hora exacta.)</span></p>
       <div class="r4-graficas">${GRAFICAS.map(htmlGrafica).join("")}</div>`,
     radio: () => `${HORA_UNIVERSAL}
       <div class="r4-dos">
         <div class="r4-subdoc"><h3>Documento A · Registro automático de órdenes</h3>
-          <table class="chuleta r4-tabla mono-tabla"><thead><tr><th>Hora</th><th>Estación</th><th>Orden</th></tr></thead><tbody>
-            <tr><td>08:15</td><td>GS1</td><td>ROT +015</td></tr>
-            <tr><td>08:17</td><td>GS1</td><td>ROT 000</td></tr>
-            <tr><td>11:40</td><td>GS1</td><td>DL IMG</td></tr>
-            <tr><td>12:32</td><td>GS2</td><td>ROT +180</td></tr>
-          </tbody></table>
+          ${libro(["Hora", "Estación", "Orden"], [["08:15", "GS1", "ROT +015"], ["08:17", "GS1", "ROT 000"], ["11:40", "GS1", "DL IMG"], ["12:32", "GS2", "ROT +180"]])}
           <p class="r4-leyenda-doc"><b>GS1</b> = estación del laboratorio · <b>GS2</b> = estación de la azotea · <b>ROT</b> = girar los
             paneles a los grados indicados · <b>DL IMG</b> = enviar las fotos a tierra.</p>
-          <div class="r4-norma" role="note"><span aria-hidden="true">🔐</span><p>El satélite solo acepta órdenes firmadas con una <b>llave física</b>
+          <div class="r4-norma" role="note"><p class="r4-norma-tit">Norma de seguridad</p><p>El satélite solo acepta órdenes firmadas con una <b>llave física</b>
             que está guardada <b>dentro</b> de cada estación. Para enviarle una orden hay que estar <b>dentro de la estación</b>. Desde fuera es imposible.</p></div></div>
-        <div class="r4-subdoc r4-nota-papel"><h3>Documento B · Plan de trabajo · 15 de julio <small>(horas de España)</small></h3>
+        <div class="r4-cuaderno"><h3>Documento B · Plan de trabajo · 15 de julio <span>(horas de España)</span></h3>
           <ul>
             <li><b>10:15</b> · Marta: calibración de los sensores desde el laboratorio. Girar el satélite un poco y volver a dejarlo como estaba.</li>
             <li><b>13:40</b> · Marta: descarga de las fotos de la mañana (laboratorio).</li>
-            <li><s><b>16:30</b> · Javier: pruebas de la radio en la azotea.</s> <i>Aplazado al lunes: Javier tiene la reunión de proyecto.</i></li>
+            <li class="r4-tachada"><s><b>16:30</b> · Javier: pruebas de la radio en la azotea.</s> <i>Aplazado al lunes: Javier tiene la reunión de proyecto.</i></li>
             <li>Recordatorio: <b>nadie toca la orientación del satélite sin avisar.</b></li>
           </ul></div>
       </div>`,
     accesos: () => `
-      <p class="r4-aviso-hora">${ICONO.reloj}<span>Estas horas son <b>las de España</b>: son los relojes del edificio.</span></p>
+      <aside class="r4-adhesiva r4-adhesiva-corta r4-adhesiva-azul" role="note"><p>Estas horas son <b>las de España</b>: son los relojes del edificio.</p></aside>
       <div class="r4-tres">
         <div class="r4-subdoc"><h3>Documento A · Registro de tarjetas del 15 de julio</h3>
-          <table class="chuleta r4-tabla mono-tabla"><thead><tr><th>Hora</th><th>Tarjeta</th><th>Puerta</th><th></th></tr></thead><tbody>
-            ${[["09:00", "0412", "L", "entrada"], ["13:50", "1133", "A", "entrada"], ["14:00", "1580", "L", "entrada"], ["14:20", "1133", "A", "salida"],
-              ["14:20", "1580", "L", "salida"], ["14:25", "0957", "A", "entrada"], ["14:45", "0957", "A", "salida"], ["18:00", "0412", "L", "salida"]]
-              .map(([hh, t, p, x]) => `<tr><td>${hh}</td><td>${t}</td><td>${p}</td><td>${x}</td></tr>`).join("")}
-          </tbody></table>
+          ${libro(["Hora", "Tarjeta", "Puerta", ""], [["09:00", "0412", "L", "entrada"], ["13:50", "1133", "A", "entrada"], ["14:00", "1580", "L", "entrada"], ["14:20", "1133", "A", "salida"],
+            ["14:20", "1580", "L", "salida"], ["14:25", "0957", "A", "entrada"], ["14:45", "0957", "A", "salida"], ["18:00", "0412", "L", "salida"]])}
           <p class="r4-leyenda-doc"><b>L</b> = laboratorio · <b>A</b> = azotea</p></div>
-        <div class="r4-subdoc"><h3>Documento B · Listado de tarjetas <small>(administración)</small></h3>
-          <table class="chuleta r4-tabla"><thead><tr><th>Tarjeta</th><th>Puesto</th><th>Puertas que abre</th></tr></thead><tbody>
-            <tr><td class="mono">0412</td><td>Ingeniería de software</td><td>L</td></tr>
-            <tr><td class="mono">0957</td><td>Operación de radio</td><td>L y A</td></tr>
-            <tr><td class="mono">1133</td><td>Técnica de antenas</td><td>A</td></tr>
-            <tr><td class="mono">1580</td><td>Becario/a</td><td>L</td></tr>
-          </tbody></table></div>
-        <div class="r4-subdoc r4-declaraciones"><h3>Documento C · Declaraciones y comprobaciones</h3>
-          <blockquote><b>Javier:</b> «De 14:00 a 15:00 estuve en la reunión de proyecto. Dejé la chaqueta en la sala común.»</blockquote>
-          <blockquote><b>Lucía:</b> «Terminé en la azotea a las 14:20, me quité el casco y me fui a casa en autobús.»</blockquote>
-          <blockquote><b>Pablo:</b> «A las 14:20 salí del laboratorio y me fui a la cafetería hasta las tres.»</blockquote>
-          <blockquote><b>Marta:</b> «Estuve todo el día en mi mesa del laboratorio.»</blockquote>
-          <div class="r4-comprobacion"><i>Acta de la reunión de proyecto, 15 de julio, 14:00–15:00.</i> Asistentes: J. Ortega, R. Carrillo,
-            A. Gómez, S. Díaz, M. López, E. Navarro. <i>(6 firmas)</i></div>
-          <div class="r4-comprobacion"><i>Registro de la tarjeta de transporte a nombre de L. Martín:</i> subida al autobús línea 4, 14:28.</div>
-          <div class="r4-comprobacion"><i>Nota de la cajera de la cafetería:</i> «Ese día, entre las dos y las tres, no vino ningún chico con
-            gorra roja. Me acuerdo porque solo vinieron dos profesores.»</div></div>
+        <div class="r4-subdoc r4-listado"><h3>Documento B · Listado de tarjetas <span>(administración)</span></h3>
+          ${libro(["Tarjeta", "Puesto", "Puertas que abre"], [["0412", "Ingeniería de software", "L"], ["0957", "Operación de radio", "L y A"],
+            ["1133", "Técnica de antenas", "A"], ["1580", "Becario/a", "L"]])}</div>
+      </div>
+      <div class="r4-subdoc r4-declaraciones"><h3>Documento C · Declaraciones y comprobaciones</h3>
+        <div class="r4-declaraciones-mesa">
+          <div class="r4-transcripcion">
+            <p><b>Javier:</b> «De 14:00 a 15:00 estuve en la reunión de proyecto. Dejé la chaqueta en la sala común.»</p>
+            <p><b>Lucía:</b> «Terminé en la azotea a las 14:20, me quité el casco y me fui a casa en autobús.»</p>
+            <p><b>Pablo:</b> «A las 14:20 salí del laboratorio y me fui a la cafetería hasta las tres.»</p>
+            <p><b>Marta:</b> «Estuve todo el día en mi mesa del laboratorio.»</p>
+          </div>
+          <div class="r4-pruebas-sueltas">
+            <div class="r4-acta"><p><i>Acta de la reunión de proyecto, 15 de julio, 14:00–15:00.</i> Asistentes: J. Ortega, R. Carrillo,
+              A. Gómez, S. Díaz, M. López, E. Navarro. <i>(6 firmas)</i></p>
+              <div class="r4-firmas">${[41, 7, 63, 19, 88, 52].map(firma).join("")}</div></div>
+            <div class="r4-billete"><p class="r4-billete-cab">Tarjeta de transporte</p>
+              <p><i>Registro de la tarjeta de transporte a nombre de L. Martín:</i> subida al autobús línea 4, 14:28.</p></div>
+            <div class="r4-comanda"><p class="r4-comanda-cab">Cafetería · comanda</p>
+              <p><i>Nota de la cajera de la cafetería:</i> «Ese día, entre las dos y las tres, no vino ningún chico con
+                gorra roja. Me acuerdo porque solo vinieron dos profesores.»</p></div>
+          </div>
+        </div>
       </div>`,
   };
 
@@ -589,12 +722,11 @@
   async function recibirCamara() {
     const boton = $("#r4-recibir"), caja = $("#r4-camara");
     boton.disabled = true;
-    caja.innerHTML = App.htmlCarga("Sintonizando la cámara de la azotea…");
+    caja.innerHTML = cargando("Sintonizando la cámara de la azotea…");
     try {
       const url = urlDe(blobDesdeB64(await cargarDatos("reto4_camara"), "audio/wav"));
-      App.reproductor(caja, url, "camara_azotea.wav", "CÁMARA AZOTEA · camara_azotea.wav");
-      boton.classList.add("oculto");
-      const audio = $("audio", caja);
+      const audio = reproductorCinta(caja, url, "camara_azotea.wav", "Cámara de la azotea · camara_azotea.wav");
+      $(".r4-camara-mesa").classList.add("oculto");
       const aviso = (vivo) => { $("#r4-mientras").classList.toggle("oculto", !vivo); const m = $("#r4-tx-archivo"); if (m) m.classList.toggle("oculto", !vivo); };
       audio.addEventListener("play", () => aviso(true));
       audio.addEventListener("pause", () => aviso(false));
@@ -602,7 +734,7 @@
       $(".rx-play", caja).click(); // «Recibir» ya es la orden de emitir
     } catch (e) {
       boton.disabled = false;
-      caja.innerHTML = `<div class="aviso aviso-error">No se ha podido cargar la transmisión. Avisad a la organización.</div>`;
+      caja.innerHTML = `<p class="r4-margen-rojo">No se ha podido cargar la transmisión. Avisad a la organización.</p>`;
     }
   }
 

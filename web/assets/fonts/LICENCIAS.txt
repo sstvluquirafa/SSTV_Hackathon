@@ -7,3 +7,13 @@ descargadas de Google Fonts):
 
 Las tres se distribuyen bajo la licencia SIL Open Font License 1.1 (https://openfontlicense.org),
 que permite usarlas, incluirlas y redistribuirlas libremente con este proyecto.
+
+Fuentes del reto 4 («el cuaderno del detective»), también de Google Fonts (subconjunto latino, WOFF2):
+
+- Courier Prime (400, 700 e itálica 400) .. courier-prime-latin.woff2, courier-prime-bold-latin.woff2,
+                                            courier-prime-italic-latin.woff2
+- Libre Baskerville (variable 400-700) ... libre-baskerville-latin.woff2, libre-baskerville-italic-latin.woff2
+- Caveat (variable, 400-700) ............. caveat-latin.woff2
+  Las tres, SIL Open Font License 1.1.
+- Special Elite (400) .................... special-elite-latin.woff2
+  Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0), que también permite incluirla y redistribuirla.

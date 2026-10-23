@@ -184,6 +184,8 @@
     const el = $("#vista");
     el.innerHTML = "";
     el.className = "vista";
+    document.body.dataset.vista = vista; // el reto 4 cambia la escena entera (css/reto4.css)
+    document.body.classList.remove("r4-con-libreta");
     void el.offsetWidth; // reinicia la animación de entrada
     App.VISTAS[vista](el);
     $$(".nav a").forEach((a) => a.classList.toggle("activo", a.dataset.ruta === vista || (vista.startsWith("reto") && a.dataset.ruta === "panel")));

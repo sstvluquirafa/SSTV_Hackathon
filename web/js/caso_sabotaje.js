@@ -10,18 +10,18 @@
   // Carpetas en el orden en que conviene abrirlas. Cada una termina con una o dos preguntas de opción múltiple
   // (ids a, b, c…); para extraer la prueba hay que acertarlas todas.
   const CARPETAS = [
-    { id: "camara", num: 1, icono: "📷", titulo: "Cámara de la azotea", preguntas: [
+    { id: "camara", num: 1, romano: "I", titulo: "Cámara de la azotea", preguntas: [
       { texto: "Según lo que sabéis del equipo, ¿quién puede ser la persona de la foto?",
         opciones: ["Solo Pablo", "Solo Lucía", "Pablo o Lucía", "Javier", "Marta"] }] },
-    { id: "telemetria", num: 2, icono: "📈", titulo: "Telemetría del satélite", preguntas: [
+    { id: "telemetria", num: 2, romano: "II", titulo: "Telemetría del satélite", preguntas: [
       { texto: "¿Qué le pasó al satélite?",
         opciones: ["Se puso de espaldas al Sol y se quedó sin batería", "Se calentó demasiado y se averió",
           "Su ordenador se colgó y se reinició", "Su señal dejó de llegar a la Tierra aunque seguía teniendo batería"] },
       { texto: "¿A qué hora empezó el problema, según el reloj del satélite?", opciones: ["08:15", "12:32", "14:10", "14:32"] }] },
-    { id: "radio", num: 3, icono: "📻", titulo: "Registro de radio", preguntas: [
+    { id: "radio", num: 3, romano: "III", titulo: "Registro de radio", preguntas: [
       { texto: "¿Qué orden del registro NO estaba en el plan de trabajo?",
         opciones: ["La de las 08:15", "La de las 08:17", "La de las 11:40", "La de las 12:32"] }] },
-    { id: "accesos", num: 4, icono: "🪪", titulo: "Accesos y declaraciones", preguntas: [
+    { id: "accesos", num: 4, romano: "IV", titulo: "Accesos y declaraciones", preguntas: [
       { texto: "¿De quién era la tarjeta que abrió la azotea a las 14:25?", opciones: ["Marta", "Javier", "Lucía", "Pablo"] }] },
   ].map((c) => ({ ...c, preguntas: c.preguntas.map((p) => ({ ...p, opciones: p.opciones.map((texto, i) => ({ id: "abcdefgh"[i], texto })) })) }));
   const PERSONAS = ["Marta", "Javier", "Lucía", "Pablo"]; // apartados de la libreta del investigador
