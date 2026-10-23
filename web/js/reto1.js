@@ -1,9 +1,13 @@
 // Reto 1 · Mensaje desde 1969: pista SSTV → respuesta → puzle 3×3 → fragmento ORIÓN.
 // Basado en referencia/reto1_prototipo.html. La respuesta no está en el código: si es correcta,
 // abre la llave que descifra la foto del puzle y el audio de recompensa (ver base.js → Cripto).
+// Estética: la sala de control de misión (especificaciones/reto1_estetica_control_mision.md). Una línea de fases
+// (Recepción · Identificación · Reconstrucción · Entrega) y, de cada fase, solo lo suyo: la acción en la pantalla mural
+// y los mandos en el puesto del equipo. Estilos en css/reto1.css; el reproductor usa el tema «control-mision».
+// Ojo: ningún rótulo decorativo puede insinuar la respuesta de la foto (nada de nombres de misión ni de tripulantes).
 (function () {
   "use strict";
-  const { $, $$, Progreso, Cripto, cargarDatos, blobDesdeB64, urlDe, Sonido, aviso } = App;
+  const { $, $$, Progreso, Cripto, cargarDatos, blobDesdeB64, urlDe, Sonido } = App;
   const ID = "reto1";
 
   // Cada pista bloquea el reto un tiempo creciente (efectos.js → App.usarPista)
@@ -13,152 +17,253 @@
     { id: "p2", titulo: "Pista 2 · Mirad el reflejo",
       texto: "El astronauta de la foto es Buzz Aldrin. En el visor de su casco se refleja quien sostiene la cámara: su comandante, el primer ser humano que pisó la Luna." },
   ];
+  // Las fases del plan de vuelo, con la orden que se da en cada una
+  const FASES = [
+    { nombre: "Recepción", orden: "Pulsad <b>RECIBIR TRANSMISIÓN</b> y decodificad la imagen con Black Cat SSTV." },
+    { nombre: "Identificación", orden: "Escribid quién responde a la pregunta de la imagen y pulsad <b>COMPROBAR</b>." },
+    { nombre: "Reconstrucción", orden: "Reconstruid la fotografía: pulsad una pieza junto al hueco o usad las flechas del teclado." },
+    { nombre: "Entrega", orden: "Pulsad <b>EMITIR FRAGMENTO</b>, decodificadlo con Black Cat SSTV y guardad la imagen para el montaje del mapa." },
+  ];
 
   const estado = () => Progreso.reto(ID);
+  const mmss = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+  const hms = (s) => `${Math.floor(s / 3600)}:${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
+  // ---------- Displays de 7 segmentos (App.segmentos está en reproductor.js) ----------
+  function display(el, texto) {
+    if (!el) return;
+    el.innerHTML = App.segmentos(texto);
+    el.setAttribute("aria-label", String(texto));
+  }
+  const htmlDisplay = (id, rotulo, texto) => `<div class="r1-indicador">
+      <span class="r1-rotulo">${rotulo}</span>
+      <span class="r1-display" id="${id}" role="img" aria-label="${texto}">${App.segmentos(texto)}</span></div>`;
+
+  // ---------- Fases: cuál toca, cuál se ve ----------
+  /** Fases terminadas: Recepción (transmisión oída o descargada), Identificación, Reconstrucción y Entrega. */
+  function hechas() {
+    const e = estado();
+    return [!!(e.recibida || e.llave), !!e.llave, !!e.completado, !!e.fragmentoRecibido];
+  }
+  /** La fase que toca (0–3); con todo hecho, la de Entrega. */
+  const faseActual = () => { const i = hechas().indexOf(false); return i === -1 ? 3 : i; };
+  let faseVista = 0;      // la que se está mostrando (puede ser una terminada, para repasarla)
+  const preparadas = {};  // fases cuyo contenido ya se ha montado (la transmisión se crea al verla por primera vez)
+
+  // ===================================== Vista =====================================
   function vista(el) {
-    Progreso.cambiar(ID, (r) => { r.empezado = true; });
-    const def = App.RETOS.find((r) => r.id === ID);
+    Progreso.cambiar(ID, (r) => { r.empezado = true; if (!r.inicio && !r.completado) r.inicio = Date.now(); });
+    for (const k of Object.keys(preparadas)) delete preparadas[k];
     el.innerHTML = `
-      <a class="volver" href="#/panel">${ICONO.volver} Volver a los retos</a>
-      <section class="panel expediente">
-        <div class="expediente-cab">
-          <div class="sello">${ICONO.espia}</div>
-          <div><div class="expediente-num">EXPEDIENTE #01 · FRAGMENTO ${def.fragmento}</div>
-          <div class="expediente-fecha">20-07-1969 · 20:17 UTC · Mar de la Tranquilidad</div></div>
-        </div>
-        <div class="expediente-cuerpo">
-          <div>
-            <h1 class="titulo" style="font-size:34px">Mensaje desde <em>1969</em></h1>
-            <div class="datos">
-              <div class="dato"><small>Clasificación</small><strong>SSTV · PD120</strong></div>
-              <div class="dato"><small>Duración</small><strong>${def.duracion}</strong></div>
-              <div class="dato destacado"><small>Puntos ahora</small><strong id="r1-puntos">${App.puntosReto(ID)} PTS</strong></div>
+      <div class="r1-sala">
+        <header class="r1-plan">
+          <h1 class="r1-titulo">Mensaje desde 1969</h1>
+          <ol class="r1-fases" aria-label="Fases">${FASES.map((f, i) => `
+            <li><button class="r1-fase" type="button" data-fase="${i}">
+              <i class="r1-luz" aria-hidden="true"></i><span class="r1-fase-num">${i + 1}</span><span class="r1-fase-nombre">${f.nombre}</span>
+            </button></li>`).join("")}</ol>
+          <a class="r1-boton r1-boton-sec" href="#/panel">Volver a los retos</a>
+        </header>
+        <p class="r1-orden" id="r1-orden" aria-live="polite"></p>
+
+        <section class="r1-mural" aria-label="Pantalla mural">
+          <div class="r1-mural-barra">
+            <span class="r1-reloj"><span class="r1-rotulo">Reloj de misión</span><span class="r1-display r1-display-peq" id="r1-reloj" role="img"></span></span>
+            <span class="r1-fase-estado" id="r1-fase-estado"></span>
+          </div>
+          <div class="r1-mural-fase r1-m-recepcion" data-fase="0">
+            <div class="r1-analizador" id="r1-pista"><p class="r1-cargando">Sintonizando la transmisión…</p></div>
+            <div class="r1-lista">
+              <p class="r1-lista-tit">Antes de recibir</p>
+              <ol>
+                <li>Abrid Black Cat SSTV (o YONIQ) con la entrada de audio <b>CABLE Output</b>.</li>
+                <li>Comprobad que el sonido del PC sale por <b>CABLE Input (VB-Audio)</b>.</li>
+                <li>Pulsad <b>RECIBIR TRANSMISIÓN</b> y esperad unos 2 minutos sin tocar nada: la imagen aparece línea a línea.</li>
+                <li>Leed con atención la pregunta que viene en la imagen.</li>
+              </ol>
             </div>
           </div>
-          <div>
-            <p class="etiqueta-seccion">Informe de misión interceptado</p>
-            <div class="ventana informe"><div class="ventana-cuerpo" id="r1-informe">
-              <p class="linea-cmd">&gt; INICIANDO LECTURA DE DATOS…</p>
-              <p>Operadores: nuestra antena ha captado una transmisión SSTV muy antigua. Dentro viaja una fotografía
-                histórica y una pregunta. Descodificad la imagen, contestad la pregunta y reconstruid la foto del
-                archivo para liberar el fragmento <b>${def.fragmento}</b> del mapa.</p>
-            </div></div>
-          </div>
-        </div>
-      </section>
-
-      <div class="pasos">
-        <section class="panel paso" id="r1-paso1" data-num="1">
-          <div class="paso-cab"><h2>Recepción de la transmisión SSTV</h2></div>
-          <div class="paso-cuerpo dos-col">
-            <div id="r1-pista">${App.htmlCarga("Sintonizando la transmisión…")}</div>
-            <ol class="lista-pasos">
-              <li>Abrid el descodificador SSTV (Black Cat SSTV o YONIQ) con la entrada de audio <b>CABLE Output</b>.</li>
-              <li>Comprobad que el sonido del PC sale por <b>CABLE Input (VB-Audio)</b>.</li>
-              <li>Pulsad ▶ y esperad unos 2 minutos sin tocar nada: la imagen aparece línea a línea.
-                En la cascada veréis la señal saltar entre 1500 Hz (negro) y 2300 Hz (blanco).</li>
-              <li>Leed con atención la pregunta que viene en la imagen.</li>
-            </ol>
-          </div>
-        </section>
-
-        <section class="panel paso" id="r1-paso2" data-num="2">
-          <div class="paso-cab"><h2>Respuesta a la pregunta de la imagen</h2><span class="estado" id="r1-estado2"></span></div>
-          <div class="paso-cuerpo dos-col">
-            <div>
-              <p class="texto-2" style="margin-top:0">Escribid el <b>nombre y apellido</b> de la persona que responde a la pregunta de la imagen.
+          <div class="r1-mural-fase r1-m-identificacion" data-fase="1" hidden>
+            <div class="r1-teletipo">
+              <p class="r1-texto">Escribid el <b>nombre y apellido</b> de la persona que responde a la pregunta de la imagen.
                 No importan las tildes ni las mayúsculas.</p>
-              <form class="campo" id="r1-form" autocomplete="off">
-                <input class="entrada" id="r1-respuesta" placeholder="Nombre y apellido…" aria-label="Respuesta">
-                <button class="btn btn-ambar" id="r1-comprobar" type="submit">${ICONO.lupa} Comprobar</button>
-              </form>
-              <div class="intentos" id="r1-intentos"></div>
-              <div id="r1-aviso" class="aviso oculto"></div>
+              <div class="r1-resultado">
+                <i class="r1-luz r1-luz-verde" id="r1-luz-ok" aria-hidden="true"></i>
+                <i class="r1-luz r1-luz-roja" id="r1-luz-error" aria-hidden="true"></i>
+                <div class="r1-mensaje" id="r1-mensaje" role="status">Esperando respuesta</div>
+                <span class="r1-display" id="r1-cuenta" role="img" hidden></span>
+              </div>
+              <p class="r1-explicacion" id="r1-explicacion"></p>
             </div>
-            <div>
-              <p class="etiqueta-seccion">Pistas · cada una bloquea el reto un rato</p>
-              <div class="pistas" id="r1-pistas"></div>
-            </div>
+            <div class="r1-pistas-recibidas" id="r1-pistas-recibidas"></div>
+          </div>
+          <div class="r1-mural-fase r1-m-reconstruccion" data-fase="2" id="r1-puzle" hidden></div>
+          <div class="r1-mural-fase r1-m-entrega" data-fase="3" hidden>
+            <div class="r1-entrega-texto" id="r1-entrega-texto"></div>
+            <div class="r1-analizador" id="r1-premio"></div>
           </div>
         </section>
 
-        <section class="panel paso bloqueado" id="r1-paso3" data-num="3">
-          <div class="paso-cab"><h2>Reconstrucción de la fotografía (puzle 3×3)</h2></div>
-          <div class="paso-cuerpo" id="r1-puzle"><p class="texto-3" style="margin:0">${ICONO.candado.replace("<svg", '<svg width="14" height="14"')} Se desbloquea al acertar la pregunta.</p></div>
-        </section>
-
-        <section class="panel paso oculto recompensa" id="r1-paso4" data-num="4">
-          <div class="paso-cab"><h2>Fragmento ${def.fragmento} desbloqueado</h2><span class="estado chip chip-verde">COMPLETADO</span></div>
-          <div class="paso-cuerpo" id="r1-premio"></div>
+        <section class="r1-puesto" aria-label="Puesto del equipo">
+          <div class="r1-puesto-fase r1-p-recepcion" data-fase="0">
+            <div class="r1-mandos" id="r1-mandos-pista"><p class="r1-motivo">Cargando la transmisión…</p></div>
+            <div class="r1-extra"><button class="r1-boton r1-boton-sec" id="r1-ya" type="button" disabled>Ya tenemos la imagen</button>
+              <span class="r1-motivo" id="r1-ya-motivo">Disponible al empezar la recepción</span></div>
+          </div>
+          <div class="r1-puesto-fase r1-p-identificacion" data-fase="1" hidden>
+            <div class="r1-intentos"><span class="r1-rotulo">Intentos</span><span class="r1-luces" id="r1-intentos" aria-hidden="true"></span><span class="r1-motivo" id="r1-intentos-texto"></span></div>
+            <form class="r1-respuesta" id="r1-form" autocomplete="off">
+              <input class="r1-entrada" id="r1-respuesta" placeholder="Nombre y apellido" aria-label="Respuesta" spellcheck="false">
+              <button class="r1-boton r1-boton-principal" id="r1-comprobar" type="submit">Comprobar</button>
+              <span class="r1-motivo" id="r1-comprobar-motivo"></span>
+            </form>
+            <div class="r1-pista-puesto" id="r1-pistas"></div>
+          </div>
+          <div class="r1-puesto-fase r1-p-reconstruccion" data-fase="2" id="r1-puesto-puzle" hidden></div>
+          <div class="r1-puesto-fase r1-p-entrega" data-fase="3" hidden>
+            <div class="r1-mandos" id="r1-mandos-premio"><p class="r1-motivo">Se activa al reconstruir la fotografía.</p></div>
+            <div class="r1-extra"><a class="r1-boton r1-boton-sec" href="#/panel">Volver a los retos</a></div>
+          </div>
         </section>
       </div>`;
 
-    App.escribir($("#r1-informe"));
-    cargarPista();
+    $$(".r1-fase", el).forEach((b) => b.addEventListener("click", () => mostrarFase(Number(b.dataset.fase))));
+    $("#r1-form").addEventListener("submit", (ev) => { ev.preventDefault(); comprobar(); });
+    $("#r1-ya").addEventListener("click", () => { marcar("recibida"); });
+    faseVista = faseActual();
+    mostrarFase(faseVista);
     pintarPistas();
     pintarRespuesta();
-    $("#r1-form").addEventListener("submit", (ev) => { ev.preventDefault(); comprobar(); });
-    App.cadaSegundo(() => { pintarRespuesta(); App.comprobarBloqueo(ID); });
+    pintarReloj();
+    App.cadaSegundo(() => { pintarRespuesta(); pintarReloj(); App.comprobarBloqueo(ID); });
     App.comprobarBloqueo(ID);
-    if (estado().llave) abrirPuzle(false);
-    App.lineaTiempo();
   }
 
-  // ---------- Paso 1 ----------
+  /** Enseña una fase (la actual o una ya terminada) en la pantalla mural y en el puesto. */
+  function mostrarFase(n) {
+    const actual = faseActual(), hecho = hechas();
+    if (n > actual) return; // las siguientes están apagadas
+    faseVista = n;
+    $$(".r1-mural-fase, .r1-puesto-fase").forEach((x) => { x.hidden = Number(x.dataset.fase) !== n; });
+    preparar(n);
+    pintarFases();
+    const orden = $("#r1-orden");
+    if (n !== actual) {
+      orden.innerHTML = `<span class="r1-orden-rotulo">Repaso</span><span>Estáis repasando la fase de ${FASES[n].nombre}.</span>
+        <button class="r1-boton r1-boton-sec r1-boton-mini" type="button" id="r1-volver-fase">Volver a la fase actual</button>`;
+      $("#r1-volver-fase").addEventListener("click", () => mostrarFase(faseActual()));
+    } else {
+      orden.innerHTML = `<span class="r1-orden-rotulo">Orden</span><span>${hecho.every(Boolean)
+        ? "Fragmento ORIÓN recibido. Guardad la imagen: la necesitaréis en el montaje del mapa." : FASES[n].orden}</span>`;
+    }
+    $("#r1-fase-estado").textContent = hecho.every(Boolean) ? "Misión cumplida" : `Fase ${n + 1} de 4 · ${FASES[n].nombre}`;
+  }
+
+  /** La línea de fases: verde = hecha (se puede reabrir), ámbar = la que toca, apagada = las siguientes. */
+  function pintarFases() {
+    const hecho = hechas(), actual = faseActual();
+    $$(".r1-fase").forEach((b) => {
+      const i = Number(b.dataset.fase);
+      b.classList.toggle("hecha", hecho[i]);
+      b.classList.toggle("actual", i === actual && !hecho[i]);
+      b.disabled = i > actual;
+      if (i === faseVista) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current");
+      b.setAttribute("aria-label", `Fase ${i + 1}: ${FASES[i].nombre}${hecho[i] ? " (hecha)" : i === actual ? " (ahora)" : " (todavía no)"}`);
+    });
+  }
+
+  /** Al terminar una fase se pasa a la siguiente (salvo que el equipo esté repasando otra). */
+  function marcar(campo) {
+    if (estado()[campo]) return;
+    const seguir = faseVista === faseActual();
+    Progreso.cambiar(ID, (r) => { r[campo] = true; });
+    if (seguir) mostrarFase(faseActual()); else pintarFases();
+  }
+
+  function pintarReloj() {
+    const e = estado();
+    const s = e.inicio ? ((e.fin || Date.now()) - e.inicio) / 1000 : null;
+    display($("#r1-reloj"), s == null ? "-:--:--" : hms(Math.min(s, 9 * 3600 + 3599)));
+  }
+
+  /** Monta el contenido de una fase la primera vez que se ve. */
+  function preparar(n) {
+    if (preparadas[n]) return;
+    if (n === 0) { preparadas[0] = true; cargarPista(); }
+    if (n === 2 && estado().llave) { preparadas[2] = true; abrirPuzle(); }
+    if (n === 3 && estado().completado) { preparadas[3] = true; mostrarPremio(); }
+  }
+
+  // ---------- Fase 1: recepción ----------
   async function cargarPista() {
     const caja = $("#r1-pista");
     try {
       const b64 = await cargarDatos("reto1_pista");
       if (!caja.isConnected) return;
-      App.reproductor(caja, urlDe(blobDesdeB64(b64, "audio/wav")), "pista_reto1.wav");
+      const url = urlDe(blobDesdeB64(b64, "audio/wav"));
+      const audio = App.reproductor(caja, url, "pista_reto1.wav", "pista_reto1.wav", {
+        tema: "control-mision", mandos: $("#r1-mandos-pista"), textos: { reproducir: "Recibir transmisión", detener: "Detener" },
+      });
+      audio.addEventListener("play", () => { $("#r1-ya").disabled = !!estado().recibida || !!estado().llave; $("#r1-ya-motivo").textContent = ""; });
+      audio.addEventListener("ended", () => marcar("recibida"));
+      const bajar = $("#r1-mandos-pista a[download]");
+      if (bajar) bajar.addEventListener("click", () => marcar("recibida"));
+      if (estado().recibida || estado().llave) { $("#r1-ya").hidden = true; $("#r1-ya-motivo").textContent = ""; }
     } catch (e) {
-      caja.innerHTML = `<span class="cargando">No se ha podido cargar la pista. Avisad a la organización.</span>`;
+      caja.innerHTML = `<p class="r1-cargando">No se ha podido cargar la transmisión. Avisad a la organización.</p>`;
+      $("#r1-mandos-pista").innerHTML = "";
     }
   }
 
-  // ---------- Paso 2 ----------
-  function actualizarPuntos() {
-    const p = $("#r1-puntos");
-    if (p) p.textContent = `${App.puntosReto(ID)} PTS`;
-  }
-
+  // ---------- Fase 2: identificación ----------
   function pintarPistas() {
-    const e = estado();
-    $("#r1-pistas").innerHTML = PISTAS.map((p, i) => {
-      const abierta = e.pistas.some((x) => x.id === p.id);
-      const anteriorAbierta = i === 0 || e.pistas.some((x) => x.id === PISTAS[i - 1].id);
-      return `<div class="pista ${abierta ? "abierta" : ""}">
-        <div class="pista-texto">${abierta ? `<b>${p.titulo}:</b> ${p.texto}` : `<b>${p.titulo}</b>`}</div>
-        ${abierta ? "" : `<button class="btn btn-oscuro btn-peq" data-pista="${p.id}" ${anteriorAbierta && !e.llave ? "" : "disabled"}>${ICONO.reloj} Ver (${App.proximoBloqueo(ID)} s)</button>`}
-      </div>`;
-    }).join("");
-    $$("[data-pista]").forEach((b) => b.addEventListener("click", () => {
-      const p = PISTAS.find((x) => x.id === b.dataset.pista);
-      if (!App.usarPista(ID, p.id, `Vais a abrir «${p.titulo}».`, `<b>${p.titulo}:</b> ${p.texto}`)) return;
-      pintarPistas();
-    }));
+    const e = estado(), caja = $("#r1-pistas"), recibidas = $("#r1-pistas-recibidas");
+    if (!caja) return;
+    const abiertas = PISTAS.filter((p) => e.pistas.some((x) => x.id === p.id));
+    recibidas.innerHTML = `<p class="r1-lista-tit">Pistas recibidas</p>${abiertas.length
+      ? abiertas.map((p) => `<p class="r1-pista-texto"><b>${p.titulo}${/[?!]$/.test(p.titulo) ? "" : "."}</b> ${p.texto}</p>`).join("")
+      : `<p class="r1-pista-vacia">Ninguna todavía. Si os atascáis, usad el pulsador rojo del puesto.</p>`}`;
+    const siguiente = PISTAS.find((p) => !e.pistas.some((x) => x.id === p.id));
+    if (e.llave) caja.innerHTML = "";
+    else if (!siguiente) caja.innerHTML = `<p class="r1-motivo">Ya habéis abierto todas las pistas.</p>`;
+    else {
+      caja.innerHTML = `<button class="r1-tapa" type="button" data-pista="${siguiente.id}">
+          <span>${siguiente.titulo.split(" · ")[0]}</span><small>bloquea la consola ${App.proximoBloqueo(ID)} s</small></button>
+        <span class="r1-tapa-tema">${siguiente.titulo.split(" · ")[1]}</span>`;
+      $("[data-pista]", caja).addEventListener("click", () => {
+        if (App.usarPista(ID, siguiente.id, `Vais a abrir «${siguiente.titulo}».`, `<b>${siguiente.titulo}:</b> ${siguiente.texto}`)) pintarPistas();
+      });
+    }
   }
 
+  let ultimo = null; // último resultado de «Comprobar»: { mensaje, tipo, texto, bloqueo }
   function pintarRespuesta() {
     const e = estado();
     if (!$("#r1-form")) return;
     const espera = App.segundosBloqueo(e);
-    const input = $("#r1-respuesta"), boton = $("#r1-comprobar");
+    const input = $("#r1-respuesta"), boton = $("#r1-comprobar"), cuenta = $("#r1-cuenta"), motivo = $("#r1-comprobar-motivo");
+    let m = ultimo || { mensaje: "Esperando respuesta", tipo: "", texto: "" };
     if (e.llave) {
-      input.disabled = true; boton.disabled = true;
-      $("#r1-intentos").innerHTML = "";
-      $("#r1-paso1").classList.add("hecho");
-      $("#r1-paso2").classList.add("hecho");
-      $("#r1-estado2").innerHTML = `<span class="chip chip-verde">${ICONO.check} VALIDADO</span>`;
-      return;
+      m = { mensaje: "Respuesta aceptada", tipo: "ok", texto: "Fue él quien hizo la foto. Pasad a la reconstrucción de la fotografía." };
+    } else if (espera > 0) {
+      m = { mensaje: "Consola bloqueada", tipo: "error", texto: "Habéis gastado los 5 intentos. Revisad la imagen y, si os atascáis, usad una pista." };
+    } else if (ultimo && ultimo.bloqueo) {
+      ultimo = null;
+      m = { mensaje: "Esperando respuesta", tipo: "", texto: "El bloqueo ha terminado. Podéis volver a intentarlo." };
     }
-    input.disabled = espera > 0; boton.disabled = espera > 0;
-    if (espera > 0) {
-      $("#r1-intentos").innerHTML = `${ICONO.reloj.replace("<svg", '<svg width="14" height="14"')} Sistema bloqueado: <span class="cuenta-atras">${espera} s</span>. Aprovechad para revisar la imagen.`;
-    } else {
-      $("#r1-intentos").innerHTML = App.puntosIntentos(e);
-    }
+    input.disabled = boton.disabled = !!e.llave || espera > 0;
+    motivo.textContent = e.llave ? "Respuesta ya validada." : espera > 0 ? "Consola bloqueada: esperad a la cuenta atrás." : "";
+    cuenta.hidden = !(espera > 0) || !!e.llave;
+    if (espera > 0) display(cuenta, mmss(espera));
+    const caja = $("#r1-mensaje");
+    if (caja.textContent !== m.mensaje) caja.textContent = m.mensaje;
+    $("#r1-explicacion").innerHTML = m.texto;
+    $("#r1-luz-ok").classList.toggle("encendida", m.tipo === "ok");
+    $("#r1-luz-error").classList.toggle("encendida", m.tipo === "error");
+    // Intentos: una luz ámbar por intento que queda antes del bloqueo
+    const quedan = e.llave || espera > 0 ? 0 : App.MAX_INTENTOS - e.intentos;
+    $("#r1-intentos").innerHTML = Array.from({ length: App.MAX_INTENTOS }, (_, i) => `<i class="r1-luz r1-luz-ambar ${i < quedan ? "encendida" : ""}"></i>`).join("");
+    $("#r1-intentos-texto").textContent = e.llave ? "" : espera > 0 ? "Agotados" : `Quedan ${quedan} de ${App.MAX_INTENTOS}`;
   }
 
   async function comprobar() {
@@ -167,32 +272,32 @@
     if (App.segundosBloqueo(e) > 0 || e.llave) return;
     if (!Cripto.normalizar(input.value)) { input.focus(); return; }
     $("#r1-comprobar").disabled = true;
+    $("#r1-mensaje").textContent = "Comprobando…";
     const llave = await Cripto.probar(window.DATOS.reto1_llaves, input.value).catch(() => null);
     $("#r1-comprobar").disabled = false;
-    const caja = $("#r1-aviso");
     if (llave) {
       Sonido.exito();
       Progreso.cambiar(ID, (r) => { r.llave = llave; });
       Progreso.anotar("Reto 1: pregunta respondida. Puzle desbloqueado.", true);
-      aviso(caja, "ok", "<b>¡Correcto!</b> Fue él quien hizo la foto. Ahora reconstruid la fotografía del archivo.");
       pintarRespuesta();
       pintarPistas();
-      abrirPuzle(true);
+      pintarFases();
+      $("#r1-ya").hidden = true;
+      setTimeout(() => { if (faseVista === 1) mostrarFase(faseActual()); else pintarFases(); }, 1200);
     } else {
       Sonido.error();
       App.registrarFallo(ID);
       const bloqueado = App.segundosBloqueo(estado()) > 0;
-      aviso(caja, "error", bloqueado
-        ? "Habéis gastado los 5 intentos. El sistema se bloquea <b>1 minuto</b>. Revisad la imagen y, si os atascáis, usad una pista."
-        : `Esa no es la respuesta. Releed la pregunta de la imagen: ¿quién <b>hizo</b> la foto? (−${App.PENALIZACION_FALLO} puntos)`);
+      ultimo = bloqueado
+        ? { mensaje: "Consola bloqueada", tipo: "error", texto: "", bloqueo: true }
+        : { mensaje: "Respuesta no válida", tipo: "error",
+            texto: `Releed la pregunta de la imagen: ¿quién <b>hizo</b> la foto? (−${App.PENALIZACION_FALLO} puntos)` };
       Progreso.anotar("Reto 1: respuesta incorrecta");
       pintarRespuesta();
-      actualizarPuntos();
     }
-    App.lineaTiempo();
   }
 
-  // ---------- Paso 3: puzle 3×3 ----------
+  // ---------- Fase 3: puzle 3×3 en la mesa de luz ----------
   const META = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   const HUECO = 8;
   // Todos los equipos reciben un desorden que necesita EXACTAMENTE estos movimientos para resolverse
@@ -200,19 +305,31 @@
   let fichas = [], historial = [], inicio = [], movimientos = 0, t0 = 0, resuelto = false, foto = "", infoFoto = null;
   let aDistancia = null;
 
+  // Cada trozo de foto tiene su borde algo irregular (siempre el mismo para la misma pieza)
+  const BORDES = META.map((f) => {
+    let s = f * 97 + 13;
+    const r = () => ((s = (s * 16807) % 2147483647) / 2147483647) * 2.2;
+    return `polygon(${r()}px ${r()}px, 50% ${r()}px, calc(100% - ${r()}px) ${r()}px, calc(100% - ${r()}px) 50%,
+      calc(100% - ${r()}px) calc(100% - ${r()}px), 50% calc(100% - ${r()}px), ${r()}px calc(100% - ${r()}px), ${r()}px 50%)`;
+  });
+
   const numerosAbiertos = () => estado().pistas.some((p) => p.id === "numeros");
   function pintarBotonNumeros() {
     const b = $("#r1-numeros"), tablero = $("#r1-tablero");
     if (!b) return;
-    if (!numerosAbiertos()) b.innerHTML = `${ICONO.reloj} Ver números (pista: ${App.proximoBloqueo(ID)} s)`;
-    else {
-      const ocultos = tablero.classList.contains("sin-numeros");
-      b.innerHTML = `${ocultos ? ICONO.ojoNo : ICONO.ojo} Números: ${ocultos ? "no" : "sí"}`;
+    if (!numerosAbiertos()) {
+      b.className = "r1-tapa";
+      b.innerHTML = `<span>Ver números</span><small>pista: bloquea la consola ${App.proximoBloqueo(ID)} s</small>`;
+    } else {
+      const vistos = !tablero.classList.contains("sin-numeros");
+      b.className = "r1-boton r1-boton-sec";
+      b.innerHTML = `<i class="r1-luz r1-luz-blanca ${vistos ? "encendida" : ""}" aria-hidden="true"></i>Números`;
+      b.setAttribute("aria-pressed", String(vistos));
     }
   }
 
   const textoFoto = () => (infoFoto
-    ? `<div class="credito-foto"><b>${App.escapar(infoFoto.titulo)}</b><span>${App.escapar(infoFoto.credito)}</span></div>` : "");
+    ? `<p class="r1-credito"><b>${App.escapar(infoFoto.titulo)}</b><span>${App.escapar(infoFoto.credito)}</span></p>` : "");
 
   /** Estados del puzle a exactamente DISTANCIA movimientos de la solución (búsqueda en anchura). */
   function desordenesDificultadFija() {
@@ -242,11 +359,9 @@
     return v;
   };
 
-  async function abrirPuzle(desplazar) {
-    const paso = $("#r1-paso3"), zona = $("#r1-puzle");
-    paso.classList.remove("bloqueado");
-    App.lineaTiempo();
-    zona.innerHTML = App.htmlCarga("Descifrando la fotografía del archivo (AES-256)…");
+  async function abrirPuzle() {
+    const zona = $("#r1-puzle"), puesto = $("#r1-puesto-puzle");
+    zona.innerHTML = `<p class="r1-cargando">Descifrando la fotografía del archivo…</p>`;
     // Cada equipo recibe una foto al azar (todas con dificultad parecida: ver medir_fotos_puzle.py)
     const fotos = window.DATOS.reto1_llaves.fotos;
     if (estado().foto == null || !fotos[estado().foto]) Progreso.cambiar(ID, (r) => { r.foto = Math.floor(Math.random() * fotos.length); });
@@ -255,42 +370,39 @@
       const datos = await cargarDatos(infoFoto.archivo);
       foto = urlDe(await Cripto.abrir(estado().llave, datos));
     } catch (err) {
-      zona.innerHTML = `<div class="aviso aviso-error">No se ha podido descifrar la foto. Avisad a la organización.</div>`;
+      zona.innerHTML = `<p class="r1-cargando">No se ha podido descifrar la foto. Avisad a la organización.</p>`;
       return;
     }
     if (!zona.isConnected) return;
-    if (estado().completado) {
-      paso.classList.add("hecho");
-      zona.innerHTML = `<div class="referencia" style="margin:0"><img src="${foto}" alt="Fotografía reconstruida" id="r1-ref">
-        <div><div class="texto-2">Fotografía reconstruida en <b>${estado().movimientos}</b> movimientos y <b>${formatoTiempo(estado().tiempo)}</b>.</div>
-        ${textoFoto()}</div></div>`;
+    const e = estado();
+    if (e.completado) {
+      zona.innerHTML = `<div class="r1-mesa-zona"><button class="r1-copia r1-copia-grande" id="r1-ref" aria-label="Ampliar la fotografía reconstruida"><img src="${foto}" alt="Fotografía reconstruida"></button></div>
+        <div class="r1-objetivo"><p class="r1-texto">Fotografía reconstruida.</p>${textoFoto()}</div>`;
+      puesto.innerHTML = `<div class="r1-indicadores">${htmlDisplay("r1-mov", "Movimientos", e.movimientos)}${htmlDisplay("r1-tiempo", "Tiempo", mmss(e.tiempo || 0))}</div>
+        <p class="r1-motivo">Fase terminada.</p>`;
       $("#r1-ref").addEventListener("click", ampliar);
-      mostrarPremio(false);
       return;
     }
     zona.innerHTML = `
-      <div class="puzle-zona">
-        <div>
-          <div class="tablero ${numerosAbiertos() ? "" : "sin-numeros"}" id="r1-tablero" aria-label="Puzle"></div>
-          <p class="texto-3 pequeno" style="text-align:center;margin:8px 0 0">Haced clic en una pieza junto al hueco para moverla, o usad las <b>flechas del teclado</b>.</p>
-        </div>
-        <div>
-          <div class="estadisticas">
-            <div class="dato"><small>Movimientos</small><strong id="r1-mov">0</strong></div>
-            <div class="dato"><small>Tiempo</small><strong id="r1-tiempo">00:00</strong></div>
-            <div class="dato"><small>En su sitio</small><strong id="r1-sitio">0 / 9</strong></div>
-          </div>
-          <div class="referencia">
-            <img src="${foto}" alt="Fotografía objetivo" id="r1-ref">
-            <div><b>Fotografía objetivo</b><div class="texto-3 pequeno">Haced clic en la miniatura para verla en grande.</div>${textoFoto()}</div>
-          </div>
-          <div class="botonera">
-            <button class="btn btn-oscuro btn-peq" id="r1-numeros"></button>
-            <button class="btn btn-oscuro btn-peq" id="r1-deshacer">${ICONO.deshacer} Deshacer</button>
-            <button class="btn btn-oscuro btn-peq" id="r1-reiniciar">${ICONO.reiniciar} Volver a empezar</button>
-          </div>
-        </div>
+      <div class="r1-mesa-zona"><div class="r1-mesa-luz">
+        <div class="r1-tablero ${numerosAbiertos() ? "" : "sin-numeros"}" id="r1-tablero" aria-label="Puzle"></div>
+      </div></div>
+      <div class="r1-objetivo">
+        <button class="r1-copia" id="r1-ref" aria-label="Ampliar la fotografía objetivo"><img src="${foto}" alt="Fotografía objetivo"></button>
+        <p class="r1-copia-pie">Fotografía objetivo. Pulsad para verla en grande.</p>
+        ${textoFoto()}
       </div>`;
+    puesto.innerHTML = `
+      <div class="r1-indicadores">
+        ${htmlDisplay("r1-mov", "Movimientos", 0)}
+        ${htmlDisplay("r1-tiempo", "Tiempo", "00:00")}
+        ${htmlDisplay("r1-sitio", "En su sitio", 0)}
+      </div>
+      <div class="r1-centro">
+        <button class="r1-boton r1-boton-sec" id="r1-deshacer" type="button">Deshacer</button>
+        <button class="r1-boton r1-boton-sec" id="r1-reiniciar" type="button">Volver a empezar</button>
+      </div>
+      <div class="r1-pista-puesto"><button class="r1-tapa" id="r1-numeros" type="button"></button></div>`;
     $("#r1-ref").addEventListener("click", ampliar);
     // Los números de las piezas son una pista: la primera vez bloquean el reto (30 s, 60 s, 90 s…
     // según las pistas ya usadas). Después se pueden mostrar u ocultar libremente.
@@ -309,8 +421,7 @@
     $("#r1-deshacer").addEventListener("click", deshacer);
     $("#r1-reiniciar").addEventListener("click", () => { fichas = [...inicio]; historial = [[...fichas]]; movimientos = 0; t0 = Date.now(); pintarTablero(); });
     barajar();
-    App.cadaSegundo(() => { if (!resuelto && $("#r1-tiempo")) $("#r1-tiempo").textContent = formatoTiempo((Date.now() - t0) / 1000); });
-    if (desplazar) paso.scrollIntoView({ behavior: "smooth", block: "start" });
+    App.cadaSegundo(() => { if (!resuelto && $("#r1-tiempo")) display($("#r1-tiempo"), mmss((Date.now() - t0) / 1000)); });
   }
 
   function barajar() {
@@ -330,20 +441,19 @@
       const d = document.createElement("button");
       const hueco = f === HUECO && !resuelto;
       d.type = "button";
-      d.className = "ficha" + (hueco ? " hueco" : "") + (!resuelto && movibles.includes(pos) ? " movible" : "");
+      d.className = "r1-pieza" + (hueco ? " hueco" : "") + (!resuelto && movibles.includes(pos) ? " movible" : "");
       d.setAttribute("aria-label", hueco ? "Hueco" : `Pieza ${f + 1}`);
       if (!hueco) {
-        d.style.backgroundImage = `url("${foto}")`;
-        d.style.backgroundPosition = `${(f % 3) * 50}% ${Math.floor(f / 3) * 50}%`;
-        if (!resuelto) d.innerHTML = `<span class="num">${f + 1}</span>`;
+        d.innerHTML = `<span class="r1-papel" style="clip-path:${BORDES[f]};background-image:url('${foto}');background-position:${(f % 3) * 50}% ${Math.floor(f / 3) * 50}%">
+          ${resuelto ? "" : `<span class="r1-num">${f + 1}</span>`}</span>`;
       }
       if (f === META[pos]) enSitio++;
       if (!resuelto && movibles.includes(pos)) d.addEventListener("click", () => mover(pos));
       else d.tabIndex = -1;
       tab.appendChild(d);
     });
-    $("#r1-mov").textContent = movimientos;
-    $("#r1-sitio").textContent = `${enSitio} / 9`;
+    display($("#r1-mov"), movimientos);
+    display($("#r1-sitio"), enSitio);
     if (!resuelto && fichas.every((v, i) => v === META[i])) terminar();
   }
 
@@ -370,7 +480,7 @@
   // Flechas: mueven la pieza que está al lado del hueco hacia él (no durante un bloqueo por pista)
   window.addEventListener("keydown", (ev) => {
     if (ev.key === "Escape") { const m = $(".modal"); if (m) m.remove(); return; }
-    if (resuelto || !$("#r1-tablero") || $("#bloqueo-pista") || $(".celebracion") || /input|textarea|select/i.test(document.activeElement.tagName)) return;
+    if (resuelto || !$("#r1-tablero") || $("#r1-puzle").hidden || $("#bloqueo-pista") || $(".celebracion") || /input|textarea|select/i.test(document.activeElement.tagName)) return;
     const h = fichas.indexOf(HUECO), f = Math.floor(h / 3), c = h % 3;
     const destino = { ArrowUp: f < 2 ? h + 3 : -1, ArrowDown: f > 0 ? h - 3 : -1, ArrowLeft: c < 2 ? h + 1 : -1, ArrowRight: c > 0 ? h - 1 : -1 }[ev.key];
     if (destino === undefined) return;
@@ -380,57 +490,58 @@
 
   function ampliar() {
     const m = document.createElement("div");
-    m.className = "modal";
-    m.innerHTML = `<img src="${foto}" alt="Fotografía objetivo ampliada"><button class="btn btn-oscuro">Cerrar (Esc)</button>`;
+    m.className = "modal r1-ampliada";
+    m.innerHTML = `<img src="${foto}" alt="Fotografía ampliada"><button class="r1-boton r1-boton-sec">Cerrar (Esc)</button>`;
     m.addEventListener("click", () => m.remove());
     document.body.appendChild(m);
+    $("button", m).focus();
   }
-
-  const formatoTiempo = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
   function terminar() {
     resuelto = true;
     const segundos = Math.floor((Date.now() - t0) / 1000);
     const puntos = App.puntosReto(ID);
-    Progreso.cambiar(ID, (r) => { r.completado = true; r.puntos = puntos; r.movimientos = movimientos; r.tiempo = segundos; });
+    Progreso.cambiar(ID, (r) => { r.completado = true; r.puntos = puntos; r.movimientos = movimientos; r.tiempo = segundos; r.fin = Date.now(); });
     Progreso.anotar(`Reto 1 superado: fragmento ORIÓN desbloqueado (+${puntos} pts)`, true);
     pintarTablero();
-    $("#r1-paso3").classList.add("hecho");
     App.actualizarCabecera();
-    actualizarPuntos();
     Sonido.exito();
-    mostrarPremio(false);
-    App.celebrar("ORIÓN", puntos, () => { const p = $("#r1-paso4"); if (p) p.scrollIntoView({ behavior: "smooth", block: "start" }); });
+    $(".r1-mesa-luz").classList.add("completa");
+    $$("#r1-puesto-puzle button").forEach((b) => { b.disabled = true; });
+    pintarReloj();
+    pintarFases();
+    setTimeout(() => { if ($("#r1-puzle")) mostrarFase(3); }, 1400);
   }
 
-  // ---------- Paso 4: recompensa ----------
-  async function mostrarPremio(desplazar) {
-    const paso = $("#r1-paso4"), caja = $("#r1-premio");
-    paso.classList.remove("oculto");
-    paso.classList.add("hecho");
-    App.lineaTiempo();
-    caja.innerHTML = App.htmlCarga("Descifrando la transmisión del fragmento ORIÓN (AES-256)…");
-    if (desplazar) paso.scrollIntoView({ behavior: "smooth", block: "start" });
+  // ---------- Fase 4: entrega del fragmento ----------
+  async function mostrarPremio() {
+    const caja = $("#r1-premio"), texto = $("#r1-entrega-texto");
+    caja.innerHTML = `<p class="r1-cargando">Descifrando la transmisión del fragmento ORIÓN…</p>`;
     try {
       const datos = await cargarDatos("reto1_audio");
       const url = urlDe(await Cripto.abrir(estado().llave, datos));
       if (!caja.isConnected) return;
       const e = estado();
-      caja.innerHTML = `
-        <p style="margin-top:0;color:#d1fae5">¡Fotografía reconstruida! Habéis liberado la transmisión del fragmento <b>ORIÓN</b>.
-          Reproducidla por el cable virtual, descodificadla y <b>guardad la imagen</b>: la necesitaréis en el montaje del mapa.</p>
-        <div id="r1-reproductor"></div>
-        <div class="marcador">
-          <span class="chip chip-ambar">${ICONO.estrella} ${e.puntos} PTS</span>
-          <span class="chip">PISTAS: ${e.pistas.length}</span>
-          <span class="chip">FALLOS: ${e.fallos}</span>
-          <a class="btn btn-borde btn-peq" href="#/panel">${ICONO.volver} Volver a los retos</a>
-        </div>`;
-      App.reproductor($("#r1-reproductor"), url, "fragmento_orion.wav");
+      texto.innerHTML = `
+        <p class="r1-texto">Fotografía reconstruida. La transmisión del fragmento <b>ORIÓN</b> está liberada: emitidla por el cable
+          virtual, decodificadla y <b>guardad la imagen</b>. La necesitaréis en el montaje del mapa.</p>
+        <div class="r1-indicadores">
+          ${htmlDisplay("r1-fin-puntos", "Puntos", e.puntos)}
+          ${htmlDisplay("r1-fin-pistas", "Pistas", e.pistas.length)}
+          ${htmlDisplay("r1-fin-fallos", "Fallos", e.fallos)}
+        </div>
+        <div class="r1-letrero ${e.fragmentoRecibido ? "encendido" : ""}" id="r1-letrero">Transmisión completa</div>`;
+      const audio = App.reproductor(caja, url, "fragmento_orion.wav", "fragmento_orion.wav", {
+        tema: "control-mision", mandos: $("#r1-mandos-premio"), textos: { reproducir: "Emitir fragmento", detener: "Detener" },
+      });
+      const recibido = () => { marcar("fragmentoRecibido"); const l = $("#r1-letrero"); if (l) l.classList.add("encendido"); };
+      audio.addEventListener("ended", recibido);
+      const bajar = $("#r1-mandos-premio a[download]");
+      if (bajar) bajar.addEventListener("click", recibido);
     } catch (err) {
-      caja.innerHTML = `<div class="aviso aviso-error">No se ha podido descifrar el audio. Avisad a la organización.</div>`;
+      caja.innerHTML = `<p class="r1-cargando">No se ha podido descifrar el audio. Avisad a la organización.</p>`;
     }
   }
 
-  App.VISTAS[ID] = (el) => { resuelto = false; vista(el); };
+  App.VISTAS[ID] = (el) => { resuelto = false; ultimo = null; vista(el); };
 })();

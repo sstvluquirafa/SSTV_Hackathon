@@ -1,0 +1,122 @@
+/* Temas del reproductor común (js/reproductor.js, especificaciones/reproductor_temas.md).
+   Sin tema, el reproductor usa los estilos .rx-* de estilo.css (panel principal y montaje del mapa).
+   Cada tema cambia marco, cabecera, estado, controles, marcas, barra y tipografía; la paleta de la cascada está en el JS.
+   Las clases del tema van en el reproductor (.rx.rx-cm…) y, si los mandos se sacan fuera, también en su contenedor. */
+
+/* ---------- control-mision (reto 1): analizador de espectro de la sala de control ---------- */
+.rx.rx-cm {
+  padding: 10px 12px 12px; border: 0; border-radius: 4px; color: #e8e4d6; font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  background: #2a3136; box-shadow: inset 0 0 0 2px #475259, 0 3px 0 #0b0d0e;
+}
+.rx-cm .rx-cab { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 8px; }
+.rx-cm .rx-rotulo {
+  display: inline-block; padding: 2px 8px; font: 600 15px/1.25 "Barlow Condensed", sans-serif; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #e8e4d6; background: #161b1e; border-radius: 2px;
+}
+.rx-cm .rx-archivo { font: 15px "IBM Plex Mono", monospace; color: #c4ccc8; }
+.rx-cm .rx-estado { display: flex; gap: 16px; margin-left: auto; font: 600 15px "Barlow Condensed", sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: #d6dcd8; animation: none; }
+.rx-cm .rx-piloto { display: inline-flex; align-items: center; gap: 6px; }
+.rx-cm .rx-luz { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #9aa3a0; background: #4a4a40; transition: background 0.2s; }
+.rx-cm .rx-luz-espera { background: #5a4a24; }
+.rx-cm .rx-luz-espera.on { background: #e3a21a; }
+.rx-cm .rx-luz-vivo { background: #4d2622; }
+.rx-cm .rx-luz-vivo.on { background: #d0402f; }
+.rx-cm .rx-luz-fin { background: #2f402d; }
+.rx-cm .rx-luz-fin.on { background: #4f9a4a; }
+.rx-cm .rx-cascada { height: var(--rx-alto, 170px); overflow: hidden; border: 0; border-radius: 16px / 12px; background: #030908; box-shadow: inset 0 0 0 3px #0a0f0e; }
+.rx-cm .rx-reticula { /* retícula grabada en el cristal del tubo */
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(140, 220, 190, 0.13) 1px, transparent 1px), linear-gradient(90deg, rgba(140, 220, 190, 0.13) 1px, transparent 1px);
+  background-size: 10% 20%;
+}
+.rx-cm .rx-marcas span { border-left: 1px solid rgba(140, 220, 190, 0.5); font: 13px "IBM Plex Mono", monospace; color: #a5dcc8; text-shadow: 0 0 2px #030908, 0 0 4px #030908; }
+.rx-cm .rx-marcas b { color: #e3a21a; }
+.rx-cm .rx-reposo { font: 600 16px "IBM Plex Mono", monospace; letter-spacing: 0.08em; text-transform: uppercase; color: #86c7b0; }
+.rx-cm.rx-controles, .rx-cm .rx-controles { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; padding: 12px 0 0; }
+.rx-cm.rx-mandos { padding: 0; }
+/* La acción principal: pulsador grande iluminado en ámbar */
+.rx-cm .rx-play {
+  width: auto; height: auto; min-height: 64px; padding: 0 30px; border: 0; border-radius: 4px; cursor: pointer;
+  font: 700 23px/1 "Barlow Condensed", sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: #1f1a0e;
+  background: #e3a21a; box-shadow: inset 0 0 0 3px #f6c552, 0 5px 0 #7c5508, 0 5px 0 2px #0b0d0e; transition: transform 0.06s, box-shadow 0.06s;
+}
+.rx-cm .rx-play:hover { transform: none; background: #edb23a; }
+.rx-cm .rx-play:active { transform: translateY(4px); box-shadow: inset 0 0 0 3px #f6c552, 0 1px 0 #7c5508, 0 1px 0 2px #0b0d0e; }
+.rx-cm .rx-tiempo, .rx-cm .rx-freq { display: grid; justify-items: center; gap: 4px; min-width: 0; text-align: center; }
+.rx-cm .rx-segmentos { display: block; height: 42px; padding: 5px 8px; background: #0c0c0a; border: 3px solid #2b2d27; border-radius: 2px; }
+.rx-cm .segmentos { display: block; height: 100%; width: auto; }
+.rx-cm .segmentos polygon, .rx-cm .segmentos circle { fill: #2e1a10; }
+.rx-cm .segmentos .on { fill: #ff8a3d; }
+.rx-cm .rx-barra {
+  flex: 1; min-width: 120px; height: 8px; border-radius: 0;
+  background: linear-gradient(#e3a21a, #e3a21a) 0 0 / var(--avance, 0%) 100% no-repeat, #1a1f22;
+}
+.rx-cm .rx-barra::-webkit-slider-thumb { width: 10px; height: 20px; border-radius: 1px; background: #d8dcd8; box-shadow: none; }
+.rx-cm .rx-secundario {
+  display: inline-flex; align-items: center; padding: 10px 16px 9px; cursor: pointer; text-decoration: none; border-radius: 3px;
+  font: 600 16px/1.1 "Barlow Condensed", sans-serif; letter-spacing: 0.08em; text-transform: uppercase;
+  color: #1c2124; background: #d9dcd8; box-shadow: 0 4px 0 #7d8481, 0 4px 0 1px #0b0d0e; transition: transform 0.06s, box-shadow 0.06s;
+}
+.rx-cm .rx-secundario:hover { background: #e7eae6; }
+.rx-cm .rx-secundario:active { transform: translateY(3px); box-shadow: 0 1px 0 #7d8481, 0 1px 0 1px #0b0d0e; }
+
+/* ---------- matrix (reto 2): dentro de la señal, fósforo verde sobre negro ---------- */
+.rx.rx-matrix { padding: 10px 12px 12px; border: 1px solid #2f8a45; border-radius: 0; color: #7dff9b; background: #000; font-family: "JetBrains Mono", Consolas, monospace; font-variant-ligatures: none; }
+.rx-matrix .rx-cab { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 8px; font-size: 15px; }
+.rx-matrix .rx-archivo { color: #7dff9b; }
+.rx-matrix .rx-estado { margin-left: auto; color: #2f8a45; animation: none; }
+.rx-matrix .rx-estado.vivo { color: #000; background: #7dff9b; padding: 0 6px; }
+.rx-matrix .rx-cascada { height: var(--rx-alto, 150px); border: 1px solid #1d5a2c; background: #000; }
+.rx-matrix .rx-marcas span { border-left: 1px dashed rgba(125, 255, 155, 0.4); font: 13px "JetBrains Mono", monospace; color: #7dff9b; text-shadow: 0 0 2px #000, 0 0 4px #000; }
+.rx-matrix .rx-marcas b { color: #d6ffe0; }
+.rx-matrix .rx-reposo { font: 15px "JetBrains Mono", monospace; letter-spacing: 0.04em; color: #2f8a45; }
+.rx-matrix.rx-controles, .rx-matrix .rx-controles { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 10px 0 0; }
+.rx-matrix .rx-play, .rx-matrix .rx-secundario {
+  width: auto; height: auto; min-height: 44px; padding: 0 16px; cursor: pointer; border: 1px solid #7dff9b; border-radius: 0; box-shadow: 0 3px 0 #1d5a2c;
+  display: inline-flex; align-items: center; font: 600 16px "JetBrains Mono", monospace; letter-spacing: 0.06em; text-transform: uppercase;
+  text-decoration: none; color: #7dff9b; background: #000; transition: transform 0.06s, box-shadow 0.06s;
+}
+.rx-matrix .rx-secundario { color: #2f8a45; border-color: #2f8a45; }
+.rx-matrix .rx-play:hover, .rx-matrix .rx-secundario:hover { transform: none; color: #000; background: #7dff9b; border-color: #7dff9b; }
+.rx-matrix .rx-play:active, .rx-matrix .rx-secundario:active { transform: translateY(3px); box-shadow: 0 0 0 #1d5a2c; }
+.rx-matrix .rx-play.activo { color: #000; background: #7dff9b; }
+.rx-matrix .rx-tiempo, .rx-matrix .rx-freq { font: 15px "JetBrains Mono", monospace; color: #7dff9b; }
+.rx-matrix .rx-barra { flex: 1; min-width: 120px; height: 6px; border-radius: 0; background: linear-gradient(#7dff9b, #7dff9b) 0 0 / var(--avance, 0%) 100% no-repeat, #0d2a14; }
+.rx-matrix .rx-barra::-webkit-slider-thumb { width: 8px; height: 16px; border-radius: 0; background: #d6ffe0; box-shadow: none; }
+
+/* ---------- cuaderno (reto 4): registrador gráfico de papel ---------- */
+.rx.rx-cuaderno {
+  padding: 12px 14px 14px; border: 1.5px solid #2b2118; border-radius: 0; color: #2b2118; font-family: "Courier Prime", "Courier New", monospace;
+  background: #e8dcc0; box-shadow: 2px 3px 0 rgba(20, 12, 6, 0.3);
+}
+.rx-cuaderno .rx-cab { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-bottom: 8px; }
+.rx-cuaderno .rx-rotulo { font: 400 19px "Special Elite", "Courier Prime", monospace; color: #8b1e1e; }
+.rx-cuaderno .rx-archivo { font: 700 15px "Courier Prime", monospace; }
+.rx-cuaderno .rx-estado { margin-left: auto; font: italic 16px "Courier Prime", monospace; color: #2b2118; animation: none; }
+.rx-cuaderno .rx-estado.vivo { color: #8b1e1e; }
+.rx-cuaderno .rx-cascada { height: var(--rx-alto, 150px); border: 1px solid #b9a98a; background: #f3ead8; }
+.rx-cuaderno .rx-reticula { /* rejilla impresa del papel del registrador */
+  position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(139, 30, 30, 0.13) 1px, transparent 1px), linear-gradient(90deg, rgba(139, 30, 30, 0.13) 1px, transparent 1px);
+  background-size: 5% 12.5%;
+}
+.rx-cuaderno .rx-marcas span { border-left: 1px dashed rgba(43, 33, 24, 0.4); font: 700 13px "Courier Prime", monospace; color: #3d352c; text-shadow: 0 0 2px #f3ead8, 0 0 4px #f3ead8; }
+.rx-cuaderno .rx-marcas b { color: #8b1e1e; }
+.rx-cuaderno .rx-reposo { font: italic 16px "Courier Prime", monospace; letter-spacing: 0; color: #5a5146; }
+.rx-cuaderno.rx-controles, .rx-cuaderno .rx-controles { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; padding: 12px 0 0; background: none; }
+.rx-cuaderno .rx-play {
+  width: auto; height: auto; padding: 0.38em 0.9em 0.3em; cursor: pointer; border: 2px solid #8b1e1e; border-radius: 2px;
+  font: 400 19px/1.2 "Special Elite", "Courier Prime", monospace; color: #8b1e1e; background: #f3ead8;
+  box-shadow: 2px 3px 0 rgba(20, 12, 6, 0.4); transform: rotate(-0.6deg); transition: transform 0.12s, box-shadow 0.12s;
+}
+.rx-cuaderno .rx-play:hover { transform: rotate(-0.6deg) translateY(-2px); box-shadow: 3px 5px 0 rgba(20, 12, 6, 0.4); }
+.rx-cuaderno .rx-play:active { transform: rotate(-0.6deg) translateY(1px); box-shadow: 1px 1px 0 rgba(20, 12, 6, 0.4); }
+.rx-cuaderno .rx-tiempo, .rx-cuaderno .rx-freq { font: 15px "Courier Prime", monospace; color: #2b2118; }
+.rx-cuaderno .rx-barra { flex: 1; min-width: 120px; height: 6px; border-radius: 0; background: linear-gradient(#2b2118, #2b2118) 0 0 / var(--avance, 0%) 100% no-repeat, #cdbb96; }
+.rx-cuaderno .rx-barra::-webkit-slider-thumb { width: 8px; height: 16px; border-radius: 0; background: #2b2118; box-shadow: none; }
+.rx-cuaderno .rx-secundario { font: 700 16px "Courier Prime", monospace; color: #2b2118; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+.rx-cuaderno .rx-secundario:hover { text-decoration-color: #8b1e1e; text-decoration-thickness: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rx-cm .rx-play, .rx-cm .rx-secundario, .rx-cuaderno .rx-play, .rx-cm .rx-luz, .rx-matrix .rx-play, .rx-matrix .rx-secundario { transition: none; }
+}

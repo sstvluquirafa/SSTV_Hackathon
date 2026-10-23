@@ -145,13 +145,28 @@ git push                      # 5. subir
   se recortan 63 de 496 px) y se quitan además 1 fila (en PD120 las filas comparten color de dos en dos y la primera
   sale teñida de naranja) y 2 px de cada lado (puntitos del principio y final de cada línea SSTV).
 - **Reproductor SSTV** propio (`js/reproductor.js`): cascada con el espectro en directo y marcas en 1200, 1500,
-  1900 y 2300 Hz. El sonido sale por la salida predeterminada de Windows (CABLE Input en el aula).
+  1900 y 2300 Hz. El sonido sale por la salida predeterminada de Windows (CABLE Input en el aula). Una sola lógica
+  con **temas** (`especificaciones/reproductor_temas.md`, estilos en `css/reproductor.css`): `control-mision` (reto 1,
+  analizador de espectro verde azulado con retícula y displays de segmentos), `matrix` (reto 2, fósforo verde sobre
+  negro) y `cuaderno` (reto 4, registrador gráfico de papel). Sin tema se ve con el estilo general de GranaSAT.
+- **Escenas de los retos:** al entrar en un reto, `app.js` marca la vista en `body[data-vista]` y la hoja del reto
+  (`css/reto1.css`, `css/reto2.css`, `css/reto4.css`) cambia la escena entera; al salir se vuelve a la base GranaSAT.
 - **Efectos** (`js/efectos.js`): línea de tiempo de los pasos, expediente que se escribe como en un terminal,
   estrellas que titilan y celebración al desbloquear un fragmento. Se desactivan si Windows pide reducir animaciones.
 - Para regenerar los datos: `python herramientas/reto2_generador.py --exportar` y `python herramientas/construir_web.py`.
   Para probar el reto 2 en JS: `node herramientas/probar_reto2_js.mjs`.
 
 ## Reto 1 · "Mensaje desde 1969" → ORIÓN
+
+Estética «la sala de control de misión» (`especificaciones/reto1_estetica_control_mision.md`, estilos en
+`web/css/reto1.css`; la v1 «consola del Apolo» está en `descartadas/`). Sala en penumbra con una **línea de fases**
+(Recepción · Identificación · Reconstrucción · Entrega: verde = hecha y se puede reabrir, ámbar = la actual, apagada =
+las siguientes), una sola **orden** con lo que toca, la **pantalla mural** con la acción de la fase (analizador de señal,
+teletipo de respuestas, mesa de luz del puzle, entrega) y el **puesto del equipo** con solo los mandos de esa fase: la
+acción principal grande e iluminada en ámbar en el centro («RECIBIR TRANSMISIÓN», «COMPROBAR», «EMITIR FRAGMENTO») y las
+pistas como pulsadores rojos con tapa. Reloj de misión y displays de 7 segmentos (SVG). Cabe sin scroll a 1366×768
+(también con la ventana del navegador). Ningún rótulo nombra la misión ni a su tripulación: no pueden insinuar la
+respuesta. Fuentes: Barlow Condensed, IBM Plex Sans e IBM Plex Mono (en `web/assets/fonts/`).
 
 1. La pista SSTV (foto de Aldrin en la Luna) pregunta «¿Quién hizo esta fotografía?».
 2. Respuesta: el comandante que sostenía la cámara (en `construir_web.py`). Dos pistas (bloquean 30 s y 60 s).
@@ -228,6 +243,17 @@ encadenables como una receta, con la salida en directo. No indica si cada paso e
 - Si una operación falla (por ejemplo, Base64 inválido), muestra un aviso amable en lugar de romperse.
 
 **Chuleta del Espía:** misma tabla que la de referencia (Base64, Hex, César, Binario, Espejo). La fila "Magic" se sustituye por pistas.
+En la web se llama «Identificación de formatos» y está siempre visible a la derecha.
+
+**Estética «descifrado estilo Matrix»** (`especificaciones/reto2_estetica_matrix.md`, estilos en `web/css/reto2.css`; la
+propuesta de terminal ámbar quedó en `descartadas/` sin implementar): detrás, una **lluvia de caracteres** verdes en un
+`<canvas>` tenue (~20 fps) que se aviva un momento cuando una operación se aplica sin error y se calma mientras el grupo
+escribe; delante, la **sesión de descifrado** en paneles negros sólidos: la transmisión grande, las 6 operaciones en
+columna y, al lado, cada paso en su línea con su resultado debajo, que aparece con el **efecto de descifrado** (los
+caracteres se agitan y encajan de izquierda a derecha; un clic lo termina). Errores de operación en ámbar. Una **línea de
+estado** inferior en vídeo inverso dice qué toca, los intentos que quedan y la tecla de ayuda (**F1** = «¿Qué código es
+la salida?», que es una pista). Caja fuerte como `CONTRASEÑA>`; al abrirla, «ARCHIVO DESCIFRADO» y el audio con el tema
+`matrix`. Con «reducir animaciones», la lluvia queda quieta y el efecto no se anima. Fuente: JetBrains Mono.
 
 **Presión de juego:**
 - **Pistas con coste:** "¿Qué tipo de código es esto?" analiza el texto actual y dice qué parece. Cada pista resta puntos.
@@ -244,8 +270,8 @@ que incluye huellas SHA-256 de cada etapa para que las pistas sepan por dónde v
 Especificación: `especificaciones/reto4_sabotaje.md` (la v1 está en `especificaciones/descartadas/`).
 Estética «el cuaderno del detective» (`especificaciones/reto4_estetica_cuaderno.md`, estilos en `web/css/reto4.css`): al
 entrar, la escena pasa al escritorio de un detective (madera, carpetas de cartulina, papel mecanografiado, sellos de tinta,
-libreta manuscrita y corcho), sin emoticonos, iconos, degradados ni insignias. Fuentes: Courier Prime, Special Elite,
-Libre Baskerville y Caveat (en `web/assets/fonts/`).
+libreta manuscrita y corcho), sin emoticonos, iconos, degradados ni insignias. Los audios usan el tema `cuaderno` del
+reproductor. Fuentes: Courier Prime, Special Elite, Libre Baskerville y Caveat (en `web/assets/fonts/`).
 
 Un caso de detectives para un grupo de 4 alrededor de **un solo PC**, todos juntos (sin roles). Dificultad media. La v1 se resolvía
 sin leer: en esta versión **los documentos dan datos, no conclusiones**, cada pregunta obliga a **cruzar al menos dos

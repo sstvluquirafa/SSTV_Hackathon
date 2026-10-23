@@ -48,7 +48,7 @@ img { max-width: 100%; }
 button, input, select { font: inherit; color: inherit; }
 code, .mono { font-family: var(--mono); }
 /* Sin ligaduras en la letra técnica: "==" o "->" deben verse tal cual (importa en Base64) */
-code, .mono, textarea, .salida, .transmision, .chip, .ventana, .rotulo, .chuleta, .ingrediente-params { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+code, .mono, textarea, .chip, .ventana { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
 .paso, .panel { scroll-margin-top: 90px; }
 a { color: var(--ambar); }
 :focus-visible { outline: 2px solid var(--ambar); outline-offset: 2px; }
@@ -363,56 +363,7 @@ a { color: var(--ambar); }
 }
 .modal img { max-width: 90vw; max-height: 80vh; border-radius: 10px; border: 2px solid var(--ambar); }
 
-/* ---------- Reto 2: mini-CyberChef ---------- */
-.transmision {
-  font-family: var(--mono); font-size: 15px; word-break: break-all; color: #fde68a;
-  padding: 12px 14px; border-radius: 10px; background: rgba(3, 7, 18, 0.8); border: 1px dashed rgba(251, 191, 36, 0.45);
-  display: flex; justify-content: space-between; gap: 12px; align-items: center;
-}
-.cocina { display: grid; grid-template-columns: 210px 1fr 1.1fr; gap: 16px; }
-.cocina-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-.op-boton {
-  display: flex; justify-content: space-between; align-items: center; width: 100%;
-  padding: 10px 12px; border-radius: 9px; cursor: pointer; text-align: left;
-  background: rgba(3, 7, 18, 0.6); border: 1px solid var(--borde-fuerte); color: var(--texto); font-weight: 600; font-size: 14px;
-}
-.op-boton:hover { border-color: var(--ambar); color: var(--ambar); }
-.op-boton span { font-family: var(--mono); font-size: 11px; color: var(--texto-3); font-weight: 400; }
-.receta { min-height: 230px; display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 10px; border: 1px dashed var(--borde-fuerte); background: rgba(3, 7, 18, 0.35); }
-.receta-vacia { margin: auto; text-align: center; color: var(--texto-3); font-size: 13px; padding: 20px; }
-.ingrediente { border-radius: 9px; border: 1px solid rgba(251, 191, 36, 0.35); background: rgba(217, 119, 6, 0.08); padding: 9px 10px; }
-.ingrediente.apagado { opacity: 0.45; border-style: dashed; }
-.ingrediente.fallo { border-color: rgba(248, 113, 113, 0.6); background: rgba(248, 113, 113, 0.08); }
-.ingrediente-cab { display: flex; align-items: center; gap: 6px; }
-.ingrediente-cab strong { font-size: 14px; flex: 1; }
-.ingrediente-cab .n { font-family: var(--mono); font-size: 11px; color: var(--texto-3); }
-.mini { background: transparent; border: 1px solid transparent; border-radius: 6px; color: var(--texto-3); cursor: pointer; padding: 3px; display: grid; place-items: center; }
-.mini:hover { color: var(--texto); border-color: var(--borde-fuerte); }
-.mini svg { width: 14px; height: 14px; }
-.ingrediente-params { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; font-size: 13px; color: var(--texto-2); }
-.ingrediente-params input[type="text"], .ingrediente-params select {
-  padding: 5px 8px; border-radius: 7px; background: rgba(3, 7, 18, 0.85); border: 1px solid var(--borde-fuerte); font-family: var(--mono); font-size: 13px; min-width: 0;
-}
-.ingrediente-params input[type="text"] { flex: 1; text-transform: uppercase; }
-.ingrediente-params input[type="range"] { flex: 1; accent-color: var(--ambar); }
-.desp { font-family: var(--mono); font-weight: 700; color: var(--ambar); min-width: 26px; text-align: right; }
-.zona-texto { display: flex; flex-direction: column; gap: 6px; }
-.zona-texto textarea {
-  width: 100%; min-height: 92px; resize: vertical; padding: 10px 12px; border-radius: 10px;
-  background: rgba(3, 7, 18, 0.85); border: 1px solid var(--borde-fuerte); color: var(--texto);
-  font-family: var(--mono); font-size: 14px; line-height: 1.5; word-break: break-all;
-}
-.salida { min-height: 110px; padding: 10px 12px; border-radius: 10px; background: rgba(3, 7, 18, 0.85); border: 1px solid rgba(16, 185, 129, 0.35); font-family: var(--mono); font-size: 15px; word-break: break-all; white-space: pre-wrap; color: #d1fae5; }
-.salida.error { border-color: rgba(248, 113, 113, 0.45); color: #fecaca; font-family: var(--sans); font-size: 14px; }
-.rotulo { display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--texto-3); }
-
-.chuleta { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-.chuleta th, .chuleta td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--borde); vertical-align: top; }
-.chuleta th { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--texto-3); font-weight: 600; }
-.chuleta td:first-child { font-weight: 700; color: var(--ambar); white-space: nowrap; }
-.chuleta td code { color: #fde68a; word-break: break-all; }
-.chuleta tr.magia td { color: var(--texto-2); font-style: italic; }
-.chuleta tr.magia td:first-child { color: var(--texto-3); }
+/* El reto 2 tiene su propia hoja: css/reto2.css (descifrado estilo Matrix) */
 
 .cuenta-atras { font-family: var(--mono); font-weight: 700; color: var(--error); }
 
@@ -609,26 +560,6 @@ a { color: var(--ambar); }
 @keyframes escanear { from { top: -18px; } to { top: 70px; } }
 .escaner-texto { padding: 10px 14px; font-size: 13px; color: var(--ambar); border-top: 1px solid var(--borde); }
 
-/* ---------- Chuleta del Espía en cajón lateral ---------- */
-.chuleta-pestana {
-  position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 30;
-  writing-mode: vertical-rl; display: flex; align-items: center; gap: 10px;
-  padding: 18px 10px; border-radius: 12px 0 0 12px; cursor: pointer;
-  background: var(--ambar); color: #1c1203; border: 0; font-weight: 700; font-size: 14px; letter-spacing: 0.04em;
-  box-shadow: -6px 0 24px rgba(0, 0, 0, 0.45), 0 0 22px rgba(251, 191, 36, 0.3); transition: padding 0.15s;
-}
-.chuleta-pestana:hover { padding-right: 14px; }
-.chuleta-pestana svg { width: 18px; height: 18px; transform: rotate(90deg); }
-.chuleta-pestana[aria-expanded="true"] { opacity: 0; pointer-events: none; }
-.chuleta-cajon {
-  position: fixed; top: var(--alto-cabecera, 66px); right: 0; bottom: 0; z-index: 35; width: min(560px, 92vw); overflow-y: auto;
-  background: var(--tarjeta-solida); border-left: 1px solid rgba(251, 191, 36, 0.45);
-  box-shadow: -24px 0 60px rgba(0, 0, 0, 0.6); backdrop-filter: blur(14px);
-  transform: translateX(105%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.chuleta-cajon.abierto { transform: none; }
-.chuleta-cajon .chuleta td:first-child { white-space: normal; }
-
 /* ---------- Montaje: pasos, siluetas y vista grande ---------- */
 .pasos-montaje { list-style: none; margin: 0 0 18px; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .pasos-montaje li {
@@ -665,8 +596,6 @@ a { color: var(--ambar); }
 /* ---------- Pantallas más estrechas ---------- */
 @media (max-width: 1280px) {
   .retos { grid-template-columns: repeat(2, 1fr); }
-  .cocina { grid-template-columns: 190px 1fr; }
-  .cocina .col-texto { grid-column: 1 / -1; }
   .puzle-zona { grid-template-columns: 1fr; }
   .tablero { width: min(540px, 100%); }
 }

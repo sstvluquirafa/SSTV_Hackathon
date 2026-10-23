@@ -1,0 +1,178 @@
+/* Reto 2 · Telemetría interceptada — «descifrado estilo Matrix» (especificaciones/reto2_estetica_matrix.md).
+   Detrás, la lluvia de caracteres (un <canvas> tenue); delante, la sesión de descifrado en paneles negros sólidos con
+   borde verde fino, todo en monoespaciada. Todo va bajo body[data-vista="reto2"] o con el prefijo .r2-; la cabecera
+   común no cambia y el reproductor usa el tema «matrix» (css/reproductor.css). Sin degradados, sin cristal, sin iconos. */
+
+body[data-vista="reto2"] {
+  --r2-fosforo: #7dff9b;
+  --r2-claro: #d6ffe0;
+  --r2-apagado: #2f8a45;
+  --r2-borde: #1d5a2c;
+  --r2-ambar: #ffb347;
+  --r2-mono: "JetBrains Mono", Consolas, monospace;
+  background: #000;
+}
+body[data-vista="reto2"] .estrellas { display: none; }
+body[data-vista="reto2"] .contenedor { padding: 14px 20px 18px; }
+body[data-vista="reto2"] .pie { position: relative; z-index: 1; margin-bottom: 44px; color: var(--r2-apagado); }
+body[data-vista="reto2"] :focus-visible { outline: 2px solid var(--r2-claro); outline-offset: 3px; }
+
+/* ---------- La lluvia de fondo ---------- */
+.r2-lluvia { position: fixed; inset: 0; z-index: 0; width: 100vw; height: 100vh; pointer-events: none; opacity: 0.3; transition: opacity 0.5s; }
+.r2-lluvia[data-animo="viva"] { opacity: 0.6; }
+.r2-lluvia[data-animo="calma"] { opacity: 0.16; }
+.r2-lluvia.quieta { opacity: 0.18; }
+
+/* ---------- Primer plano ---------- */
+.r2-pantalla { position: relative; z-index: 1; color: var(--r2-fosforo); font-family: var(--r2-mono); font-variant-ligatures: none; }
+.r2-cab {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; margin-bottom: 12px; padding: 10px 16px;
+  background: #000; border: 1px solid var(--r2-borde);
+}
+.r2-titulo { margin: 0; font: 700 24px var(--r2-mono); letter-spacing: 0.08em; color: var(--r2-fosforo); }
+.r2-sec { margin: 0; font-size: 15px; line-height: 1.5; color: var(--r2-apagado); }
+.r2-puntos { margin-left: auto; font-size: 16px; color: var(--r2-claro); }
+.r2-cuerpo { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 14px; align-items: start; }
+.r2-principal { display: grid; gap: 12px; min-width: 0; }
+.r2-panel { min-width: 0; padding: 14px 18px 16px; background: #000; border: 1px solid var(--r2-borde); }
+.r2-panel[hidden] { display: none; }
+.r2-rotulo { margin: 0 0 10px; font: 700 15px var(--r2-mono); letter-spacing: 0.14em; color: var(--r2-fosforo); }
+.r2-rotulo span { margin-left: 10px; font-weight: 400; letter-spacing: 0; color: var(--r2-apagado); }
+.r2-texto { margin: 0 0 12px; font-size: 17px; line-height: 1.55; }
+.r2-texto b { color: var(--r2-claro); }
+
+/* La cadena interceptada, grande y sobre negro sólido */
+.r2-cadena-fila { display: flex; align-items: flex-start; gap: 16px; }
+.r2-cadena { flex: 1; margin: 0; font-size: 24px; line-height: 1.5; letter-spacing: 0.02em; color: var(--r2-claro); word-break: break-all; }
+.r2-informe { margin: 10px 0 0; padding-left: 26px; font-size: 17px; line-height: 1.55; }
+.r2-informe li { margin-bottom: 4px; }
+.r2-informe b, .r2-pregunta { color: var(--r2-claro); }
+.r2-pregunta { font-weight: 700; }
+
+/* ---------- Botones ---------- */
+.r2-boton, .r2-op {
+  cursor: pointer; border: 1px solid var(--r2-fosforo); border-radius: 0; background: #000; color: var(--r2-fosforo);
+  font-family: var(--r2-mono); text-transform: uppercase; text-decoration: none; box-shadow: 0 3px 0 var(--r2-borde);
+  transition: transform 0.06s, box-shadow 0.06s;
+}
+.r2-boton { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; font-size: 16px; font-weight: 600; letter-spacing: 0.06em; }
+.r2-boton:hover:not(:disabled), .r2-op:hover { color: #000; background: var(--r2-fosforo); }
+.r2-boton:active:not(:disabled), .r2-op:active { transform: translateY(3px); box-shadow: 0 0 0 var(--r2-borde); }
+.r2-boton:disabled { cursor: not-allowed; opacity: 0.45; }
+.r2-boton-sec { color: var(--r2-apagado); border-color: var(--r2-apagado); }
+.r2-boton-sec:hover:not(:disabled) { color: #000; background: var(--r2-apagado); }
+/* Operaciones en columna a la izquierda y la sesión a su lado: el botón y su resultado, a la vista a la vez */
+.r2-mesa { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 12px; align-items: start; }
+.r2-ops { position: sticky; top: calc(var(--alto-cabecera, 66px) + 12px); }
+.r2-operaciones { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.r2-ops .r2-op-sec { flex-direction: column; }
+.r2-ops .r2-boton { min-height: 40px; padding: 0 8px; font-size: 14px; letter-spacing: 0.02em; white-space: nowrap; }
+.r2-op { display: grid; place-content: center; gap: 2px; min-height: 58px; padding: 6px 8px; font-size: 17px; font-weight: 700; letter-spacing: 0.04em; }
+.r2-op small { font-size: 13px; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--r2-apagado); }
+.r2-op:hover small { color: #0d3a1a; }
+.r2-op-sec { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+.r2-mini {
+  padding: 2px 4px; cursor: pointer; border: 0; background: none; color: var(--r2-apagado);
+  font: 15px var(--r2-mono); text-decoration: underline; text-underline-offset: 3px;
+}
+.r2-mini:hover:not(:disabled) { color: var(--r2-fosforo); }
+.r2-mini:disabled { cursor: default; opacity: 0.35; text-decoration: none; }
+
+/* ---------- Campos: parámetros y contraseña ---------- */
+.r2-campo {
+  min-width: 0; padding: 4px 6px; border: 0; border-bottom: 2px solid var(--r2-fosforo); border-radius: 0; background: #000;
+  color: var(--r2-claro); font: 600 20px var(--r2-mono); text-transform: uppercase; caret-color: var(--r2-fosforo); caret-shape: block;
+}
+.r2-campo-peq { width: 12ch; font-size: 18px; }
+.r2-campo:disabled { opacity: 0.5; }
+.r2-param { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; color: var(--r2-apagado); }
+.r2-param select { padding: 4px 6px; border: 1px solid var(--r2-apagado); border-radius: 0; background: #000; color: var(--r2-fosforo); font: 15px var(--r2-mono); }
+.r2-param input[type="range"] { width: 160px; accent-color: var(--r2-fosforo); }
+.r2-desp { min-width: 2ch; text-align: right; font-size: 18px; color: var(--r2-claro); }
+
+/* ---------- Sesión: cada operación en su línea y su resultado debajo ---------- */
+.r2-linea { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 17px; }
+.r2-n { width: 1.5em; color: var(--r2-apagado); }
+.r2-op-nombre { min-width: 9ch; font-weight: 700; letter-spacing: 0.06em; }
+.r2-acciones { display: flex; gap: 6px; margin-left: auto; }
+.r2-entrada {
+  display: block; width: 100%; min-height: 64px; margin: 6px 0 4px; padding: 8px 10px; resize: vertical; border: 1px solid var(--r2-borde);
+  border-radius: 0; background: #000; color: var(--r2-fosforo); font: 17px/1.5 var(--r2-mono); word-break: break-all; caret-color: var(--r2-fosforo);
+}
+.r2-vacia { margin: 10px 0 0; font-size: 16px; color: var(--r2-apagado); }
+.r2-paso { padding: 10px 0 2px; border-top: 1px dashed var(--r2-borde); margin-top: 8px; }
+.r2-paso.apagado { opacity: 0.5; }
+.r2-paso.fallo .r2-op-nombre { color: var(--r2-ambar); }
+.r2-resultado {
+  margin: 8px 0 0 calc(1.5em + 14px); font-size: 19px; line-height: 1.5; color: var(--r2-claro);
+  white-space: pre-wrap; word-break: break-all;
+}
+.r2-resultado:empty { display: none; }
+.r2-paso.final .r2-resultado { padding-left: 12px; font-size: 21px; border-left: 3px solid var(--r2-fosforo); }
+.r2-resultado.r2-error { font-size: 17px; color: var(--r2-ambar); word-break: normal; }
+
+/* ---------- Ayuda, caja fuerte y entrega ---------- */
+.r2-pista { margin-top: 12px; padding: 10px 14px; border: 1px solid var(--r2-fosforo); font-size: 17px; line-height: 1.5; color: var(--r2-claro); }
+.r2-pista b { color: var(--r2-fosforo); }
+.r2-pista.r2-aviso-ambar { border-color: var(--r2-ambar); color: #ffd9a0; }
+.r2-orden { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px; }
+.r2-orden label { font-size: 20px; font-weight: 700; }
+.r2-orden .r2-campo { width: 20ch; }
+.r2-sistema { margin: 12px 0 6px; font-size: 17px; line-height: 1.5; color: var(--r2-fosforo); }
+.r2-sistema.ambar { color: var(--r2-ambar); }
+.r2-sistema.ok { color: var(--r2-claro); }
+.r2-premio { border-color: var(--r2-fosforo); }
+.r2-resumen { margin: 12px 0 0; font-size: 16px; color: var(--r2-apagado); }
+
+/* ---------- Chuleta fija a la derecha ---------- */
+.r2-chuleta {
+  position: sticky; top: calc(var(--alto-cabecera, 66px) + 12px);
+  max-height: calc(100vh - var(--alto-cabecera, 66px) - 70px); overflow-y: auto;
+}
+.r2-chuleta dl { margin: 0 0 12px; }
+.r2-chuleta dt { margin-top: 12px; font-size: 16px; font-weight: 700; letter-spacing: 0.08em; }
+.r2-chuleta dt:first-child { margin-top: 0; }
+.r2-chuleta dd { margin: 4px 0 0; font-size: 15.5px; line-height: 1.5; }
+.r2-chuleta dd span { display: block; margin-top: 2px; color: var(--r2-apagado); }
+.r2-chuleta code { font: inherit; color: var(--r2-claro); word-break: break-all; }
+
+/* ---------- Línea de estado inferior, en vídeo inverso ---------- */
+.r2-estado {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; margin: 0; padding: 9px 20px;
+  font: 600 16px/1.35 var(--r2-mono); color: #000; background: var(--r2-fosforo);
+}
+
+/* ---------- «Archivo descifrado» en el centro ---------- */
+.r2-revelacion { position: fixed; inset: 0; z-index: 120; display: grid; place-items: center; background: rgba(0, 0, 0, 0.6); cursor: pointer; }
+.r2-revelacion-texto {
+  margin: 0; padding: 22px 34px; border: 1px solid var(--r2-fosforo); background: #000;
+  font: 700 clamp(28px, 4vw, 46px) "JetBrains Mono", monospace; letter-spacing: 0.12em; color: #d6ffe0; font-variant-ligatures: none;
+}
+
+/* ---------- Bloqueo por pista (capa común de efectos.js) ---------- */
+body[data-vista="reto2"] .bloqueo-pista { background: rgba(0, 0, 0, 0.88); backdrop-filter: none; }
+body[data-vista="reto2"] .bloqueo-caja { border: 1px solid var(--r2-fosforo); border-radius: 0; color: var(--r2-fosforo); font-family: var(--r2-mono); background: #000; box-shadow: none; }
+body[data-vista="reto2"] .bloqueo-caja .texto-2 { color: var(--r2-fosforo); font-size: 17px; }
+body[data-vista="reto2"] .pista-fondo { stroke: var(--r2-borde); }
+body[data-vista="reto2"] .pista-progreso { stroke: var(--r2-fosforo); stroke-linecap: butt; filter: none; }
+body[data-vista="reto2"] .bloqueo-cuenta { color: var(--r2-claro); font-family: var(--r2-mono); }
+body[data-vista="reto2"] .bloqueo-etq { color: var(--r2-claro); animation: none; letter-spacing: 0.14em; }
+body[data-vista="reto2"] .bloqueo-pista-texto { border-radius: 0; color: var(--r2-claro); background: #000; border: 1px solid var(--r2-apagado); font-size: 17px; }
+body[data-vista="reto2"] .bloqueo-pista-texto > span { color: var(--r2-apagado); }
+body[data-vista="reto2"] .bloqueo-caja .btn {
+  border: 1px solid var(--r2-apagado); border-radius: 0; color: var(--r2-apagado); background: #000; box-shadow: none;
+  font: 600 15px var(--r2-mono); text-transform: uppercase; letter-spacing: 0.06em;
+}
+body[data-vista="reto2"] .bloqueo-caja .btn svg { display: none; }
+
+/* ---------- Movimiento reducido y pantallas estrechas ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .r2-lluvia, .r2-boton, .r2-op { transition: none; }
+}
+@media (max-width: 1100px) {
+  .r2-cuerpo { grid-template-columns: 1fr; }
+  .r2-chuleta { position: static; max-height: none; }
+  .r2-mesa { grid-template-columns: 1fr; }
+  .r2-ops { position: static; }
+  .r2-operaciones { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

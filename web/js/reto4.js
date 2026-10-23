@@ -533,7 +533,7 @@
           </article>
           <aside class="r4-sobre" aria-label="Fragmento ANDRÓMEDA">
             <p class="r4-sobre-rotulo">Fragmento ANDRÓMEDA</p>
-            <p>Dentro del sobre, la cinta con la transmisión. Decodificad el audio con Black Cat SSTV y guardad la imagen para el montaje del mapa.</p>
+            <p>Dentro del sobre, el registro de la transmisión. Decodificad el audio con Black Cat SSTV y guardad la imagen para el montaje del mapa.</p>
             <div id="r4-audio">${cargando("Descifrando la transmisión…")}</div>
           </aside>
         </div>
@@ -544,21 +544,14 @@
       const resumen = await (await Cripto.abrir(e.llave, await cargarDatos(ll.resumen))).text();
       if ($("#r4-resumen")) $("#r4-resumen").innerHTML = resumen;
       const url = urlDe(await Cripto.abrir(e.llave, await cargarDatos(ll.audio)));
-      if ($("#r4-audio")) reproductorCinta($("#r4-audio"), url, "fragmento_andromeda.wav", "Fragmento ANDRÓMEDA");
+      if ($("#r4-audio")) reproductorCuaderno($("#r4-audio"), url, "fragmento_andromeda.wav", "Fragmento ANDRÓMEDA");
     } catch (err) {
       if ($("#r4-audio")) $("#r4-audio").innerHTML = `<p class="r4-margen-rojo">No se ha podido descifrar el audio. Avisad a la organización.</p>`;
     }
   }
 
-  /** El reproductor común, vestido de grabadora de cinta: sin iconos, con la orden escrita en la tecla. */
-  function reproductorCinta(caja, url, nombre, etiqueta) {
-    const audio = App.reproductor(caja, url, nombre, etiqueta);
-    $(".rx", caja).classList.add("r4-cinta");
-    $(".ventana-barra b", caja).textContent = etiqueta;
-    $(".rx-reposo", caja).textContent = "Pulsad «Reproducir» para emitir la señal";
-    $(".rx-controles .btn", caja).textContent = "Descargar el audio";
-    return audio;
-  }
+  /** El reproductor común con el tema «cuaderno»: un registrador gráfico de papel (css/reproductor.css). */
+  const reproductorCuaderno = (caja, url, nombre, etiqueta) => App.reproductor(caja, url, nombre, etiqueta, { tema: "cuaderno" });
 
   // ---------- Pistas: un sobre con tres notas ----------
   function pintarPistas() {
@@ -725,7 +718,7 @@
     caja.innerHTML = cargando("Sintonizando la cámara de la azotea…");
     try {
       const url = urlDe(blobDesdeB64(await cargarDatos("reto4_camara"), "audio/wav"));
-      const audio = reproductorCinta(caja, url, "camara_azotea.wav", "Cámara de la azotea · camara_azotea.wav");
+      const audio = reproductorCuaderno(caja, url, "camara_azotea.wav", "Cámara de la azotea · camara_azotea.wav");
       $(".r4-camara-mesa").classList.add("oculto");
       const aviso = (vivo) => { $("#r4-mientras").classList.toggle("oculto", !vivo); const m = $("#r4-tx-archivo"); if (m) m.classList.toggle("oculto", !vivo); };
       audio.addEventListener("play", () => aviso(true));

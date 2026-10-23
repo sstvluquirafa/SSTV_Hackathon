@@ -396,31 +396,8 @@ body[data-vista="reto4"] :focus-visible { outline: 3px dashed var(--r4-foco); ou
 .r4-mientras { margin: 12px 0 0; color: var(--r4-lapiz); }
 .r4-mientras .r4-palabra { font-size: 18px; color: var(--r4-tinta); }
 
-/* El reproductor común, vestido de grabadora de cinta */
-.r4-cinta { margin-top: 10px; border: 0; border-radius: 4px; background: var(--r4-tinta); box-shadow: 3px 5px 0 rgba(0, 0, 0, 0.35); }
-.r4-cinta .ventana-barra { padding: 8px 14px; background: var(--r4-carton) var(--r4-ruido); border: 0; color: var(--r4-tinta); }
-.r4-cinta .ventana-barra i { display: none; }
-.r4-cinta .ventana-barra b { font: 700 16px var(--r4-maquina); letter-spacing: 0; color: var(--r4-tinta); }
-.r4-cinta .rx-estado { font: 700 14px var(--r4-maquina); color: var(--r4-sello); animation: none; }
-.r4-cinta .rx-marcas span, .r4-cinta .rx-reposo { font-family: var(--r4-maquina); }
-.r4-cinta .rx-reposo { font-size: 15px; color: #cbbd9f; letter-spacing: 0; }
-.r4-cinta .rx-controles { background: var(--r4-madera); gap: 16px; padding: 10px 14px; }
-.r4-cinta .rx-play {
-  width: auto; height: auto; padding: 7px 16px 5px; border-radius: 3px; color: var(--r4-tinta); background: var(--r4-papel);
-  box-shadow: 0 3px 0 #120b06; transition: transform 0.08s, box-shadow 0.08s;
-}
-.r4-cinta .rx-play:hover { transform: none; }
-.r4-cinta .rx-play:active { transform: translateY(2px); box-shadow: 0 1px 0 #120b06; }
-.r4-cinta .rx-play svg { display: none; }
-.r4-cinta .rx-play::after { content: attr(aria-label); font: 700 16px var(--r4-maquina); }
-.r4-cinta .rx-tiempo, .r4-cinta .rx-freq { font-family: var(--r4-maquina); color: var(--r4-carton); font-size: 15px; }
-.r4-cinta .rx-barra {
-  height: 7px; border-radius: 0;
-  background: linear-gradient(var(--r4-carton), var(--r4-carton)) 0 0 / var(--avance, 0%) 100% no-repeat, #5d4838;
-}
-.r4-cinta .rx-barra::-webkit-slider-thumb { width: 10px; height: 18px; border-radius: 1px; background: var(--r4-papel); box-shadow: none; }
-.r4-cinta .btn { padding: 0; border: 0; background: none; box-shadow: none; color: var(--r4-papel); font: 700 16px var(--r4-maquina); text-decoration: underline; text-underline-offset: 4px; }
-.r4-cinta .btn svg { display: none; }
+/* El reproductor común usa el tema «cuaderno» (css/reproductor.css) */
+.r4-sobre .rx, #r4-camara .rx { margin-top: 10px; }
 
 /* ---------- Extraer prueba: formulario en papel al pie del informe ---------- */
 .r4-formulario {
