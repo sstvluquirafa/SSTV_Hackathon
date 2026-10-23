@@ -33,10 +33,11 @@ Pantalla de fósforo **ámbar** del ordenador de 1984: cascada negro → ámbar 
 tiempos en la fuente de terminal, estado como línea de sistema (`RX: EN ESPERA`), controles como **teclas** o comandos
 (`[ REPRODUCIR ]`). El reproductor puede presentarse como una unidad de cinta junto al monitor.
 
-### `matrix` (reto 2, ver `reto2_estetica_matrix.md`)
-Dentro de la señal, estilo Matrix: cascada negro → verde oscuro → verde → verde blanquecino, marcas y tiempos en
-monoespaciada verde (`#7dff9b`), estado como texto (`RX: EN ESPERA`, `RX: RECIBIENDO`, `RX: FIN`), controles como los
-botones del reto (borde verde, mayúsculas; se rellenan al pasar el ratón y se hunden al pulsar). Descargar, en verde apagado.
+### `matrix` (reto 2, ver `reto2_estetica_matrix.md` y `referencia/reto2_maqueta.html`)
+Dentro de la señal, estilo Matrix: cascada negro → verde oscuro → verde Matrix (`#3dfa7a`) → blanco menta (`#e4fbee`).
+Marco como los bloques de la maqueta (panel `#080d0b`, borde `#26372e`, esquinas redondeadas), nombre del archivo y
+tiempos en blanco menta, marcas en verde grisáceo, estado como texto (`RX: EN ESPERA`, `RX: RECIBIENDO` en verde, `RX: FIN`).
+Reproducir como el botón principal de la maqueta (blanco con texto oscuro); Descargar como sus botones secundarios.
 
 ### `cuaderno` (reto 4, ver `reto4_estetica_cuaderno.md`)
 Un **registrador gráfico de papel**: la cascada se dibuja como si una aguja la imprimiera sobre una tira de papel

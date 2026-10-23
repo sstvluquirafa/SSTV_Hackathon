@@ -26,10 +26,14 @@
     return true;
   };
 
+  // Retos que enseñan el bloqueo a su manera (sin la capa que tapa la página): el reto 2 bloquea solo sus mandos
+  App.BLOQUEO_SIN_CAPA = new Set();
+
   /** Muestra u oculta la capa "transmisión en pausa". Devuelve true si el reto está bloqueado. */
   App.comprobarBloqueo = function (id) {
     const vista = $("#vista");
     const e = Progreso.reto(id);
+    if (App.BLOQUEO_SIN_CAPA.has(id)) return restante(e) > 0 && !e.completado;
     let capa = $("#bloqueo-pista");
     const s = restante(e);
     const fondo = $$(":scope > :not(#bloqueo-pista)", vista);

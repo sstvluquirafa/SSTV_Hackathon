@@ -1,0 +1,561 @@
+<title>Telemetría interceptada</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&family=Martian+Mono:wght@300;400;600&display=swap">
+<style>
+/* Layout: banda de intercepción (lluvia contenida + cadena) arriba; mesa de trabajo en dos columnas (sesión y teclas | chuleta y clave); línea de estado al pie.
+   Regla de color: verde Matrix = solo lo que se está descifrando (y la lluvia); código ya descifrado = blanco menta
+   luminoso; interfaz = blancos y grises; ámbar = avisos y bloqueos. */
+:root {
+  color-scheme: dark;
+  --void: #040706;
+  --panel: #080d0b;
+  --line: #16221c;
+  --line-2: #26372e;
+  --code: #e4fbee;
+  --code-glow: rgba(110, 255, 170, 0.28);
+  --scramble: #3dfa7a;
+  --scramble-dim: #1a7a3e;
+  --cmd: #8fb8a1;
+  --ink: #eef2ef;
+  --soft: #b6c0ba;
+  --mute: #75827a;
+  --warn: #e8b552;
+  --ui: "Chivo", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --display: "Martian Mono", "JetBrains Mono", ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--void); color: var(--ink); font: 400 17px/1.5 var(--ui); }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+.marco { max-width: 1240px; margin: 0 auto; padding-block: 18px 0; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 18px; }
+
+.cabecera { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.volver { color: var(--soft); text-decoration: none; font-size: 15px; border-bottom: 1px solid var(--line-2); padding-bottom: 2px; }
+.volver:hover { color: var(--ink); border-color: var(--ink); }
+.cabecera h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: 0.01em; }
+.cabecera .sub { color: var(--mute); font-size: 15px; }
+.maqueta { font-size: 13px; color: var(--mute); border: 1px solid var(--line-2); padding: 3px 8px; border-radius: 4px; }
+
+/* Banda de intercepción */
+/* Lluvia detrás de toda la página */
+#lluvia { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.5; pointer-events: none; }
+.viñeta { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse 75% 70% at 50% 45%, rgba(4,7,6,0.82) 0%, rgba(4,7,6,0.55) 60%, rgba(4,7,6,0.1) 100%); }
+.marco { position: relative; z-index: 1; padding-right: max(60px, calc(44px + env(safe-area-inset-right, 0px))); }
+
+.banda { position: relative; border: 1px solid var(--line-2); border-radius: 12px; overflow: hidden; background: rgba(4, 7, 6, 0.72); min-height: 210px; display: grid; align-content: center; }
+.banda-txt { position: relative; z-index: 1; padding: 34px clamp(18px, 4vw, 48px); max-width: 100%; min-width: 0; }
+.banda-txt .intro { margin: 0 0 14px; color: var(--soft); font-size: 16px; max-width: 56ch; }
+.cadena { font: 400 clamp(19px, 2.9vw, 34px)/1.25 var(--display); color: var(--code); letter-spacing: 0.02em; word-break: break-all; margin: 0; text-shadow: 0 0 22px var(--code-glow); }
+.cadena-meta { margin-top: 14px; font-size: 14px; color: var(--mute); display: flex; gap: 18px; flex-wrap: wrap; }
+.cadena-meta span::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--scramble); box-shadow: 0 0 8px var(--scramble); margin-right: 8px; vertical-align: 2px; }
+.ruido { color: var(--scramble); text-shadow: 0 0 10px rgba(61, 250, 122, 0.55); }
+
+/* Mesa de trabajo */
+.mesa { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; align-items: start; }
+.bloque { border: 1px solid var(--line); border-radius: 10px; background: rgba(8, 13, 11, 0.94); padding: 18px 20px; min-width: 0; }
+
+/* Chuleta desplegable a la derecha */
+.chuleta-asa { position: fixed; z-index: 4; right: env(safe-area-inset-right, 0px); top: 50%; transform: translateY(-50%); writing-mode: vertical-rl; padding: 18px 10px; border: 1px solid var(--line-2); border-right: 0; border-radius: 8px 0 0 8px; background: var(--panel); color: var(--ink); font: 700 15px var(--ui); letter-spacing: 0.06em; cursor: pointer; box-shadow: 0 0 0 1px rgba(0,0,0,0.4); }
+.chuleta-asa::after { content: ""; display: block; width: 6px; height: 6px; margin: 10px auto 0; border-radius: 50%; background: var(--scramble); box-shadow: 0 0 8px var(--scramble); }
+.chuleta-asa:hover { border-color: var(--mute); }
+.chuleta { position: fixed; z-index: 5; top: 0; right: 0; bottom: 0; width: min(360px, 88vw); background: var(--panel); border-left: 1px solid var(--line-2); padding: calc(22px + env(safe-area-inset-top, 0px)) calc(22px + env(safe-area-inset-right, 0px)) 22px 22px; transform: translateX(100%); transition: transform 220ms ease; overflow-y: auto; box-shadow: -24px 0 40px rgba(0,0,0,0.5); }
+.chuleta.abierta { transform: translateX(0); }
+.chuleta-cab { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 6px; }
+.chuleta-cab h2 { margin: 0; font-size: 18px; }
+.chuleta .ayuda { margin: 0 0 18px; color: var(--mute); font-size: 15px; }
+.bloque h2 { margin: 0 0 4px; font-size: 17px; font-weight: 700; }
+.bloque .ayuda { margin: 0 0 14px; color: var(--mute); font-size: 15px; }
+
+.sesion { font: 400 15px/1.65 var(--mono); min-height: 120px; display: grid; gap: 0; position: relative; }
+.sesion .vacia { font-family: var(--ui); color: var(--mute); font-size: 15px; padding: 6px 0; }
+.origen { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; color: var(--mute); font-family: var(--ui); font-size: 14px; padding-bottom: 6px; }
+.paso { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; min-width: 0; position: relative; padding-bottom: 14px; }
+.nodo { position: relative; display: flex; justify-content: center; }
+.nodo::before { content: ""; position: absolute; top: 0; bottom: -14px; width: 1px; background: var(--line-2); }
+.paso:last-child .nodo::before { bottom: 50%; }
+.nodo i { position: relative; margin-top: 7px; width: 11px; height: 11px; border-radius: 50%; background: var(--void); border: 1px solid var(--cmd); }
+.paso.nuevo .nodo i { background: var(--scramble); border-color: var(--scramble); box-shadow: 0 0 10px var(--scramble); }
+.paso.roto .nodo i { border-color: var(--warn); }
+.paso-cuerpo { min-width: 0; }
+.paso-cab { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; color: var(--cmd); }
+.paso-op { border: 1px solid var(--line-2); border-radius: 4px; padding: 0 8px; color: var(--ink); letter-spacing: 0.06em; font-size: 13px; }
+.paso-param { display: inline-flex; align-items: center; gap: 6px; color: var(--soft); font-family: var(--ui); font-size: 14px; }
+.paso-param b { font: 500 14px var(--mono); color: var(--code); }
+.origen .nodo i { border-color: var(--mute); border-style: dashed; }
+.origen-txt { color: var(--mute); font: 400 14px var(--ui); }
+.origen-cadena { color: var(--soft); text-shadow: none; }
+.fantasma .nodo i { border: 1px dashed var(--line-2); }
+.fantasma .vacia { padding: 2px 0 0; }
+
+/* Rueda de César: dos botones grandes y el número en medio */
+.rueda { display: inline-flex; align-items: center; gap: 8px; }
+.rueda-rotulo { color: var(--soft); font: 400 14px var(--ui); margin-right: 2px; }
+.rueda-btn { width: 44px; height: 38px; border: 1px solid #2f4238; border-radius: 6px; background: #0c1410; color: var(--ink); font-size: 14px; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 3px 0 #1a2620; transition: transform 70ms, box-shadow 70ms; }
+.rueda-btn:hover { border-color: #4b6656; }
+.rueda-btn:active { transform: translateY(3px); box-shadow: 0 0 0 #1a2620; }
+.rueda-num { min-width: 2.2ch; text-align: center; font: 600 22px var(--mono); color: var(--code); font-variant-numeric: tabular-nums; text-shadow: 0 0 12px var(--code-glow); }
+
+/* El control que toca ahora */
+.toca { box-shadow: 0 0 0 1px rgba(61, 250, 122, 0.55), 0 0 22px rgba(61, 250, 122, 0.18); border-radius: 10px; animation: toca 2.4s ease-in-out infinite; }
+.teclas.toca { padding: 8px; margin-inline: -8px; }
+.caja.toca { padding: 14px; margin-inline: -14px; }
+@keyframes toca { 50% { box-shadow: 0 0 0 1px rgba(61, 250, 122, 0.25), 0 0 8px rgba(61, 250, 122, 0.06); } }
+
+/* Desbloqueo final: la página se ilumina un instante */
+body.desbloqueo #lluvia { opacity: 0.95; transition: opacity 200ms; }
+body.desbloqueo .viñeta { opacity: 0.35; transition: opacity 200ms; }
+#lluvia, .viñeta { transition: opacity 900ms; }
+.paso-salida { color: var(--code); word-break: break-all; font-size: 16px; margin-top: 4px; text-shadow: 0 0 14px var(--code-glow); }
+.paso-error { color: var(--warn); font-family: var(--ui); font-size: 15px; margin-top: 4px; }
+
+.teclas { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-top: 20px; }
+.tecla { position: relative; min-height: 56px; border: 1px solid #2f4238; border-radius: 7px; background: #0c1410; color: var(--ink); font: 600 13px var(--mono); letter-spacing: 0.06em; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 0 #1a2620; transition: transform 80ms, box-shadow 80ms, border-color 120ms; padding-top: 10px; }
+.tecla::before { content: ""; position: absolute; top: 8px; left: 50%; width: 14px; height: 3px; margin-left: -7px; border-radius: 2px; background: #1c2a22; }
+.tecla.usada::before { background: var(--scramble); box-shadow: 0 0 8px var(--scramble); }
+.tecla:hover { border-color: #4b6656; }
+.tecla:active, .tecla.pulsada { transform: translateY(4px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 0 0 #1a2620; }
+.secundarias { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.boton { min-height: 40px; padding: 0 14px; border-radius: 6px; border: 1px solid var(--line-2); background: transparent; color: var(--soft); cursor: pointer; font-size: 15px; }
+.boton:hover { color: var(--ink); border-color: var(--mute); }
+.boton[disabled] { color: var(--mute); cursor: not-allowed; border-color: var(--line); }
+
+.caja { margin-top: 18px; }
+.fila { display: flex; gap: 10px; flex-wrap: wrap; }
+.campo { flex: 1 1 220px; min-width: 0; min-height: 46px; background: var(--void); border: 1px solid var(--line-2); border-radius: 6px; padding: 0 12px; color: var(--code); font: 500 17px var(--mono); letter-spacing: 0.05em; caret-color: var(--code); }
+.campo::placeholder { color: var(--mute); font-family: var(--ui); letter-spacing: 0; font-size: 15px; }
+.primaria { min-height: 46px; padding: 0 20px; border-radius: 6px; border: 0; background: var(--ink); color: var(--void); font-weight: 700; cursor: pointer; }
+.primaria:hover { background: #ffffff; }
+.primaria[disabled] { background: var(--line-2); color: var(--mute); cursor: not-allowed; }
+.mensaje { margin: 10px 0 0; font-size: 15px; color: var(--soft); min-height: 22px; }
+.mensaje.aviso { color: var(--warn); }
+.intentos { display: inline-flex; gap: 5px; vertical-align: middle; margin-left: 8px; }
+.intentos i { width: 9px; height: 9px; border-radius: 50%; background: var(--soft); display: inline-block; }
+.intentos i.gastado { background: var(--line-2); }
+
+/* Columna derecha */
+.lateral { display: grid; gap: 18px; }
+.pregunta { margin: 0 0 12px; font-size: 16px; color: var(--ink); }
+.formatos { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.formatos li { display: grid; gap: 2px; font-size: 15px; color: var(--soft); border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+.formatos li:last-child { border-bottom: 0; padding-bottom: 0; }
+.formatos code { font: 600 13px var(--mono); color: var(--ink); letter-spacing: 0.06em; justify-self: start; border: 1px solid var(--line-2); border-radius: 4px; padding: 0 8px; margin-top: 4px; }
+.formatos .distractor { color: var(--mute); font-size: 13px; }
+.pista-txt { margin: 12px 0 0; font-size: 15px; color: var(--soft); }
+.bloqueo { color: var(--warn); font-variant-numeric: tabular-nums; }
+
+/* Entrega */
+.entrega { border: 1px solid var(--scramble-dim); border-radius: 12px; background: var(--panel); padding: 24px; display: grid; gap: 12px; }
+.entrega .grande { font: 400 clamp(22px, 3.4vw, 36px) var(--display); color: var(--code); letter-spacing: 0.04em; margin: 0; text-shadow: 0 0 24px var(--code-glow); }
+.entrega p { margin: 0; color: var(--soft); max-width: 62ch; }
+.cinta { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; border: 1px solid var(--line-2); border-radius: 8px; padding: 12px 14px; }
+.cinta-nombre { font-family: var(--mono); color: var(--code); }
+.cinta-nota { color: var(--mute); font-size: 14px; }
+
+.estado { position: sticky; bottom: 0; background: var(--void); border-top: 1px solid var(--line); padding-block: 10px calc(10px + env(safe-area-inset-bottom, 0px)); color: var(--soft); font-size: 15px; display: flex; gap: 14px; flex-wrap: wrap; align-items: baseline; }
+.estado b { color: var(--ink); font-weight: 500; }
+
+@media (max-width: 900px) {
+  .mesa { grid-template-columns: minmax(0, 1fr); }
+  .teclas { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tecla, .chuleta, .rueda-btn, #lluvia, .viñeta { transition: none; }
+  .toca { animation: none; }
+}
+</style>
+
+<canvas id="lluvia" aria-hidden="true"></canvas>
+<div class="viñeta" aria-hidden="true"></div>
+
+<button class="chuleta-asa" id="chuleta-asa" type="button" aria-expanded="false" aria-controls="chuleta">Chuleta</button>
+<aside class="chuleta" id="chuleta" aria-labelledby="t-formatos" aria-hidden="true">
+  <div class="chuleta-cab">
+    <h2 id="t-formatos">Identificación de formatos</h2>
+    <button class="boton" id="chuleta-cerrar" type="button">Cerrar</button>
+  </div>
+  <p class="ayuda">Mirad el resultado de cada paso y buscad su forma aquí.</p>
+  <ul class="formatos">
+    <li>Termina con uno o dos signos igual<code>BASE64</code></li>
+    <li>Solo letras de la A a la F y números<code>HEX</code></li>
+    <li>Parece español con las letras cambiadas<code>CÉSAR</code></li>
+    <li>Solo ceros y unos<code>BINARIO</code></li>
+    <li>Está escrito del revés<code>ESPEJO</code></li>
+  </ul>
+</aside>
+
+<div class="marco">
+  <header class="cabecera">
+    <div>
+      <a class="volver" href="#">Volver a los retos</a>
+    </div>
+    <div style="display:grid;gap:2px;min-width:0;">
+      <h1>Telemetría interceptada</h1>
+      <span class="sub">Reto 2 · fragmento CYGNUS</span>
+    </div>
+    <span class="maqueta">Maqueta de diseño</span>
+  </header>
+
+  <section class="banda" aria-label="Señal interceptada">
+    <div class="banda-txt">
+      <p class="intro">Hemos captado este mensaje del GranaSAT-II. Está cifrado en varias capas. Quitadlas una a una hasta leer la contraseña.</p>
+      <p class="cadena" id="cadena">U0vuDzNXE0huTUcrJEwYHJZpGwNXJTJhNyy=</p>
+      <div class="cadena-meta"><span>Captado por la estación de la azotea</span>36 caracteres</div>
+    </div>
+  </section>
+
+  <div class="mesa">
+    <div style="display:grid;gap:18px;min-width:0;">
+      <section class="bloque" aria-labelledby="t-receta">
+        <h2 id="t-receta">Receta de descifrado</h2>
+        <p class="ayuda">Cada operación se aplica al resultado de la anterior.</p>
+        <div class="sesion" id="sesion" aria-live="polite"></div>
+
+        <div class="teclas" role="group" aria-label="Operaciones">
+          <button class="tecla" data-op="vigenere" type="button">VIGENÈRE</button>
+          <button class="tecla" data-op="base64" type="button">BASE64</button>
+          <button class="tecla" data-op="hex" type="button">HEX</button>
+          <button class="tecla" data-op="cesar" type="button">CÉSAR</button>
+          <button class="tecla" data-op="binario" type="button">BINARIO</button>
+          <button class="tecla" data-op="espejo" type="button">ESPEJO</button>
+        </div>
+        <div class="secundarias">
+          <button class="boton" id="borrar" type="button">Borrar el último paso</button>
+          <button class="boton" id="vaciar" type="button">Empezar de nuevo</button>
+        </div>
+
+        <form class="caja" id="caja" autocomplete="off">
+          <h2>Caja fuerte</h2>
+          <p class="ayuda">Cuando leáis la contraseña, escribidla aquí. <span id="intentos-txt">5 intentos</span><span class="intentos" id="intentos" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></p>
+          <div class="fila">
+            <input class="campo" id="contrasena" placeholder="Contraseña" spellcheck="false" aria-label="Contraseña">
+            <button class="primaria" id="comprobar" type="submit">Abrir la caja</button>
+          </div>
+          <p class="mensaje" id="mensaje" role="status"></p>
+        </form>
+      </section>
+
+      <section class="entrega" id="entrega" hidden aria-live="polite">
+        <p class="grande" id="entrega-txt">ARCHIVO DESCIFRADO</p>
+        <p>La caja contiene la transmisión del fragmento CYGNUS. Ponedla a sonar y decodificadla con Black Cat SSTV.</p>
+        <div class="cinta">
+          <span class="cinta-nombre">fragmento_cygnus.wav</span>
+          <span class="cinta-nota">Aquí va el reproductor común con el tema matrix.</span>
+        </div>
+      </section>
+    </div>
+
+    <aside class="lateral">
+      <section class="bloque" aria-labelledby="t-clave">
+        <h2 id="t-clave">Clave de Vigenère</h2>
+        <p class="pregunta">¿Qué misión de la NASA llevó al ser humano a la Luna por primera vez en 1969?</p>
+        <input class="campo" id="clave" placeholder="Una palabra" spellcheck="false" aria-label="Clave de Vigenère" style="width:100%;">
+      </section>
+
+      <section class="bloque" aria-labelledby="t-pistas">
+        <h2 id="t-pistas">Pistas</h2>
+        <p class="ayuda">Cada pista bloquea la mesa un rato.</p>
+        <button class="boton" id="pista" type="button">Analizar el último resultado</button>
+        <p class="pista-txt" id="pista-txt"></p>
+      </section>
+    </aside>
+  </div>
+
+  <footer class="estado" id="estado"><b>Ahora:</b> <span id="estado-txt">Responded la pregunta de la clave y pulsad VIGENÈRE.</span></footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (s) { return document.querySelector(s); };
+  var CADENA = $("#cadena").textContent.trim();
+  var reducido = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var RUIDO = "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄ0123456789ABCDEFabcdef+/=";
+
+  /* ---------- Lluvia contenida en la banda ---------- */
+  var lienzo = $("#lluvia"), g = lienzo.getContext("2d"), cols = [], ancho = 14, brillo = 0;
+  function medir() {
+    lienzo.width = Math.max(1, window.innerWidth); lienzo.height = Math.max(1, window.innerHeight);
+    cols = []; for (var i = 0; i < Math.ceil(lienzo.width / ancho); i++) cols.push(Math.random() * -30);
+    g.fillStyle = "#050807"; g.fillRect(0, 0, lienzo.width, lienzo.height);
+  }
+  function caer() {
+    g.fillStyle = "rgba(4,7,6,0.14)"; g.fillRect(0, 0, lienzo.width, lienzo.height);
+    g.font = "14px JetBrains Mono, monospace";
+    for (var i = 0; i < cols.length; i++) {
+      var y = cols[i] * 17;
+      g.fillStyle = brillo > 1.6 ? "#c8ffda" : (brillo > 0.2 ? "#3dfa7a" : "#1b8a45");
+      g.fillText(RUIDO[Math.floor(Math.random() * RUIDO.length)], i * ancho, y - 17);
+      g.fillStyle = "#eafff1";
+      g.fillText(RUIDO[Math.floor(Math.random() * RUIDO.length)], i * ancho, y);
+      cols[i] += 0.5 + brillo;
+      if (y > lienzo.height && Math.random() > 0.975) cols[i] = Math.random() * -8;
+    }
+    brillo = Math.max(0, brillo - 0.04);
+  }
+  medir(); window.addEventListener("resize", medir);
+  if (reducido) { for (var k = 0; k < 40; k++) caer(); } else { setInterval(caer, 55); }
+  function avivar(fuerza) { brillo = fuerza || 0.9; }
+
+  /* ---------- Operaciones ---------- */
+  function vigenere(t, clave) {
+    var k = (clave || "").normalize("NFD").replace(/[^A-Za-z]/g, "").toUpperCase();
+    if (!k) throw new Error("Falta la clave: responded la pregunta de la derecha.");
+    var out = "", j = 0;
+    for (var i = 0; i < t.length; i++) {
+      var c = t[i], code = c.charCodeAt(0);
+      var base = code >= 65 && code <= 90 ? 65 : (code >= 97 && code <= 122 ? 97 : 0);
+      if (base) { var d = k.charCodeAt(j % k.length) - 65; out += String.fromCharCode((code - base - d + 26) % 26 + base); j++; }
+      else out += c;
+    }
+    return out;
+  }
+  function base64(t) {
+    if (!/^[A-Za-z0-9+/]+={0,2}$/.test(t.trim()) || t.trim().length % 4) throw new Error("Esto no es Base64 válido.");
+    var bin = atob(t.trim()), bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
+  function hex(t) {
+    var s = t.replace(/\s+/g, "");
+    if (!/^[0-9A-Fa-f]+$/.test(s) || s.length % 2) throw new Error("Esto no es hexadecimal válido.");
+    var bytes = new Uint8Array(s.length / 2);
+    for (var i = 0; i < bytes.length; i++) bytes[i] = parseInt(s.substr(i * 2, 2), 16);
+    return new TextDecoder().decode(bytes);
+  }
+  function cesar(t, n) {
+    n = ((Number(n) || 0) % 26 + 26) % 26;
+    return t.replace(/[A-Za-z]/g, function (c) { var b = c <= "Z" ? 65 : 97; return String.fromCharCode((c.charCodeAt(0) - b - n + 26) % 26 + b); });
+  }
+  function binario(t) {
+    var s = t.trim();
+    if (!/^[01\s]+$/.test(s)) throw new Error("Esto no es binario: hay más que ceros y unos.");
+    return s.split(/\s+/).map(function (b) { return String.fromCharCode(parseInt(b, 2)); }).join("");
+  }
+  function espejo(t) { return Array.from(t).reverse().join(""); }
+
+  var NOMBRES = { vigenere: "VIGENÈRE", base64: "BASE64", hex: "HEX", cesar: "CÉSAR", binario: "BINARIO", espejo: "ESPEJO" };
+  var receta = [];
+
+  function aplicar(paso, entrada) {
+    switch (paso.op) {
+      case "vigenere": return vigenere(entrada, $("#clave").value);
+      case "base64": return base64(entrada);
+      case "hex": return hex(entrada);
+      case "cesar": return cesar(entrada, paso.n);
+      case "binario": return binario(entrada);
+      case "espejo": return espejo(entrada);
+    }
+  }
+
+  /* ---------- Efecto de descifrado ---------- */
+  function descifrar(el, texto, ms) {
+    if (reducido) { el.textContent = texto; return; }
+    var total = Array.from(texto), fijos = 0, paso = Math.max(1, Math.round(total.length / (ms / 28)));
+    var t = setInterval(function () {
+      el.textContent = "";
+      var hecho = document.createElement("span"); hecho.textContent = total.slice(0, fijos).join("");
+      var resto = document.createElement("span"); resto.className = "ruido";
+      resto.textContent = total.slice(fijos).map(function (c) { return c === " " ? " " : RUIDO[Math.floor(Math.random() * RUIDO.length)]; }).join("");
+      el.appendChild(hecho); el.appendChild(resto);
+      fijos += paso;
+      if (fijos > total.length) { clearInterval(t); el.textContent = texto; }
+    }, 28);
+    el.addEventListener("click", function () { clearInterval(t); el.textContent = texto; }, { once: true });
+  }
+
+  /* ---------- Pintar la receta ---------- */
+  function ultimaSalida() {
+    var entrada = CADENA;
+    for (var i = 0; i < receta.length; i++) { try { entrada = aplicar(receta[i], entrada); } catch (e) { return null; } }
+    return entrada;
+  }
+  function pintar(animarIndice, rapido) {
+    var s = $("#sesion"); s.textContent = "";
+    var origen = document.createElement("div"); origen.className = "paso origen";
+    origen.innerHTML = '<div class="nodo"><i></i></div><div class="paso-cuerpo"><div class="paso-cab"><span class="origen-txt">Mensaje interceptado</span></div><div class="paso-salida origen-cadena"></div></div>';
+    origen.querySelector(".origen-cadena").textContent = CADENA;
+    s.appendChild(origen);
+    if (!receta.length) {
+      var v = document.createElement("div"); v.className = "paso fantasma";
+      v.innerHTML = '<div class="nodo"><i></i></div><div class="paso-cuerpo vacia">Cada operación que apliquéis aparecerá aquí, debajo de la anterior. Empezad con VIGENÈRE cuando tengáis la clave.</div>';
+      s.appendChild(v); actualizarEstado(); return;
+    }
+    var entrada = CADENA, roto = false;
+    receta.forEach(function (paso, i) {
+      var div = document.createElement("div"); div.className = "paso" + (i === animarIndice ? " nuevo" : "");
+      var nodo = document.createElement("div"); nodo.className = "nodo"; nodo.innerHTML = "<i></i>"; div.appendChild(nodo);
+      var cuerpo = document.createElement("div"); cuerpo.className = "paso-cuerpo"; div.appendChild(cuerpo);
+      var cab = document.createElement("div"); cab.className = "paso-cab";
+      cab.innerHTML = '<span class="paso-op">' + NOMBRES[paso.op] + '</span>';
+      if (paso.op === "vigenere") {
+        var kk = document.createElement("span"); kk.className = "paso-param"; kk.textContent = "clave";
+        var kv = document.createElement("b");
+        kv.textContent = ($("#clave").value || "?").toUpperCase(); kk.appendChild(kv); cab.appendChild(kk);
+      }
+      if (paso.op === "cesar") {
+        var rueda = document.createElement("span"); rueda.className = "rueda"; rueda.setAttribute("role", "group"); rueda.setAttribute("aria-label", "Desplazamiento de César");
+        rueda.innerHTML = '<span class="rueda-rotulo">desplazamiento</span>' +
+          '<button type="button" class="rueda-btn" id="cesar-menos-' + i + '" aria-label="Desplazar una letra menos">&#9664;</button>' +
+          '<output class="rueda-num" aria-live="polite">' + paso.n + '</output>' +
+          '<button type="button" class="rueda-btn" id="cesar-mas-' + i + '" aria-label="Desplazar una letra más">&#9654;</button>';
+        var mover = function (d, id) { paso.n = ((Number(paso.n) + d) % 26 + 26) % 26; pintar(i, true); var b = $("#" + id); if (b) b.focus(); };
+        rueda.querySelector("#cesar-menos-" + i).addEventListener("click", function () { mover(-1, "cesar-menos-" + i); });
+        rueda.querySelector("#cesar-mas-" + i).addEventListener("click", function () { mover(1, "cesar-mas-" + i); });
+        cab.appendChild(rueda);
+      }
+      cuerpo.appendChild(cab);
+      if (roto) { s.appendChild(div); return; }
+      try {
+        entrada = aplicar(paso, entrada);
+        var out = document.createElement("div"); out.className = "paso-salida";
+        cuerpo.appendChild(out);
+        if (i === animarIndice) { descifrar(out, entrada, rapido ? 260 : Math.min(1000, 350 + entrada.length * 14)); if (!rapido) avivar(); }
+        else out.textContent = entrada;
+      } catch (e) {
+        roto = true; div.classList.add("roto");
+        var err = document.createElement("div"); err.className = "paso-error"; err.textContent = e.message; cuerpo.appendChild(err);
+      }
+      s.appendChild(div);
+    });
+    actualizarEstado(roto);
+  }
+
+  function actualizarEstado(roto) {
+    var t;
+    if (resuelto) t = "Caja abierta. Reproducid la transmisión y decodificadla con Black Cat SSTV.";
+    else if (!receta.length) t = $("#clave").value.trim() ? "Pulsad VIGENÈRE para quitar la primera capa." : "Responded la pregunta de la clave y pulsad VIGENÈRE.";
+    else if (roto) t = "Ese paso no encaja. Borradlo y probad otra operación según la chuleta.";
+    else {
+      var s = ultimaSalida() || "";
+      t = /CLAVE ES/i.test(s) ? "Ya se lee la contraseña. Escribidla en la caja fuerte." : "Mirad el último resultado, buscad su forma en la chuleta y aplicad la siguiente operación.";
+    }
+    $("#estado-txt").textContent = t;
+    guiar(roto);
+  }
+
+  /* ---------- Guiar la mirada: un único control «toca» a la vez ---------- */
+  var cajaAvisada = false;
+  function guiar(roto) {
+    document.querySelectorAll(".toca").forEach(function (e) { e.classList.remove("toca"); });
+    if (resuelto) return;
+    var objetivo;
+    var lista = !roto && receta.length && /CLAVE ES/i.test(ultimaSalida() || "");
+    if (!$("#clave").value.trim()) objetivo = $("#clave");
+    else if (lista) objetivo = $("#caja");
+    else objetivo = $(".teclas");
+    objetivo.classList.add("toca");
+    if (lista && !cajaAvisada) {
+      cajaAvisada = true;
+      setTimeout(function () { $("#caja").scrollIntoView({ behavior: reducido ? "auto" : "smooth", block: "center" }); }, 700);
+    }
+    if (!lista) cajaAvisada = false;
+  }
+
+  document.querySelectorAll(".tecla").forEach(function (b) {
+    b.addEventListener("click", function () {
+      if (bloqueado()) return;
+      receta.push({ op: b.dataset.op, n: 13 });
+      b.classList.add("pulsada"); setTimeout(function () { b.classList.remove("pulsada"); }, 160);
+      document.querySelectorAll(".tecla").forEach(function (o) { o.classList.remove("usada"); }); b.classList.add("usada");
+      pintar(receta.length - 1);
+    });
+  });
+  $("#borrar").addEventListener("click", function () { receta.pop(); pintar(-1); });
+  $("#vaciar").addEventListener("click", function () { receta = []; pintar(-1); });
+  $("#clave").addEventListener("input", function () { pintar(-1); });
+
+  /* ---------- Pistas con bloqueo ---------- */
+  var bloqueoHasta = 0, pistasUsadas = 0, reloj = null;
+  function bloqueado() { return Date.now() < bloqueoHasta; }
+  function pintarBloqueo() {
+    var q = Math.ceil((bloqueoHasta - Date.now()) / 1000);
+    var botones = document.querySelectorAll(".tecla, #pista, #comprobar");
+    if (q > 0) {
+      botones.forEach(function (b) { b.disabled = true; });
+      $("#estado-txt").innerHTML = 'Mesa bloqueada por la pista. Volved a operar en <span class="bloqueo">0:' + String(q).padStart(2, "0") + "</span>.";
+    } else {
+      clearInterval(reloj); reloj = null;
+      botones.forEach(function (b) { b.disabled = false; });
+      actualizarEstado();
+    }
+  }
+  function analizar(s) {
+    if (s == null) return "El último paso no encaja: borradlo antes de pedir una pista.";
+    var t = s.trim();
+    if (/^[01\s]+$/.test(t)) return "Solo hay ceros y unos: parece binario.";
+    if (/^[A-Za-z0-9+/]+={1,2}$/.test(t)) return "Termina con signo igual: parece Base64.";
+    if (/^=+[A-Za-z0-9+/]+$/.test(t)) return "El signo igual está al principio: parece algo escrito del revés.";
+    if (/^[0-9A-Fa-f]+$/.test(t) && t.length % 2 === 0) return "Solo hay números y letras de la A a la F: parece hexadecimal.";
+    if (/CLAVE ES/i.test(t)) return "Ya se lee: está en la caja fuerte que buscáis.";
+    if (/^[0-9\-]+[A-Z\s]+$/.test(t)) return "Empieza por números y luego letras: puede estar del revés.";
+    if (/^[A-Za-z\s\-0-9]+$/.test(t)) return "Son letras con espacios, pero no se leen: parece un César. Probad desplazamientos.";
+    return "No lo reconozco. Revisad la chuleta.";
+  }
+  $("#pista").addEventListener("click", function () {
+    if (bloqueado()) return;
+    $("#pista-txt").textContent = analizar(receta.length ? ultimaSalida() : CADENA);
+    pistasUsadas++;
+    bloqueoHasta = Date.now() + 30000 * pistasUsadas;
+    pintarBloqueo(); reloj = setInterval(pintarBloqueo, 250);
+  });
+
+  /* ---------- Caja fuerte ---------- */
+  var intentos = 5, resuelto = false;
+  function norm(s) { return s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "").toUpperCase(); }
+  $("#caja").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var m = $("#mensaje"), v = $("#contrasena").value;
+    if (!v.trim()) { m.className = "mensaje aviso"; m.textContent = "Escribid la contraseña antes de abrir la caja."; return; }
+    if (bloqueado()) return;
+    if (norm(v) === "MACROSCOPIO-69") {
+      resuelto = true; m.className = "mensaje"; m.textContent = "";
+      $("#comprobar").disabled = true; $("#contrasena").disabled = true;
+      actualizarEstado();
+      /* Final: la señal se desata un instante y después aparece el archivo */
+      avivar(3.2); document.body.classList.add("desbloqueo");
+      setTimeout(function () {
+        document.body.classList.remove("desbloqueo");
+        var e = $("#entrega"); e.hidden = false;
+        descifrar($("#entrega-txt"), "ARCHIVO DESCIFRADO", 1100);
+        e.scrollIntoView({ behavior: reducido ? "auto" : "smooth", block: "center" });
+      }, reducido ? 0 : 1100);
+      return;
+    }
+    intentos--;
+    document.querySelectorAll("#intentos i").forEach(function (i, n) { i.classList.toggle("gastado", n >= intentos); });
+    $("#intentos-txt").textContent = intentos + (intentos === 1 ? " intento" : " intentos");
+    m.className = "mensaje aviso";
+    if (intentos <= 0) {
+      m.textContent = "Sin intentos. La caja se bloquea 1 minuto.";
+      bloqueoHasta = Date.now() + 60000; intentos = 5;
+      document.querySelectorAll("#intentos i").forEach(function (i) { i.classList.remove("gastado"); });
+      $("#intentos-txt").textContent = "5 intentos";
+      pintarBloqueo(); reloj = reloj || setInterval(pintarBloqueo, 250);
+    } else m.textContent = "No es la contraseña. Revisad el último resultado de la receta.";
+  });
+  $("#contrasena").addEventListener("input", function () { $("#mensaje").textContent = ""; });
+
+  /* ---------- Chuleta desplegable ---------- */
+  var chuleta = $("#chuleta"), asa = $("#chuleta-asa");
+  function abrirChuleta(si) {
+    chuleta.classList.toggle("abierta", si);
+    chuleta.setAttribute("aria-hidden", si ? "false" : "true");
+    asa.setAttribute("aria-expanded", si ? "true" : "false");
+    asa.hidden = si;
+    if (si) $("#chuleta-cerrar").focus(); else asa.focus();
+  }
+  asa.addEventListener("click", function () { abrirChuleta(true); });
+  $("#chuleta-cerrar").addEventListener("click", function () { abrirChuleta(false); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && chuleta.classList.contains("abierta")) abrirChuleta(false); });
+
+  pintar(-1);
+  /* La señal entra descifrándose al abrir el reto: el único momento orquestado de la página. */
+  avivar(); descifrar($("#cadena"), CADENA, 1400);
+})();
+</script>

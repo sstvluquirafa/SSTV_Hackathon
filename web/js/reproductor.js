@@ -77,12 +77,12 @@
     // Reto 2: dentro de la señal, estilo Matrix (fósforo verde sobre negro)
     matrix: {
       clase: "rx-matrix",
-      paleta: [[0, [0, 0, 0]], [0.35, [0, 42, 14]], [0.6, [22, 150, 62]], [0.82, [125, 255, 155]], [1, [214, 255, 224]]],
-      fondo: "rgb(0,0,0)",
+      paleta: [[0, [4, 7, 6]], [0.35, [8, 46, 22]], [0.6, [26, 150, 70]], [0.82, [61, 250, 122]], [1, [228, 251, 238]]],
+      fondo: "rgb(4,7,6)",
       cabecera: (t) => `<div class="rx-cab"><span class="rx-archivo">SEÑAL: ${t}</span><span class="rx-estado"></span></div>`,
       estado: (k) => ({ espera: "RX: EN ESPERA", vivo: "RX: RECIBIENDO", pausa: "RX: EN PAUSA", fin: "RX: FIN" })[k],
       textos: { reproducir: "Reproducir", detener: "Detener" },
-      reposo: "RX: EN ESPERA. PULSAD REPRODUCIR.",
+      reposo: "RX: EN ESPERA. Pulsad «Reproducir».",
       tiempo: (a, t) => `T ${a} / ${t}`,
       frecuencia: (hz) => (hz ? `F ${hz} Hz` : "F ---- Hz"),
       descargar: () => "Descargar", claseDescargar: "rx-secundario",

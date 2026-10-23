@@ -147,8 +147,8 @@ git push                      # 5. subir
 - **Reproductor SSTV** propio (`js/reproductor.js`): cascada con el espectro en directo y marcas en 1200, 1500,
   1900 y 2300 Hz. El sonido sale por la salida predeterminada de Windows (CABLE Input en el aula). Una sola lógica
   con **temas** (`especificaciones/reproductor_temas.md`, estilos en `css/reproductor.css`): `control-mision` (reto 1,
-  analizador de espectro verde azulado con retícula y displays de segmentos), `matrix` (reto 2, fósforo verde sobre
-  negro) y `cuaderno` (reto 4, registrador gráfico de papel). Sin tema se ve con el estilo general de GranaSAT.
+  analizador de espectro verde azulado con retícula y displays de segmentos), `matrix` (reto 2, verde Matrix y blanco menta,
+  como la maqueta) y `cuaderno` (reto 4, registrador gráfico de papel). Sin tema se ve con el estilo general de GranaSAT.
 - **Escenas de los retos:** al entrar en un reto, `app.js` marca la vista en `body[data-vista]` y la hoja del reto
   (`css/reto1.css`, `css/reto2.css`, `css/reto4.css`) cambia la escena entera; al salir se vuelve a la base GranaSAT.
 - **Efectos** (`js/efectos.js`): línea de tiempo de los pasos, expediente que se escribe como en un terminal,
@@ -243,17 +243,23 @@ encadenables como una receta, con la salida en directo. No indica si cada paso e
 - Si una operación falla (por ejemplo, Base64 inválido), muestra un aviso amable en lugar de romperse.
 
 **Chuleta del Espía:** misma tabla que la de referencia (Base64, Hex, César, Binario, Espejo). La fila "Magic" se sustituye por pistas.
-En la web se llama «Identificación de formatos» y está siempre visible a la derecha.
+En la web se llama «Identificación de formatos» y está en un cajón a la derecha (pestaña «Chuleta»).
 
-**Estética «descifrado estilo Matrix»** (`especificaciones/reto2_estetica_matrix.md`, estilos en `web/css/reto2.css`; la
-propuesta de terminal ámbar quedó en `descartadas/` sin implementar): detrás, una **lluvia de caracteres** verdes en un
-`<canvas>` tenue (~20 fps) que se aviva un momento cuando una operación se aplica sin error y se calma mientras el grupo
-escribe; delante, la **sesión de descifrado** en paneles negros sólidos: la transmisión grande, las 6 operaciones en
-columna y, al lado, cada paso en su línea con su resultado debajo, que aparece con el **efecto de descifrado** (los
-caracteres se agitan y encajan de izquierda a derecha; un clic lo termina). Errores de operación en ámbar. Una **línea de
-estado** inferior en vídeo inverso dice qué toca, los intentos que quedan y la tecla de ayuda (**F1** = «¿Qué código es
-la salida?», que es una pista). Caja fuerte como `CONTRASEÑA>`; al abrirla, «ARCHIVO DESCIFRADO» y el audio con el tema
-`matrix`. Con «reducir animaciones», la lluvia queda quieta y el efecto no se anima. Fuente: JetBrains Mono.
+**Estética «Matrix»** (`especificaciones/reto2_estetica_matrix.md`, estilos en `web/css/reto2.css`): reproduce la
+maqueta aprobada `referencia/reto2_maqueta.html` (las propuestas anteriores están en `descartadas/`). **Lluvia** de
+caracteres detrás de toda la página con viñeta (se aviva al aplicar una operación y se desata al abrir la caja); **banda
+de intercepción** con la cadena grande, que entra descifrándose; **receta como circuito** (nodo de origen, un nodo por
+operación, el último encendido en verde y los erróneos en ámbar) con el resultado de cada paso y el **efecto de
+descifrado**; **teclas** con relieve y LED de la última usada; **rueda de César** (◀ ▶, empieza en 13 = ROT13); la clave de
+Vigenère es una sola para toda la receta, en la columna derecha junto a la pregunta del grupo; **guía de la mirada**
+(un único control resaltado: clave → teclas → caja fuerte; al leerse «LA CLAVE ES…» la página baja hasta la caja);
+chuleta en un **cajón**; línea de estado al pie. El bloqueo de las pistas no tapa la página: apaga las teclas, las pistas
+y la caja y cuenta atrás en la línea de estado (`App.BLOQUEO_SIN_CAPA` en `efectos.js`). Al abrir la caja, «ARCHIVO
+DESCIFRADO» y el audio con el tema `matrix`. Regla de color: verde Matrix solo para lo que se está descifrando y la
+lluvia; lo descifrado en blanco menta; la interfaz en grises; ámbar para avisos. Con «reducir animaciones», sin lluvia
+animada ni efectos. Fuentes: Chivo, JetBrains Mono y Martian Mono.
+Respecto a la herramienta anterior se quitan, por fidelidad a la maqueta, el campo de entrada editable (la receta
+parte siempre de la cadena interceptada), el modo «cifrar» de cada operación y desactivar o reordenar pasos.
 
 **Presión de juego:**
 - **Pistas con coste:** "¿Qué tipo de código es esto?" analiza el texto actual y dice qué parece. Cada pista resta puntos.

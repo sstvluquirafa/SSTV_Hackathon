@@ -60,29 +60,33 @@
 .rx-cm .rx-secundario:hover { background: #e7eae6; }
 .rx-cm .rx-secundario:active { transform: translateY(3px); box-shadow: 0 1px 0 #7d8481, 0 1px 0 1px #0b0d0e; }
 
-/* ---------- matrix (reto 2): dentro de la señal, fósforo verde sobre negro ---------- */
-.rx.rx-matrix { padding: 10px 12px 12px; border: 1px solid #2f8a45; border-radius: 0; color: #7dff9b; background: #000; font-family: "JetBrains Mono", Consolas, monospace; font-variant-ligatures: none; }
-.rx-matrix .rx-cab { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 8px; font-size: 15px; }
-.rx-matrix .rx-archivo { color: #7dff9b; }
-.rx-matrix .rx-estado { margin-left: auto; color: #2f8a45; animation: none; }
-.rx-matrix .rx-estado.vivo { color: #000; background: #7dff9b; padding: 0 6px; }
-.rx-matrix .rx-cascada { height: var(--rx-alto, 150px); border: 1px solid #1d5a2c; background: #000; }
-.rx-matrix .rx-marcas span { border-left: 1px dashed rgba(125, 255, 155, 0.4); font: 13px "JetBrains Mono", monospace; color: #7dff9b; text-shadow: 0 0 2px #000, 0 0 4px #000; }
-.rx-matrix .rx-marcas b { color: #d6ffe0; }
-.rx-matrix .rx-reposo { font: 15px "JetBrains Mono", monospace; letter-spacing: 0.04em; color: #2f8a45; }
-.rx-matrix.rx-controles, .rx-matrix .rx-controles { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 10px 0 0; }
-.rx-matrix .rx-play, .rx-matrix .rx-secundario {
-  width: auto; height: auto; min-height: 44px; padding: 0 16px; cursor: pointer; border: 1px solid #7dff9b; border-radius: 0; box-shadow: 0 3px 0 #1d5a2c;
-  display: inline-flex; align-items: center; font: 600 16px "JetBrains Mono", monospace; letter-spacing: 0.06em; text-transform: uppercase;
-  text-decoration: none; color: #7dff9b; background: #000; transition: transform 0.06s, box-shadow 0.06s;
+/* ---------- matrix (reto 2): cascada verde Matrix; marco y mandos como la maqueta referencia/reto2_maqueta.html ---------- */
+.rx.rx-matrix {
+  padding: 12px 14px 14px; border: 1px solid #26372e; border-radius: 8px; color: #b6c0ba; background: #080d0b;
+  font-family: "JetBrains Mono", Consolas, monospace; font-variant-ligatures: none;
 }
-.rx-matrix .rx-secundario { color: #2f8a45; border-color: #2f8a45; }
-.rx-matrix .rx-play:hover, .rx-matrix .rx-secundario:hover { transform: none; color: #000; background: #7dff9b; border-color: #7dff9b; }
-.rx-matrix .rx-play:active, .rx-matrix .rx-secundario:active { transform: translateY(3px); box-shadow: 0 0 0 #1d5a2c; }
-.rx-matrix .rx-play.activo { color: #000; background: #7dff9b; }
-.rx-matrix .rx-tiempo, .rx-matrix .rx-freq { font: 15px "JetBrains Mono", monospace; color: #7dff9b; }
-.rx-matrix .rx-barra { flex: 1; min-width: 120px; height: 6px; border-radius: 0; background: linear-gradient(#7dff9b, #7dff9b) 0 0 / var(--avance, 0%) 100% no-repeat, #0d2a14; }
-.rx-matrix .rx-barra::-webkit-slider-thumb { width: 8px; height: 16px; border-radius: 0; background: #d6ffe0; box-shadow: none; }
+.rx-matrix .rx-cab { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 8px; font-size: 15px; }
+.rx-matrix .rx-archivo { color: #e4fbee; }
+.rx-matrix .rx-estado { margin-left: auto; color: #75827a; animation: none; }
+.rx-matrix .rx-estado.vivo { color: #3dfa7a; text-shadow: 0 0 10px rgba(61, 250, 122, 0.55); }
+.rx-matrix .rx-cascada { height: var(--rx-alto, 150px); border: 1px solid #16221c; border-radius: 4px; background: #040706; }
+.rx-matrix .rx-marcas span { border-left: 1px dashed rgba(61, 250, 122, 0.35); font: 13px "JetBrains Mono", monospace; color: #8fb8a1; text-shadow: 0 0 2px #040706, 0 0 4px #040706; }
+.rx-matrix .rx-marcas b { color: #e4fbee; }
+.rx-matrix .rx-reposo { font: 15px "JetBrains Mono", monospace; letter-spacing: 0.02em; color: #75827a; }
+.rx-matrix.rx-controles, .rx-matrix .rx-controles { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px 0 0; }
+.rx-matrix .rx-play {
+  width: auto; height: auto; min-height: 46px; padding: 0 20px; cursor: pointer; border: 0; border-radius: 6px; box-shadow: none;
+  font: 700 17px "Chivo", "Segoe UI", sans-serif; color: #040706; background: #eef2ef; transition: background 0.12s;
+}
+.rx-matrix .rx-play:hover { transform: none; background: #ffffff; }
+.rx-matrix .rx-secundario {
+  display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; cursor: pointer; border: 1px solid #26372e; border-radius: 6px;
+  font: 400 15px "Chivo", "Segoe UI", sans-serif; text-decoration: none; color: #b6c0ba; background: transparent;
+}
+.rx-matrix .rx-secundario:hover { color: #eef2ef; border-color: #75827a; }
+.rx-matrix .rx-tiempo, .rx-matrix .rx-freq { font: 15px "JetBrains Mono", monospace; color: #e4fbee; font-variant-numeric: tabular-nums; }
+.rx-matrix .rx-barra { flex: 1; min-width: 120px; height: 4px; border-radius: 2px; background: linear-gradient(#3dfa7a, #3dfa7a) 0 0 / var(--avance, 0%) 100% no-repeat, #26372e; }
+.rx-matrix .rx-barra::-webkit-slider-thumb { width: 10px; height: 16px; border-radius: 2px; background: #eef2ef; box-shadow: none; }
 
 /* ---------- cuaderno (reto 4): registrador gráfico de papel ---------- */
 .rx.rx-cuaderno {
@@ -118,5 +122,5 @@
 .rx-cuaderno .rx-secundario:hover { text-decoration-color: #8b1e1e; text-decoration-thickness: 3px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .rx-cm .rx-play, .rx-cm .rx-secundario, .rx-cuaderno .rx-play, .rx-cm .rx-luz, .rx-matrix .rx-play, .rx-matrix .rx-secundario { transition: none; }
+  .rx-cm .rx-play, .rx-cm .rx-secundario, .rx-cuaderno .rx-play, .rx-cm .rx-luz, .rx-matrix .rx-play { transition: none; }
 }

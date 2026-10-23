@@ -24,3 +24,9 @@ Fuentes del reto 1 («la sala de control, 1969»), también de Google Fonts (sub
 - IBM Plex Sans (variable, 400-700) ...... ibm-plex-sans-latin.woff2
 - IBM Plex Mono (400, 600) ............... ibm-plex-mono-400-latin.woff2, ibm-plex-mono-600-latin.woff2
   Las tres, SIL Open Font License 1.1.
+
+Fuentes del reto 2 («Matrix»), también de Google Fonts (subconjunto latino, WOFF2):
+
+- Chivo (variable, 400-700) .............. chivo-latin.woff2
+- Martian Mono (variable, 300-600) ....... martian-mono-latin.woff2
+  Las dos, SIL Open Font License 1.1. El reto 2 usa además JetBrains Mono (ya incluida).
