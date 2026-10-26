@@ -86,6 +86,7 @@
           <div class="botonera" style="margin-top:18px">
             <a class="btn btn-ambar" href="#/${(App.RETOS.find((r) => !r.pronto && !Progreso.reto(r.id).completado) || { id: "montaje" }).id}">${ICONO.antena} ${n === 0 ? "Empezar la misión" : "Seguir la misión"}</a>
             <a class="btn btn-borde" href="#/montaje">${ICONO.mapa} Montar el mapa</a>
+            <button class="btn btn-oscuro" id="p-como" type="button">Cómo funciona</button>
           </div>
         </div>
         <div class="portada-arte">${App.ANTENA}</div>
@@ -159,6 +160,9 @@
           </div>
         </section>
       </div>`;
+    // Bienvenida: se abre sola la primera vez; después, con «Cómo funciona»
+    $("#p-como").addEventListener("click", () => App.Tutorial.abrir("panel"));
+    App.Tutorial.alEntrar("panel");
   }
 
   // ---------- Navegación ----------

@@ -52,7 +52,10 @@
 
   // ===================================== Vista =====================================
   function vista(el) {
-    Progreso.cambiar(ID, (r) => { r.empezado = true; if (!r.inicio && !r.completado) r.inicio = Date.now(); });
+    // El reloj de misión no corre mientras el tutorial está abierto la primera vez: arranca al cerrarlo
+    const arrancarReloj = () => Progreso.cambiar(ID, (r) => { if (!r.inicio && !r.completado) r.inicio = Date.now(); });
+    Progreso.cambiar(ID, (r) => { r.empezado = true; });
+    if (App.Tutorial.visto(ID)) arrancarReloj();
     for (const k of Object.keys(preparadas)) delete preparadas[k];
     el.innerHTML = `
       <div class="r1-sala">
@@ -62,6 +65,7 @@
             <li><button class="r1-fase" type="button" data-fase="${i}">
               <i class="r1-luz" aria-hidden="true"></i><span class="r1-fase-num">${i + 1}</span><span class="r1-fase-nombre">${f.nombre}</span>
             </button></li>`).join("")}</ol>
+          <button class="r1-boton r1-boton-sec" id="r1-como" type="button">Cómo funciona</button>
           <a class="r1-boton r1-boton-sec" href="#/panel">Volver a los retos</a>
         </header>
         <p class="r1-orden" id="r1-orden" aria-live="polite"></p>
@@ -137,6 +141,8 @@
     pintarReloj();
     App.cadaSegundo(() => { pintarRespuesta(); pintarReloj(); App.comprobarBloqueo(ID); });
     App.comprobarBloqueo(ID);
+    $("#r1-como").addEventListener("click", () => App.Tutorial.abrir(ID));
+    App.Tutorial.alEntrar(ID, () => { arrancarReloj(); pintarReloj(); });
   }
 
   /** Enseña una fase (la actual o una ya terminada) en la pantalla mural y en el puesto. */

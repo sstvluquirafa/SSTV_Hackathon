@@ -103,7 +103,8 @@
     document.body.classList.remove("r4-con-libreta");
     el.innerHTML = `${DEFINICIONES}
       <div class="r4-mesa">
-        ${cabecera(`<button class="r4-palabra" id="r4-ver-pistas" aria-expanded="false">Pistas</button>
+        ${cabecera(`<button class="r4-palabra" data-capa="r4-briefing">Cómo funciona</button>
+          <button class="r4-palabra" id="r4-ver-pistas" aria-expanded="false">Pistas</button>
           <a class="r4-palabra" href="#/panel">Volver a los retos</a>`)}
         <div class="r4-pistas oculto" id="r4-pistas"></div>
         <div class="r4-archivo">
@@ -142,7 +143,7 @@
           </section>
         </div>
       </div>
-      <button class="r4-solapa r4-solapa-instr" data-capa="r4-briefing">Instrucciones</button>
+      <button class="r4-solapa r4-solapa-instr" data-capa="r4-briefing">Cómo funciona</button>
       <button class="r4-solapa r4-solapa-libreta" data-libreta aria-controls="r4-libreta">Libreta</button>
       ${htmlBriefing()}
       ${htmlDocumento("r4-doc-equipo", "El equipo de GranaSAT", htmlEquipo(), "r4-hoja-revista")}
@@ -160,6 +161,8 @@
     $$("[data-ir-extraer]", el).forEach((b) => b.addEventListener("click", () => $(".r4-formulario", b.closest(".r4-documento")).scrollIntoView({ behavior: "smooth" })));
     $("#r4-ir-camara").addEventListener("click", () => { marcarAbierto(); abrirCapa("r4-doc-camara"); });
     $("#r4-ir-archivo").addEventListener("click", volverAlArchivo);
+    // Las instrucciones también se cierran con un clic fuera de la carta
+    $("#r4-briefing").addEventListener("click", (ev) => { if (ev.target === ev.currentTarget) volverAlArchivo(); });
     $$(".r4-opcion", el).forEach((b) => b.addEventListener("click", () => elegir(b)));
     $$("[data-extraer]", el).forEach((b) => b.addEventListener("click", () => extraer(b.dataset.extraer)));
     $("#r4-resolver").addEventListener("click", abrirAcusacion);
@@ -245,9 +248,11 @@
   }
 
   // ===================================== Instrucciones (carta) y «El equipo de GranaSAT» (recorte) =====================================
+  // La carta es también el tutorial «Cómo funciona» del reto (especificaciones/tutoriales_retos.md): se abre sola la
+  // primera vez, después con la solapa o la palabra «Cómo funciona», y se cierra con «Entendido», Escape o clic fuera.
   function htmlBriefing() {
-    return `<div class="r4-documento r4-capa-carta" id="r4-briefing" role="dialog" aria-label="Instrucciones del caso" hidden>
-      <div class="r4-doc-mando"><button class="r4-etiqueta-papel r4-cerrar" data-cerrar>Ir al archivo del caso</button></div>
+    return `<div class="r4-documento r4-capa-carta" id="r4-briefing" role="dialog" aria-label="Cómo funciona: instrucciones del caso" hidden>
+      <div class="r4-doc-mando"><button class="r4-etiqueta-papel r4-cerrar" data-cerrar>Entendido</button></div>
       <article class="r4-hoja r4-carta">
         <span class="r4-sello r4-sello-conf r4-sello-grande" aria-hidden="true">Confidencial</span>
         <p class="r4-carta-ref">Expediente n.º 04<br>El silencio del GranaSAT-II</p>
@@ -256,19 +261,20 @@
           dejó de responder. Por la mañana todo iba bien, pero al llegar la tarde se quedó en silencio. Al revisar los datos,
           el equipo descubrió que no fue una avería: <b>alguien lo hizo a propósito.</b></p>
         <p>Sois el equipo de investigación. Tenéis que descubrir <b>quién</b> saboteó el satélite, <b>cómo</b> lo hizo y <b>a qué hora</b>.</p>
+        <p class="r4-carta-como">Cómo funciona:</p>
         <ol class="r4-carta-pasos">
-          <li><b>Primero,</b> abrid la carpeta I, «Cámara de la azotea», y poned a recibir la foto. Tarda unos 2 minutos en llegar,
-            así que hacedlo lo primero.</li>
-          <li><b>Mientras llega,</b> leed «El equipo de GranaSAT» y apuntad en la libreta todo lo que os parezca importante de cada
-            persona: los sospechosos están entre ellos.</li>
-          <li><b>Después,</b> abrid el resto de carpetas, estudiad los documentos y extraed una prueba de cada una.</li>
-          <li><b>Por último,</b> cuando tengáis las 4 pruebas en el tablón, redactad el informe final del caso.</li>
+          <li><b>Poned a recibir la foto de la cámara.</b> Tarda unos 2 minutos: hacedlo lo primero.</li>
+          <li><b>Investigad.</b> Leed la historia del equipo (tomad apuntes en la libreta), abrid las cuatro carpetas y extraed una
+            prueba de cada una. Las pruebas se clavan en el tablón.</li>
+          <li><b>Resolved el caso.</b> Con las cuatro pruebas, decid quién fue, cómo lo hizo y a qué hora. Si falláis, os diremos
+            cuántos datos habéis acertado.</li>
         </ol>
+        <p>Al final: la transmisión del fragmento <b>ANDRÓMEDA</b>.</p>
         <p class="r4-carta-desp">Atentamente,</p>
         <div class="r4-carta-firma">${firma(5)}<span>Dirección de GranaSAT</span></div>
         <div class="r4-carta-botones">
           <button class="r4-boton-sello" id="r4-ir-camara">Abrir la carpeta de la cámara</button>
-          <button class="r4-palabra" id="r4-ir-archivo">Ir al archivo del caso</button>
+          <button class="r4-palabra" id="r4-ir-archivo">Entendido</button>
         </div>
       </article></div>`;
   }

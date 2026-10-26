@@ -156,6 +156,23 @@ git push                      # 5. subir
 - Para regenerar los datos: `python herramientas/reto2_generador.py --exportar` y `python herramientas/construir_web.py`.
   Para probar el reto 2 en JS: `node herramientas/probar_reto2_js.mjs`.
 
+## Tutoriales
+
+Bienvenida general y desplegable «Cómo funciona» en cada reto: `especificaciones/tutoriales_retos.md`
+(código en `web/js/tutoriales.js`, estilos en `web/css/tutoriales.css`).
+
+- **Panel principal:** bienvenida «Desbloquead el mapa» (qué son los fragmentos, una línea por prueba y el aviso de
+  abrir Black Cat SSTV con el cable virtual).
+- **Retos 1 y 2 y montaje del mapa:** tres pasos numerados y qué se gana al final, con la estética de su escena
+  (sala de control en el reto 1, Matrix en el reto 2, GranaSAT en el panel y el montaje).
+- **Reto 4:** su carta de instrucciones del caso hace de «Cómo funciona» (historia del expediente y los tres pasos);
+  se abre con la solapa lateral o con la palabra «Cómo funciona» de la cabecera.
+- Se abren solos **la primera vez** (queda guardado en el progreso, en `tutoriales`) y después con el botón
+  «Cómo funciona» de cada pantalla. Se cierran con «Entendido», Escape o un clic fuera. «Reiniciar progreso» los vuelve
+  a mostrar todos.
+- En el reto 1, el reloj de misión no arranca hasta cerrar el tutorial la primera vez.
+- **Sin destripar:** explican qué se hace y con qué herramientas, nunca la respuesta ni la parte difícil.
+
 ## Reto 1 · "Mensaje desde 1969" → ORIÓN
 
 Estética «la sala de control de misión» (`especificaciones/reto1_estetica_control_mision.md`, estilos en

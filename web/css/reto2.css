@@ -35,6 +35,23 @@ body[data-vista="reto2"] .contenedor { padding: 0 0 8px; }
 body[data-vista="reto2"] .pie { position: relative; z-index: 1; color: var(--r2-mute); }
 body[data-vista="reto2"] :focus-visible { outline: 2px solid var(--r2-ink); outline-offset: 3px; }
 
+/* ---------- Cabecera común con los materiales de la maqueta (misma altura que en el resto de la web) ---------- */
+body[data-vista="reto2"] .cabecera { background: var(--r2-void); backdrop-filter: none; border-bottom: 2px solid var(--r2-line-2); }
+body[data-vista="reto2"] .cabecera-int { min-height: 69px; } /* 71 px con el filete, como en el resto de la web: la altura se mide al cargar */
+body[data-vista="reto2"] .marca-nombre { font: 700 17px/1.1 var(--r2-ui); letter-spacing: 0.06em; color: var(--r2-ink); }
+body[data-vista="reto2"] .marca-sub { font: 400 11px var(--r2-ui); letter-spacing: 0.12em; color: var(--r2-mute); }
+body[data-vista="reto2"] .marca img { border-color: var(--r2-line-2); }
+body[data-vista="reto2"] .nav { background: none; border-color: transparent; }
+body[data-vista="reto2"] .nav a svg, body[data-vista="reto2"] .chip svg { display: none; }
+body[data-vista="reto2"] .nav a { border: 1px solid transparent; border-radius: 6px; font: 500 15px var(--r2-ui); color: var(--r2-soft); }
+body[data-vista="reto2"] .nav a:hover { color: var(--r2-ink); background: none; border-color: var(--r2-line-2); }
+body[data-vista="reto2"] .nav a.activo { color: var(--r2-ink); background: var(--r2-panel); border-color: var(--r2-line-2); box-shadow: none; }
+/* Los marcadores: código en blanco menta, sin colores de insignia (el verde queda para lo que se descifra) */
+body[data-vista="reto2"] .chip { border-radius: 6px; border: 1px solid var(--r2-line-2); background: transparent; color: var(--r2-soft); font: 500 13px var(--r2-mono); }
+body[data-vista="reto2"] .chip-ambar, body[data-vista="reto2"] .chip-verde { color: var(--r2-code); text-shadow: 0 0 12px var(--r2-code-glow); }
+body[data-vista="reto2"] #chip-puntos.destello { animation-name: r2-destello; }
+@keyframes r2-destello { 20% { transform: scale(1.12); box-shadow: 0 0 18px rgba(110, 255, 170, 0.35); } }
+
 /* ---------- Lluvia detrás de toda la página ---------- */
 .r2-lluvia { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.5; pointer-events: none; }
 .r2-vineta {
@@ -55,6 +72,7 @@ body.r2-desbloqueo .r2-vineta { opacity: 0.35; transition: opacity 200ms; }
 /* Volver a la izquierda y el título centrado, como en la maqueta (allí lo equilibraba la etiqueta «Maqueta de diseño») */
 .r2-cabecera { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; }
 .r2-cabecera .r2-volver { justify-self: start; }
+.r2-cabecera .r2-como { justify-self: end; }
 .r2-volver { color: var(--r2-soft); text-decoration: none; font-size: 15px; border-bottom: 1px solid var(--r2-line-2); padding-bottom: 2px; }
 .r2-volver:hover { color: var(--r2-ink); border-color: var(--r2-ink); }
 .r2-titulo { display: grid; gap: 2px; min-width: 0; text-align: center; }

@@ -46,6 +46,24 @@ body[data-vista="reto1"] .contenedor { padding: 10px 20px 16px; }
 body[data-vista="reto1"] .pie { color: #9aa1a4; }
 body[data-vista="reto1"] :focus-visible { outline: 3px solid var(--r1-ambar); outline-offset: 3px; }
 
+/* ---------- Cabecera común, vestida como la línea de fases de la sala (misma altura que en el resto de la web) ---------- */
+body[data-vista="reto1"] .cabecera { background: var(--r1-sala-2); backdrop-filter: none; border-bottom-color: var(--r1-consola); }
+body[data-vista="reto1"] .cabecera-int { min-height: 69px; } /* 71 px con el filete, como en el resto de la web: la altura se mide al cargar */
+body[data-vista="reto1"] .marca-nombre { font: 700 20px/1.1 var(--r1-rotulo-f); letter-spacing: 0.08em; color: var(--r1-claro); }
+body[data-vista="reto1"] .marca-sub { font: 600 12px var(--r1-rotulo-f); letter-spacing: 0.14em; color: #9aa1a4; }
+body[data-vista="reto1"] .marca img { border-color: var(--r1-consola); }
+body[data-vista="reto1"] .nav { background: none; border-color: transparent; }
+body[data-vista="reto1"] .nav a svg, body[data-vista="reto1"] .chip svg { display: none; }
+body[data-vista="reto1"] .nav a {
+  border: 0; border-radius: 3px; font: 600 17px/1 var(--r1-rotulo-f); letter-spacing: 0.06em; text-transform: uppercase; color: #8e979c;
+}
+body[data-vista="reto1"] .nav a:hover { color: var(--r1-claro); background: #2d3438; }
+body[data-vista="reto1"] .nav a.activo { color: var(--r1-claro); background: var(--r1-consola); box-shadow: inset 0 -3px 0 var(--r1-ambar); }
+/* Los marcadores, como displays de la consola */
+body[data-vista="reto1"] .chip { border-radius: 2px; border: 2px solid #2b2d27; background: #050606; color: #d6dcd8; font: 600 13px var(--r1-mono); }
+body[data-vista="reto1"] .chip-ambar { color: var(--r1-segmento); }
+body[data-vista="reto1"] .chip-verde { color: #8fd18a; }
+
 /* ---------- La sala: fases, orden, pantalla mural y puesto ---------- */
 .r1-sala {
   display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 8px; color: var(--r1-claro);
@@ -63,7 +81,10 @@ body[data-vista="reto1"] :focus-visible { outline: 3px solid var(--r1-ambar); ou
 .r1-titulo { margin: 0; white-space: nowrap; font: 700 22px/1 var(--r1-rotulo-f); letter-spacing: 0.06em; text-transform: uppercase; color: var(--r1-claro); }
 .r1-fases { display: flex; align-items: center; margin: 0 auto; padding: 0; list-style: none; }
 .r1-fases li { display: flex; align-items: center; }
-.r1-fases li + li::before { content: ""; width: 28px; height: 2px; margin: 0 4px; background: #4a545b; }
+.r1-fases li + li::before { content: ""; width: 18px; height: 2px; margin: 0 3px; background: #4a545b; }
+/* Botones de la línea de fases en una sola línea, para que la barra no crezca */
+.r1-plan .r1-boton { flex: none; white-space: nowrap; padding: 10px 13px 9px; font-size: 16px; }
+.r1-plan .r1-boton + .r1-boton { margin-left: -8px; }
 .r1-fase {
   display: flex; align-items: center; gap: 8px; padding: 8px 13px; cursor: pointer; border: 0; border-radius: 3px; background: none;
   font: 600 18px/1 var(--r1-rotulo-f); letter-spacing: 0.06em; text-transform: uppercase; color: #8e979c;

@@ -22,6 +22,7 @@
             hasta que el mapa del recinto encaje. Cuando cuadre, descargadlo y… ¡a por la gymkhana!</p>
         </div>
         <div class="botonera">
+          <button class="btn btn-oscuro" id="m-como" type="button">Cómo funciona</button>
           <button class="btn btn-oscuro" id="m-vaciar">${ICONO.papelera} Vaciar</button>
           <button class="btn btn-borde" id="m-ver">${ICONO.ojo} Ver en grande</button>
           <button class="btn btn-ambar" id="m-descargar">${ICONO.descargar} Descargar mapa (PNG)</button>
@@ -55,7 +56,9 @@
     });
     $("#m-descargar").addEventListener("click", descargarMapa);
     $("#m-ver").addEventListener("click", verEnGrande);
+    $("#m-como").addEventListener("click", () => App.Tutorial.abrir("montaje"));
     pintar();
+    App.Tutorial.alEntrar("montaje");
   }
 
   /** Mini guía: 1 Subir · 2 Ordenar · 3 Girar · 4 Descargar. Se marca sola según lo que se va haciendo. */

@@ -135,6 +135,7 @@
             <h1>Telemetría interceptada</h1>
             <span class="r2-sub">Reto ${def.num} · fragmento ${def.fragmento}</span>
           </div>
+          <button class="r2-boton r2-como" id="r2-como" type="button">Cómo funciona</button>
         </header>
 
         <section class="r2-banda" aria-label="Señal interceptada">
@@ -209,6 +210,7 @@
     $("#r2-caja").addEventListener("submit", (ev) => { ev.preventDefault(); abrirCaja(); });
     $("#r2-clave-caja").addEventListener("input", () => { if (!App.segundosBloqueo(estado())) { avisoCaja = null; pintarCaja(); } });
     enlazarChuleta();
+    $("#r2-como").addEventListener("click", () => App.Tutorial.abrir(ID));
 
     pintar(-1);
     pintarCoste();
@@ -221,6 +223,7 @@
       avivar();
       descifrar($("#r2-cadena"), cadena, 1400);
     }
+    App.Tutorial.alEntrar(ID);
   }
 
   // ---------- Chuleta en un cajón a la derecha ----------

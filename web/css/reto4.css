@@ -267,7 +267,9 @@ body[data-vista="reto4"] :focus-visible { outline: 3px dashed var(--r4-foco); ou
 .r4-carta p { margin: 0 0 14px; max-width: 70ch; }
 .r4-carta .r4-sello-grande { position: absolute; top: 34px; right: 46px; font-size: 32px; transform: rotate(-12deg); }
 .r4-carta-ref { font-weight: 700; margin-bottom: 26px !important; }
-.r4-carta-pasos { margin: 18px 0 20px; padding: 0; list-style: none; display: grid; gap: 12px; max-width: 70ch; }
+.r4-carta-como { margin: 22px 0 6px !important; font-weight: 700; }
+.r4-carta-pasos { margin: 0 0 18px; padding-left: 2.2em; list-style: decimal; display: grid; gap: 10px; max-width: 70ch; }
+.r4-carta-pasos li::marker { font-weight: 700; }
 .r4-carta-desp { margin-top: 24px !important; }
 .r4-carta-firma { display: flex; align-items: flex-end; gap: 14px; margin: -4px 0 0; }
 .r4-carta-firma .r4-firma { width: 150px; height: 46px; }
