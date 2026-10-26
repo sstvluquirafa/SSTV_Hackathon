@@ -160,6 +160,7 @@
           </div>
         </section>
       </div>`;
+    App.animarAntena($(".antena", el));
     // Bienvenida: se abre sola la primera vez; después, con «Cómo funciona»
     $("#p-como").addEventListener("click", () => App.Tutorial.abrir("panel"));
     App.Tutorial.alEntrar("panel");
