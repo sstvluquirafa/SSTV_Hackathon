@@ -30,3 +30,10 @@ Fuentes del reto 2 («Matrix»), también de Google Fonts (subconjunto latino, W
 - Chivo (variable, 400-700) .............. chivo-latin.woff2
 - Martian Mono (variable, 300-600) ....... martian-mono-latin.woff2
   Las dos, SIL Open Font License 1.1. El reto 2 usa además JetBrains Mono (ya incluida).
+
+Fuentes del reto 3 («La baliza»), también de Google Fonts (subconjunto latino, WOFF2):
+
+- Cinzel (variable, 400-900) ............. cinzel-latin.woff2
+- Source Sans 3 (variable, 200-900) ...... source-sans-3-latin.woff2
+- Space Mono (400, 700) .................. space-mono-400-latin.woff2, space-mono-700-latin.woff2
+  Las tres, SIL Open Font License 1.1.

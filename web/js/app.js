@@ -16,9 +16,9 @@
       resumen: "Un mensaje cifrado en varias capas. Pela la cebolla con el descodificador y abre la caja fuerte.",
     },
     {
-      id: "reto3", num: 3, fragmento: "LYRA", base: 100, duracion: "~15 min", pronto: true,
-      titulo: "Expediente clasificado",
-      resumen: "Este expediente todavía no se ha desclasificado. Vuelve más tarde, operador.",
+      id: "reto3", num: 3, fragmento: "LYRA", base: 100, duracion: "~15 min",
+      titulo: "La baliza",
+      resumen: "Captad una señal de radio con el SDR y descifrad el mensaje en Morse.",
     },
     {
       id: "reto4", num: 4, fragmento: "ANDRÓMEDA", base: 100, duracion: "15–18 min",

@@ -100,11 +100,24 @@
       frecuencia: (hz) => (hz ? `${hz} Hz` : "---- Hz"),
       descargar: () => "Descargar el audio", claseDescargar: "rx-secundario",
     },
+    // Reto 3: el receptor de la sala de radio del faro (latón y noche; la cascada, en la luz de la lámpara)
+    faro: {
+      clase: "rx-faro",
+      paleta: [[0, [10, 20, 32]], [0.35, [34, 48, 66]], [0.6, [176, 141, 87]], [0.82, [255, 210, 122]], [1, [255, 246, 220]]],
+      fondo: "rgb(10,20,32)",
+      cabecera: (t) => `<div class="rx-cab"><span class="rx-rotulo">Receptor</span><span class="rx-archivo">${t}</span><span class="rx-estado"></span></div>`,
+      estado: (k) => ({ espera: "En espera", vivo: "Recibiendo", pausa: "En pausa", fin: "Fin de la transmisión" })[k],
+      textos: { reproducir: "Reproducir", detener: "Detener" },
+      reposo: "Receptor en espera. Pulsad «Reproducir».",
+      tiempo: (a, t) => `${a} / ${t}`,
+      frecuencia: (hz) => (hz ? `${hz} Hz` : "---- Hz"),
+      descargar: () => "Descargar el audio", claseDescargar: "rx-secundario",
+    },
   };
   for (const t of Object.values(TEMAS)) t.tabla = hacerPaleta(t.paleta);
 
   /** Pinta el reproductor dentro de `caja`. Devuelve el elemento <audio>.
-   *  opciones: { tema: "control-mision" | "matrix" | "cuaderno", textos: { reproducir, detener },
+   *  opciones: { tema: "control-mision" | "matrix" | "faro" | "cuaderno", textos: { reproducir, detener },
    *              mandos: elemento donde van los controles si no deben ir debajo de la cascada }. */
   App.reproductor = function (caja, url, nombre, etiqueta, opciones = {}) {
     const tema = TEMAS[opciones.tema] || TEMAS.base;

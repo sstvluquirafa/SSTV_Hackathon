@@ -218,8 +218,7 @@ respuesta. Fuentes: Barlow Condensed, IBM Plex Sans e IBM Plex Mono (en `web/ass
   (`especificaciones/reto4_sabotaje.md`), un caso de detectives para resolver en equipo. En la v1
   (`descartadas/reto4_sabotaje_v1.md`) las pruebas se resolvían sin leer ni pensar. Sustituye a «Contacto con la ISS» (v1–v3) y a
   «SSTV a mano», que están en `especificaciones/descartadas/`; su código queda en el historial de git.
-  El reto 3 (con el SDR) sigue como «PRÓXIMAMENTE».
-  Reto 3 «La baliza» (Morse; primero en la web y después por SDR con walkie PMR446): pendiente de especificar.
+  El reto 3 es «La baliza» (Morse por walkie PMR446 y SDR): ver su sección.
 - **Jupyter:** solo para la clase guiada y para generar los WAV.
 - **Asignación de fragmentos:** Reto 1 → ORIÓN · Reto 2 → CYGNUS · Reto 3 → LYRA · Reto 4 → ANDRÓMEDA.
 - **Estilo:** el oscuro de "Explorador Enigma" (https://sstv.groundcontrol.granasat.space/retos): fondo espacial,
@@ -294,6 +293,27 @@ parte siempre de la cadena interceptada), el modo «cifrar» de cada operación 
 cada uso bloquea el reto 30 s más que el anterior (ver «Web local»).
 La web no lleva la frase: elige una de las 760 cadenas posibles (10 variantes × 76) del banco que genera `reto2_generador.py --exportar`,
 que incluye huellas SHA-256 de cada etapa para que las pistas sepan por dónde va el grupo.
+
+## Reto 3 · "La baliza" → LYRA (duración objetivo: ~15 min)
+
+Especificación: `especificaciones/reto3_baliza.md`. Un walkie PMR446 de la organización emite en bucle una palabra en
+Morse; los grupos la captan con el SDR (NFM, canal 1 = 446,00625 MHz, constante `FRECUENCIA` en `web/js/reto3.js`),
+la descifran y la escriben en la web. Todos oyen la misma palabra (compiten entre ellos).
+
+- **Cuatro fases:** Aprender (curso corto: qué es el Morse, seis letras para coger el oído, tres ejercicios con las
+  teclas PUNTO y RAYA y el método de tres pasos; se puede saltar) · Sintonizar (frecuencia y modo del SDR) · Escuchar
+  (hoja de escucha: una casilla por letra donde se marcan puntos y rayas y la web dice qué letra es; tabla de Morse en
+  un cajón; teclado `.` `-` espacio y retroceso) · Responder (5 intentos, 3 pistas con bloqueo) → audio de LYRA.
+- **Audio de la baliza:** `herramientas/generar_baliza_reto3.py` → `generado/reto3/baliza.wav` (para el walkie, 10
+  vueltas, ~3 min), `baliza_lenta.wav` (más silencio entre letras) y `baliza_vuelta.wav` (una vuelta, para la web).
+  Letras a 12 palabras por minuto con 1,5 s entre letras, tono de 700 Hz, pitido largo de inicio en cada vuelta. El
+  script decodifica su propio audio y comprueba la palabra. La palabra solo está en ese script (y `construir_web.py`
+  la importa): nunca en la web.
+- **Modo de reserva:** botón «Modo de reserva (organización)», con confirmación, que hace sonar la baliza en el propio
+  ordenador si falla el walkie o el SDR.
+- **Estética:** la sala de radio de un faro de noche (`web/css/reto3.css`): latón, baquelita y rótulos esmaltados; la
+  lámpara del faro destella al ritmo del Morse (también en el modo de reserva, siguiendo el sonido). Reproductor con el
+  tema `faro`. Fuentes: Cinzel, Source Sans 3 y Space Mono.
 
 ## Reto 4 · "¿Quién saboteó el GranaSAT-II?" (versión 2) → ANDRÓMEDA (duración objetivo: 15–18 min)
 

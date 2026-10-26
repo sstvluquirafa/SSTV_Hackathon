@@ -15,7 +15,7 @@
   const RESUMEN_RETO = {
     reto1: "recibid una foto histórica por radio, averiguad quién la hizo y reconstruidla.",
     reto2: "descifrad un mensaje del satélite capa a capa hasta encontrar la contraseña.",
-    reto3: "próximamente.",
+    reto3: "captad una señal de radio con el SDR y descifrad la palabra en Morse.",
     reto4: "investigad un sabotaje con las pruebas del caso y descubrid al culpable.",
   };
 
@@ -48,6 +48,15 @@
         ["Quitad las capas.", "El mensaje está cifrado varias veces. Aplicad operaciones una tras otra; la <b>chuleta</b> os ayuda a reconocer qué formato tiene cada resultado."],
         ["Abrid la caja fuerte.", "Cuando leáis la contraseña, escribidla en la caja. Tenéis 5 intentos."],
       ]) + final("CYGNUS"),
+    }),
+    reto3: () => ({
+      etiqueta: "Cómo funciona",
+      titulo: "La baliza",
+      cuerpo: pasos([
+        ["Aprended Morse.", "Haced el curso corto: escuchad las letras y practicad."],
+        ["Sintonizad la baliza.", "Poned el SDR en la frecuencia que os da la web y escuchad los pitidos."],
+        ["Descifrad la palabra.", "Apuntad puntos y rayas en la hoja de escucha y escribid la palabra."],
+      ]) + final("LYRA"),
     }),
     montaje: () => ({
       etiqueta: "Cómo funciona",

@@ -37,6 +37,7 @@ from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from medir_fotos_puzle import recortar_3x2, medir      # noqa: E402
 from reto2_generador import VARIANTES, frase            # noqa: E402
+from generar_baliza_reto3 import PALABRA as PALABRA_BALIZA  # noqa: E402
 
 Image.MAX_IMAGE_PIXELS = None
 RAIZ = Path(__file__).resolve().parent.parent
@@ -68,6 +69,13 @@ RETOS = {
         "grupos": [[contrasena, frase(contrasena)] for _, _, contrasena in VARIANTES],
         "archivos": {
             "audio": (RAIZ / "generado" / "mapa" / "fragmento_3_cygnus.wav", "audio/wav"),
+        },
+    },
+    # Reto 3 (La baliza): la palabra que emite el walkie en Morse (herramientas/generar_baliza_reto3.py).
+    "reto3": {
+        "grupos": [[PALABRA_BALIZA.lower()]],
+        "archivos": {
+            "audio": (RAIZ / "generado" / "mapa" / "fragmento_1_lyra.wav", "audio/wav"),
         },
     },
     # Reto 4 (¿Quién saboteó el GranaSAT-II?): la respuesta es la acusación "quién cómo cuándo" con los
@@ -159,6 +167,13 @@ def main(solo=None):
         datos_comunes()
     if not solo or "reto1" in solo:
         pistas_reto1()
+    if not solo or "reto3" in solo:
+        # Una vuelta de la baliza para el modo de reserva (sin cifrar: descifrarla de oído ES el reto)
+        vuelta = RAIZ / "generado" / "reto3" / "baliza_vuelta.wav"
+        if not vuelta.exists():
+            sys.exit("Falta generado/reto3/baliza_vuelta.wav: ejecuta herramientas/generar_baliza_reto3.py.")
+        tam = escribir_js("reto3_baliza", "reto3_baliza", b64(vuelta.read_bytes()))
+        print(f"reto3_baliza.js           {tam / 1e6:5.2f} MB")
     if not solo or "reto4" in solo:
         # Cámara de la azotea del reto 4 (sin cifrar: decodificarla es parte del reto). No se copia ningún PNG.
         tam = escribir_js("reto4_camara", "reto4_camara", b64((RAIZ / "generado" / "reto4" / "camara_azotea.wav").read_bytes()))
