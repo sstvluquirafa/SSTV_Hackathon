@@ -519,7 +519,8 @@
     document.body.classList.remove("r4-con-libreta");
     App.actualizarCabecera();
     Sonido.exito();
-    pintarResuelto($("#vista"), true);
+    // La escena final (cinematicas.js): el periódico con el caso resuelto; después, la última página del expediente
+    App.cinematica(ID, () => { if (location.hash.includes("reto4")) pintarResuelto($("#vista"), true); });
   }
 
   // ---------- Caso cerrado: la última página del expediente y el sobre con el audio ----------
@@ -535,7 +536,8 @@
             <div class="r4-ultima-cab"><h2 class="r4-doc-tit">Resolución del caso</h2>
               <span class="r4-sello r4-sello-cerrado ${recien ? "golpe" : ""}">Caso cerrado</span></div>
             <div class="r4-relato" id="r4-resumen">${cargando("Descifrando el informe…")}</div>
-            <p class="r4-ultima-pie">Puntuación del equipo: ${e.puntos} puntos. Errores durante la investigación: ${e.fallos}.</p>
+            <p class="r4-ultima-pie">Puntuación del equipo: ${e.puntos} puntos. Errores durante la investigación: ${e.fallos}.
+              <button class="r4-palabra" type="button" data-cine="reto4">Volver a ver la portada del periódico</button></p>
           </article>
           <aside class="r4-sobre" aria-label="Fragmento ANDRÓMEDA">
             <p class="r4-sobre-rotulo">Fragmento ANDRÓMEDA</p>

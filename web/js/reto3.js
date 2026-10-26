@@ -479,8 +479,8 @@
       App.actualizarCabecera();
       pintarRespuesta();
       pintarPistas();
-      mostrarFase(faseActual());
-      mostrarPremio();
+      // La escena final (cinematicas.js) y después la entrega
+      App.cinematica(ID, () => { if (!$("#r3-entrega")) return; mostrarFase(faseActual()); mostrarPremio(); });
     } else {
       Sonido.error();
       App.registrarFallo(ID);
@@ -506,6 +506,7 @@
         <p class="r3-texto">La baliza os ha dado la transmisión del fragmento <b>LYRA</b>. Reproducidla por el cable virtual, decodificadla con
           Black Cat SSTV y <b>guardad la imagen</b>: la necesitaréis en el montaje del mapa.</p>
         <div id="r3-reproductor"></div>
+        <div class="r3-acciones"><button class="r3-boton r3-boton-sec" type="button" data-cine="reto3">Volver a ver la escena final</button></div>
         <p class="r3-nota">${e.puntos} puntos · ${e.pistas.length} ${e.pistas.length === 1 ? "pista" : "pistas"} · ${e.fallos} ${e.fallos === 1 ? "fallo" : "fallos"}</p>`;
       App.reproductor($("#r3-reproductor"), url, "fragmento_lyra.wav", "fragmento_lyra.wav", { tema: "faro" });
     } catch (err) {

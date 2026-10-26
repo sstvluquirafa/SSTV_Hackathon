@@ -542,7 +542,8 @@
     $$("#r1-puesto-puzle button").forEach((b) => { b.disabled = true; });
     pintarReloj();
     pintarFases();
-    setTimeout(() => { if ($("#r1-puzle")) mostrarFase(3); }, 1400);
+    // La foto se cierra un momento y llega la escena final (cinematicas.js); después, la entrega
+    setTimeout(() => { if ($("#r1-puzle")) App.cinematica(ID, () => { if ($("#r1-puzle")) mostrarFase(3); }); }, 1200);
   }
 
   // ---------- Fase 4: entrega del fragmento ----------
@@ -562,7 +563,8 @@
           ${htmlDisplay("r1-fin-pistas", "Pistas", e.pistas.length)}
           ${htmlDisplay("r1-fin-fallos", "Fallos", e.fallos)}
         </div>
-        <div class="r1-letrero ${e.fragmentoRecibido ? "encendido" : ""}" id="r1-letrero">Transmisión completa</div>`;
+        <div class="r1-letrero ${e.fragmentoRecibido ? "encendido" : ""}" id="r1-letrero">Transmisión completa</div>
+        <button class="r1-boton r1-boton-sec r1-boton-mini" type="button" data-cine="reto1">Volver a ver el despegue</button>`;
       const audio = App.reproductor(caja, url, "fragmento_orion.wav", "fragmento_orion.wav", {
         tema: "control-mision", mandos: $("#r1-mandos-premio"), textos: { reproducir: "Emitir fragmento", detener: "Detener" },
       });

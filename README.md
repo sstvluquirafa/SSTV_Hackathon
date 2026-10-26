@@ -173,6 +173,23 @@ Bienvenida general y desplegable «Cómo funciona» en cada reto: `especificacio
 - En el reto 1, el reloj de misión no arranca hasta cerrar el tutorial la primera vez.
 - **Sin destripar:** explican qué se hace y con qué herramientas, nunca la respuesta ni la parte difícil.
 
+## Cinemáticas de final de reto
+
+Al superar un reto se reproduce una escena corta (unos 8 s) con la estética de su escena, que termina dibujando en el
+cielo la constelación del fragmento conseguido (`web/js/cinematicas.js`, `web/css/cinematicas.css`):
+
+- **Reto 1 · Despegue:** cuenta atrás en displays de segmentos, despega el cohete con temblor y humo, aparece **Orión**
+  y se encienden las cuatro luces de las fases.
+- **Reto 2 · Matrix:** la lluvia se desata a pantalla completa y de ella se descifra **CYGNUS**, con su constelación.
+- **Reto 3 · Faro:** el haz barre el cielo nocturno encendiendo las estrellas de **Lyra** mientras la lámpara transmite
+  «LYRA» en Morse (se oye).
+- **Reto 4 · Periódico:** el hilo rojo une las cuatro pruebas del tablón y llega girando la portada de «La Gaceta de la
+  Escuela» («Se resuelve el sabotaje del GranaSAT-II», con **Andrómeda**) y el sello «CASO CERRADO».
+
+Se pueden saltar («Saltar», Escape, Enter o clic) y acaban en un título fijo con «Continuar»; después aparece la
+entrega del audio. Cada entrega tiene un botón para volver a verla. Con «reducir animaciones» se muestra el final
+directamente. Llevan sonido suave (Web Audio, sin archivos).
+
 ## Reto 1 · "Mensaje desde 1969" → ORIÓN
 
 Estética «la sala de control de misión» (`especificaciones/reto1_estetica_control_mision.md`, estilos en

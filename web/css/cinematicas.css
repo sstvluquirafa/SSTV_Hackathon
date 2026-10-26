@@ -1,0 +1,173 @@
+/* Cinemáticas de final de reto (js/cinematicas.js). Capa a pantalla completa por encima de todo; cada escena con la
+   estética de su reto. Los pasos se encadenan añadiendo clases a .cine (p-…); .fin es el estado final, que es también lo
+   que se ve con «reducir animaciones». */
+
+/* Mientras dura la escena, la página de debajo no muestra barras de desplazamiento */
+html.cine-abierta { overflow: hidden; }
+.cine { position: fixed; inset: 0; z-index: 200; overflow: hidden; display: grid; place-items: center; cursor: default; animation: cine-entra 0.5s ease both; }
+@keyframes cine-entra { from { opacity: 0; } }
+.cine-escena { position: absolute; inset: 0; }
+.cine-boton {
+  position: absolute; z-index: 5; right: 28px; bottom: 26px; min-height: 44px; padding: 0 20px; cursor: pointer;
+  font: 600 16px "Inter", "Segoe UI", sans-serif; border-radius: 6px; transition: opacity 0.3s;
+}
+.cine-saltar { color: rgba(255, 255, 255, 0.75); background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.35); }
+.cine-saltar:hover { color: #fff; border-color: #fff; }
+.cine-seguir { opacity: 0; pointer-events: none; }
+.cine.fin .cine-saltar { opacity: 0; pointer-events: none; }
+.cine.fin .cine-seguir { opacity: 1; pointer-events: auto; }
+.cine-titulo { position: absolute; z-index: 4; left: 0; right: 0; bottom: 12%; text-align: center; opacity: 0; transform: translateY(16px); transition: opacity 0.8s, transform 0.8s; pointer-events: none; }
+.cine.p-titulo .cine-titulo, .cine.fin .cine-titulo { opacity: 1; transform: none; }
+.cine-titulo p { margin: 0; }
+
+/* Constelaciones: las líneas se trazan y las estrellas aparecen */
+.cine-constelacion { width: 100%; height: 100%; overflow: visible; }
+.cine-linea { stroke-dasharray: 1; stroke-dashoffset: 1; stroke-width: 0.5; fill: none; animation: cine-trazo 0.6s ease forwards; animation-play-state: paused; }
+.cine-estrella { opacity: 0; transform-box: fill-box; transform-origin: center; animation: cine-estrella 0.5s ease forwards; animation-play-state: paused; }
+@keyframes cine-trazo { to { stroke-dashoffset: 0; } }
+@keyframes cine-estrella { 0% { opacity: 0; transform: scale(3); } 100% { opacity: 1; transform: scale(1); } }
+.cine .cine-linea, .cine .cine-estrella { animation-play-state: running; }
+.cine.fin .cine-linea { animation: none; stroke-dashoffset: 0; }
+.cine.fin .cine-estrella { animation: none; opacity: 1; }
+
+/* ========== Reto 1 · Despegue (sala de control) ========== */
+.cine-reto1 { background: #0b0d0e; color: #f1ead6; }
+.cine-reto1 .cine-cielo { position: absolute; inset: -60% 0 0 0; width: 100%; height: 160%; fill: #f3ead2; opacity: 0; transition: opacity 1.2s; }
+.cine-reto1.p-despegue .cine-cielo { opacity: 1; animation: cine-subir 4s cubic-bezier(0.5, 0, 0.6, 1) 0.6s both; }
+@keyframes cine-subir { from { transform: translateY(0); } to { transform: translateY(37%); } }
+.cine-cuenta { position: absolute; left: 50%; top: 38%; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 14px; transition: opacity 0.4s; }
+.cine-cuenta-rotulo { padding: 4px 14px; font: 600 20px "Barlow Condensed", sans-serif; letter-spacing: 0.18em; text-transform: uppercase; color: #1f1a0e; background: #e3a21a; }
+.cine-segmentos { display: block; height: 160px; padding: 14px 20px; background: #050606; border: 4px solid #2b2d27; }
+.cine-segmentos .segmentos { height: 100%; width: auto; display: block; }
+.cine-segmentos polygon, .cine-segmentos circle { fill: #2e1a10; }
+.cine-segmentos .on { fill: #ff8a3d; }
+.cine-reto1.p-despegue .cine-cuenta { opacity: 0; }
+.cine-cohete { position: absolute; left: 50%; bottom: -4%; width: 130px; margin-left: -65px; transform: translateY(0); }
+.cine-cohete-blanco { fill: #e8e4d6; }
+.cine-cohete-negro, .cine-cohete-punta { fill: #1c2124; }
+.cine-llama { opacity: 0; transform-origin: 30px 168px; }
+.cine-llama-fuera { fill: #e3a21a; }
+.cine-llama-dentro { fill: #fff3c4; }
+.cine-reto1.p-despegue .cine-llama { opacity: 1; animation: cine-llama 0.08s steps(2) infinite; }
+@keyframes cine-llama { 50% { transform: scaleY(1.25) scaleX(0.9); } }
+.cine-reto1.p-despegue .cine-cohete { animation: cine-despega 3.4s cubic-bezier(0.55, 0, 0.8, 0.4) 0.4s forwards, cine-temblor 0.07s linear infinite; }
+@keyframes cine-despega { to { transform: translateY(-150vh); } }
+@keyframes cine-temblor { 50% { margin-left: -67px; } }
+.cine-humo { position: absolute; left: 50%; bottom: -40px; width: 0; }
+.cine-humo i { position: absolute; left: 0; bottom: 0; width: 120px; height: 120px; margin-left: -60px; border-radius: 50%; background: #3c464d; opacity: 0; }
+.cine-reto1.p-despegue .cine-humo i { animation: cine-humo 2.6s ease-out forwards; animation-delay: calc(var(--i) * 0.08s); }
+@keyframes cine-humo { 0% { opacity: 0.9; transform: translate(0, 0) scale(0.5); } 100% { opacity: 0; transform: translate(calc((var(--i) - 4) * 70px), -40px) scale(2.4); } }
+.cine-reto1.p-despegue .cine-escena { animation: cine-sacudida 0.09s linear 0s 30; }
+@keyframes cine-sacudida { 25% { transform: translate(2px, -1px); } 75% { transform: translate(-2px, 1px); } }
+.cine-orion { position: absolute; left: 50%; top: 10%; width: min(46vh, 420px); height: min(46vh, 420px); transform: translateX(-50%); opacity: 0; }
+.cine-reto1.p-espacio .cine-orion, .cine-reto1.fin .cine-orion { opacity: 1; }
+.cine-reto1 .cine-linea { stroke: #e3a21a; }
+.cine-reto1 .cine-estrella { fill: #f3ead2; }
+.cine-luces { position: absolute; left: 50%; bottom: 33%; transform: translateX(-50%); display: flex; gap: 22px; opacity: 0; transition: opacity 0.5s; }
+.cine-reto1.p-titulo .cine-luces, .cine-reto1.fin .cine-luces { opacity: 1; }
+.cine-luces span { display: flex; align-items: center; gap: 8px; font: 600 17px "Barlow Condensed", sans-serif; letter-spacing: 0.1em; text-transform: uppercase; color: #9aa1a4; transition: color 0.3s; }
+.cine-luces i { width: 18px; height: 18px; border-radius: 50%; border: 3px solid #aab0ad; background: #2f402d; transition: background 0.3s; transition-delay: inherit; }
+.cine-reto1.p-titulo .cine-luces span, .cine-reto1.fin .cine-luces span { color: #f1ead6; }
+.cine-reto1.p-titulo .cine-luces i, .cine-reto1.fin .cine-luces i { background: #4f9a4a; }
+.cine-reto1 .cine-titulo { bottom: 9%; }
+.cine-reto1 .cine-titulo-sup { display: inline-block; padding: 4px 16px; font: 600 22px "Barlow Condensed", sans-serif; letter-spacing: 0.2em; text-transform: uppercase; color: #3a2a08; background: #f2dfa5; }
+.cine-reto1 .cine-titulo-gran { margin-top: 10px !important; font: 700 clamp(44px, 8vw, 96px)/1 "Barlow Condensed", sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: #f1ead6; }
+.cine-reto1.fin .cine-cuenta { opacity: 0; }
+.cine-reto1.fin .cine-cohete, .cine-reto1.fin .cine-humo { display: none; }
+.cine-reto1.fin .cine-cielo { opacity: 1; animation: none; transform: translateY(37%); }
+.cine-reto1 .cine-seguir { color: #1f1a0e; background: #e3a21a; border: 0; font: 700 20px "Barlow Condensed", sans-serif; letter-spacing: 0.08em; text-transform: uppercase; box-shadow: 0 4px 0 #7c5508; }
+
+/* ========== Reto 2 · Matrix ========== */
+.cine-reto2 { background: #040706; color: #e4fbee; }
+.cine-lluvia { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.85; transition: opacity 1.5s; }
+.cine-reto2.p-titulo .cine-lluvia, .cine-reto2.fin .cine-lluvia { opacity: 0.35; }
+.cine-cygnus { position: absolute; left: 50%; top: 44%; width: min(58vh, 560px); height: min(58vh, 560px); transform: translate(-50%, -50%); opacity: 0; }
+.cine-reto2.p-constelacion .cine-cygnus, .cine-reto2.fin .cine-cygnus { opacity: 1; }
+.cine-reto2 .cine-linea { stroke: #3dfa7a; stroke-width: 0.4; filter: drop-shadow(0 0 1.5px #3dfa7a); }
+.cine-reto2 .cine-estrella { fill: #e4fbee; filter: drop-shadow(0 0 2px #3dfa7a); }
+.cine-palabra {
+  position: absolute; left: 0; right: 0; top: 50%; margin: 0; transform: translateY(-50%); text-align: center; opacity: 0;
+  font: 400 clamp(56px, 11vw, 150px)/1 "Martian Mono", "JetBrains Mono", monospace; letter-spacing: 0.08em; color: #e4fbee;
+  text-shadow: 0 0 30px rgba(110, 255, 170, 0.45); transition: opacity 0.3s, top 0.9s, font-size 0.9s;
+}
+.cine-palabra span { color: #3dfa7a; }
+.cine-reto2.p-palabra .cine-palabra { opacity: 1; }
+.cine-reto2.p-titulo .cine-palabra, .cine-reto2.fin .cine-palabra { opacity: 0; }
+.cine-reto2.fin .cine-palabra { transition: none; }
+.cine-reto2 .cine-titulo { bottom: 6%; }
+.cine-reto2 .cine-titulo-sup { font: 500 18px "JetBrains Mono", monospace; letter-spacing: 0.3em; color: #75827a; }
+.cine-reto2 .cine-titulo-gran { margin-top: 8px !important; font: 400 clamp(40px, 7vw, 84px)/1.1 "Martian Mono", monospace; letter-spacing: 0.06em; color: #e4fbee; text-shadow: 0 0 26px rgba(110, 255, 170, 0.4); }
+.cine-reto2 .cine-saltar { font-family: "Chivo", sans-serif; }
+.cine-reto2 .cine-seguir { color: #040706; background: #eef2ef; border: 0; font: 700 17px "Chivo", sans-serif; }
+
+/* ========== Reto 3 · Faro ========== */
+.cine-reto3 { background: #0a1420; color: #efe6d2; }
+.cine-reto3 .cine-cielo { position: absolute; inset: 0; width: 100%; height: 100%; fill: #efe6d2; opacity: 0.6; }
+.cine-lyra { position: absolute; right: 12%; top: 8%; width: min(52vh, 460px); height: min(52vh, 460px); }
+.cine-reto3 .cine-linea { stroke: #ffd27a; stroke-width: 0.45; }
+.cine-reto3 .cine-estrella { fill: #fff6dc; filter: drop-shadow(0 0 2px #ffd27a); }
+.cine-reto3:not(.p-constelacion):not(.fin) .cine-lyra { visibility: hidden; }
+.cine-faro { position: absolute; left: 0; bottom: 8%; height: 70%; width: auto; overflow: visible; }
+.cine-haz { fill: #ffd27a; opacity: 0; transform-origin: 110px 72px; transform: rotate(40deg); }
+.cine-reto3.p-haz .cine-haz { animation: cine-barrido 4.6s ease-in-out forwards; }
+@keyframes cine-barrido { 0% { opacity: 0; transform: rotate(40deg); } 15% { opacity: 0.16; } 100% { opacity: 0.12; transform: rotate(-12deg); } }
+.cine-reto3.fin .cine-haz { animation: none; opacity: 0.12; transform: rotate(-12deg); }
+.cine-lampara { fill: #6a5a33; }
+.cine-lampara.on, .cine-reto3.fin .cine-lampara { fill: #ffd27a; filter: drop-shadow(0 0 12px #ffd27a); }
+.cine-mar { position: absolute; left: 0; right: 0; bottom: 0; height: 12%; background: #1b263b; }
+.cine-mar i { position: absolute; left: -10%; right: -10%; height: 3px; background: #2f3d55; border-radius: 2px; animation: cine-ola 3s ease-in-out infinite alternate; }
+.cine-mar i:nth-child(1) { top: 18%; } .cine-mar i:nth-child(2) { top: 48%; animation-delay: -1s; } .cine-mar i:nth-child(3) { top: 76%; animation-delay: -2s; }
+@keyframes cine-ola { to { transform: translateX(6%); } }
+.cine-reto3 .cine-titulo { left: auto; right: 6%; bottom: 18%; text-align: right; }
+.cine-reto3 .cine-titulo-sup { font: 700 22px "Cinzel", serif; letter-spacing: 0.2em; color: #c9a227; }
+.cine-reto3 .cine-titulo-gran { margin-top: 6px !important; font: 700 clamp(42px, 7vw, 88px)/1.05 "Cinzel", serif; letter-spacing: 0.1em; color: #ffd27a; }
+.cine-reto3 .cine-saltar { font-family: "Source Sans 3", sans-serif; }
+.cine-reto3 .cine-seguir { color: #1b1406; background: #c9a227; border: 0; font: 700 18px "Cinzel", serif; letter-spacing: 0.06em; box-shadow: inset 0 0 0 2px #e4c766, 0 4px 0 #6b5216; }
+
+/* ========== Reto 4 · Periódico ========== */
+.cine-reto4 { background: #2a1d13; color: #2b2118; }
+.cine-corcho { position: absolute; left: 50%; top: 50%; width: min(80vw, 900px); height: min(62vh, 520px); transform: translate(-50%, -50%); background: #b4865a; border: 14px solid #5a3b22; transition: opacity 0.6s, transform 0.6s; }
+.cine-reto4.p-periodico .cine-corcho, .cine-reto4.fin .cine-corcho { opacity: 0.35; transform: translate(-50%, -50%) scale(0.92); }
+.cine-ficha { position: absolute; width: 22%; height: 24%; padding: 12px; background: #faf6ec; transform: rotate(var(--g)); box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.3); }
+.cine-ficha b { position: absolute; top: -8px; left: 50%; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: #8b1e1e; }
+.cine-ficha i { display: block; height: 3px; margin: 10px 0; background: rgba(31, 58, 95, 0.25); }
+.cine-ficha span { position: absolute; right: 10px; bottom: 6px; font: 700 18px "Courier Prime", monospace; color: #8b1e1e; }
+.cine-hilo { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cine-hilo path { fill: none; stroke: #b3261e; stroke-width: 0.6; stroke-dasharray: 1; stroke-dashoffset: 1; animation: cine-trazo 2s ease 0.4s forwards; }
+.cine-reto4.fin .cine-hilo path { animation: none; stroke-dashoffset: 0; }
+.cine-periodico {
+  position: absolute; left: 50%; top: 50%; width: min(86vw, 860px); padding: 26px 40px 34px; color: #2b2118; background: #e8dcc0;
+  font-family: "Libre Baskerville", Georgia, serif; box-shadow: 0 10px 0 rgba(0, 0, 0, 0.25); transform: translate(-50%, -50%) rotate(-3deg) scale(0); opacity: 0;
+}
+.cine-reto4.p-periodico .cine-periodico { animation: cine-gira 1.4s cubic-bezier(0.2, 0.7, 0.3, 1) forwards; }
+@keyframes cine-gira { 0% { opacity: 1; transform: translate(-50%, -50%) rotate(-720deg) scale(0.02); } 100% { opacity: 1; transform: translate(-50%, -50%) rotate(-3deg) scale(1); } }
+.cine-reto4.fin .cine-periodico { animation: none; opacity: 1; transform: translate(-50%, -50%) rotate(-3deg) scale(1); }
+.cine-cabecera-periodico { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 4px double #2b2118; font-style: italic; font-size: 15px; }
+.cine-cabecera-periodico b { font: 700 clamp(22px, 3vw, 34px) "Libre Baskerville", serif; font-style: normal; }
+.cine-periodico h2 { margin: 0 0 10px; font: 700 clamp(30px, 4.8vw, 56px)/1.05 "Libre Baskerville", serif; }
+.cine-entradilla { margin: 0 0 14px; padding-bottom: 12px; border-bottom: 1px solid #2b2118; font-style: italic; font-size: 19px; line-height: 1.45; }
+.cine-columnas { display: grid; grid-template-columns: 220px 1fr; gap: 22px; align-items: start; }
+.cine-columnas p { margin: 0; font-size: 16px; line-height: 1.6; }
+.cine-foto { display: grid; gap: 6px; padding: 10px; background: #1b1a17; color: #e8dcc0; }
+.cine-foto .cine-constelacion { height: 150px; }
+.cine-foto span { font: italic 13px "Libre Baskerville", serif; }
+.cine-reto4 .cine-linea { stroke: #e8dcc0; stroke-width: 0.6; }
+.cine-reto4 .cine-estrella { fill: #fff; }
+.cine-sello {
+  position: absolute; right: 30px; top: 46%; padding: 4px 16px; font: 400 clamp(32px, 5vw, 58px)/1.1 "Special Elite", monospace; letter-spacing: 0.08em; text-transform: uppercase;
+  color: #8b1e1e; border: 7px double #8b1e1e; border-radius: 4px; transform: rotate(-12deg) scale(2.4); opacity: 0; mix-blend-mode: multiply;
+}
+.cine-reto4.p-sello .cine-sello { animation: cine-sello 0.3s cubic-bezier(0.3, 1.6, 0.5, 1) forwards; }
+@keyframes cine-sello { to { opacity: 0.9; transform: rotate(-12deg) scale(1); } }
+.cine-reto4.fin .cine-sello { animation: none; opacity: 0.9; transform: rotate(-12deg) scale(1); }
+.cine-reto4 .cine-saltar { color: #efe6d2; font-family: "Courier Prime", monospace; }
+.cine-reto4 .cine-seguir { color: #8b1e1e; background: #f3ead8; border: 2px solid #8b1e1e; border-radius: 2px; font: 400 20px "Special Elite", monospace; box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.4); }
+
+/* Movimiento reducido: el estado final, sin animaciones */
+@media (prefers-reduced-motion: reduce) {
+  .cine, .cine *, .cine *::before { animation: none !important; transition: none !important; }
+}
+@media (max-width: 900px) {
+  .cine-luces { flex-wrap: wrap; justify-content: center; width: 90%; }
+  .cine-columnas { grid-template-columns: 1fr; }
+}

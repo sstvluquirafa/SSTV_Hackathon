@@ -452,14 +452,17 @@
       pintarCaja();
       pintarCoste();
       actualizarEstado();
-      // Final: la señal se desata un instante y después aparece el archivo
+      // Final: la señal se desata un instante, llega la escena final (cinematicas.js) y después aparece el archivo
       avivar(3.2);
       document.body.classList.add("r2-desbloqueo");
       setTimeout(() => {
         document.body.classList.remove("r2-desbloqueo");
         if (!$("#r2-entrega")) return;
-        mostrarPremio(true);
-        descifrar($("#r2-entrega-txt"), "ARCHIVO DESCIFRADO", 1100);
+        App.cinematica(ID, () => {
+          if (!$("#r2-entrega")) return;
+          mostrarPremio(true);
+          descifrar($("#r2-entrega-txt"), "ARCHIVO DESCIFRADO", 1100);
+        });
       }, sinMovimiento() ? 0 : 1100);
     } else {
       Sonido.error();
@@ -485,6 +488,7 @@
       if (!caja.isConnected) return;
       const e = estado();
       caja.innerHTML = `<div id="r2-reproductor"></div>
+        <button class="r2-boton" type="button" data-cine="reto2">Volver a ver la escena final</button>
         <p class="r2-resumen">${e.puntos} puntos · ${e.pistas.length} ${e.pistas.length === 1 ? "pista" : "pistas"} · ${e.fallos} ${e.fallos === 1 ? "fallo" : "fallos"}</p>`;
       App.reproductor($("#r2-reproductor"), url, "fragmento_cygnus.wav", "fragmento_cygnus.wav", { tema: "matrix" });
     } catch (err) {
