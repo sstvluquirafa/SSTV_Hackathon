@@ -46,11 +46,19 @@ IMG = WEB / "assets" / "img"
 ITERACIONES = 150_000          # PBKDF2: lento para probar respuestas a lo bruto, rápido para una sola
 
 # Respuestas aceptadas de cada reto (este archivo NO se copia a la web), por GRUPOS:
-# la web solo prueba las respuestas del grupo que le toca. El reto 1 tiene un solo grupo; en el reto 2
-# cada variante (pregunta) tiene su propia contraseña, y la de otra variante no abre la caja.
+# la web solo prueba las respuestas del grupo que le toca. En el reto 1 cada foto de la pista es un grupo
+# (especificaciones/reto1_variantes.md); en el reto 2 cada variante (pregunta) tiene su propia contraseña.
+# En los dos, la respuesta de otra variante no abre nada.
+PISTAS_RETO1 = "abcde"         # generado/reto1/pista_<letra>_11k.wav (herramientas/generar_pistas_reto1.py)
 RETOS = {
     "reto1": {
-        "grupos": [["neil armstrong", "armstrong", "neil alden armstrong", "neil amstrong", "amstrong"]],
+        "grupos": [  # el orden es el de PISTAS_RETO1: ¿quién hizo esta fotografía?
+            ["neil armstrong", "armstrong", "neil alden armstrong", "neil amstrong", "amstrong"],                  # a · Aldrin
+            ["michael collins", "mike collins", "collins", "michael colins", "colins"],                           # b · módulo lunar
+            ["james mcdivitt", "jim mcdivitt", "mcdivitt", "james mc divitt", "mc divitt", "james mcdivit", "mcdivit"],  # c · Ed White
+            ["william anders", "bill anders", "anders", "william andres"],                                         # d · Tierra sobre la Luna
+            ["harrison schmitt", "jack schmitt", "schmitt", "harrison smith", "harrison schmit", "schmit"],        # e · Cernan
+        ],
         "archivos": {
             "audio": (RAIZ / "generado" / "mapa" / "fragmento_2_orion.wav", "audio/wav"),
         },
@@ -149,6 +157,8 @@ def main(solo=None):
     (RAIZ / "generado" / "reto4" / "resumen_caso.html").write_text(RESUMEN_RETO4, encoding="utf-8")
     if not solo:
         datos_comunes()
+    if not solo or "reto1" in solo:
+        pistas_reto1()
     if not solo or "reto4" in solo:
         # Cámara de la azotea del reto 4 (sin cifrar: decodificarla es parte del reto). No se copia ningún PNG.
         tam = escribir_js("reto4_camara", "reto4_camara", b64((RAIZ / "generado" / "reto4" / "camara_azotea.wav").read_bytes()))
@@ -171,12 +181,19 @@ def datos_comunes():
     fondo = fondo.resize((2560, round(2560 * fondo.height / fondo.width)), Image.LANCZOS)
     fondo.save(IMG / "fondo.jpg", quality=80, optimize=True, progressive=True)
 
-    # 2) Pista del reto 1 (no va cifrada: decodificarla ES el reto). Se carga solo al entrar al reto.
-    pista = RAIZ / "generado" / "reto1" / "pista_reto1_11k.wav"
-    if not pista.exists():
-        sys.exit("Falta generado/reto1/pista_reto1_11k.wav (ver la skill audio-sstv).")
-    tam = escribir_js("reto1_pista", "reto1_pista", b64(pista.read_bytes()))
-    print(f"reto1_pista.js            {tam / 1e6:5.2f} MB")
+
+
+def pistas_reto1():
+    """Pistas SSTV del reto 1, una por foto (no van cifradas: decodificarlas ES el reto). La web carga solo la suya."""
+    viejo = DATOS / "reto1_pista.js"   # la de antes, cuando solo había una foto
+    if viejo.exists():
+        viejo.unlink()
+    for letra in PISTAS_RETO1:
+        pista = RAIZ / "generado" / "reto1" / f"pista_{letra}_11k.wav"
+        if not pista.exists():
+            sys.exit(f"Falta {pista.relative_to(RAIZ)}: ejecuta herramientas/generar_pistas_reto1.py.")
+        tam = escribir_js(f"reto1_pista_{letra}", f"reto1_pista_{letra}", b64(pista.read_bytes()))
+        print(f"reto1_pista_{letra}.js          {tam / 1e6:5.2f} MB")
 
 
 def recompensa(reto, cfg):

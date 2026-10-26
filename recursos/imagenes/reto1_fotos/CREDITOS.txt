@@ -1,0 +1,10 @@
+Fotos de las pistas del reto 1 («Mensaje desde 1969»): NASA, dominio público.
+Descargadas de images.nasa.gov (versión «large»). Ver especificaciones/reto1_variantes.md.
+
+a_aldrin.jpg             AS11-40-5903   Buzz Aldrin en la Luna. La hizo Neil Armstrong.
+b_modulo_lunar.jpg       AS11-44-6642   El módulo lunar volviendo de la Luna, con la Tierra detrás. La hizo Michael Collins.
+c_paseo_espacial.jpg     S65-30433      Ed White en el primer paseo espacial de EE. UU. La hizo James McDivitt.
+d_tierra_sobre_luna.jpg  AS08-14-2383   La Tierra asomando sobre la Luna. La hizo William Anders.
+e_cernan_bandera.jpg     AS17-134-20386 Eugene Cernan junto a la bandera. La hizo Harrison Schmitt.
+
+Estos datos no deben aparecer en la web antes de acertar: dan la respuesta.

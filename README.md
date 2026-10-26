@@ -185,8 +185,15 @@ pistas como pulsadores rojos con tapa. Reloj de misión y displays de 7 segmento
 (también con la ventana del navegador). Ningún rótulo nombra la misión ni a su tripulación: no pueden insinuar la
 respuesta. Fuentes: Barlow Condensed, IBM Plex Sans e IBM Plex Mono (en `web/assets/fonts/`).
 
-1. La pista SSTV (foto de Aldrin en la Luna) pregunta «¿Quién hizo esta fotografía?».
-2. Respuesta: el comandante que sostenía la cámara (en `construir_web.py`). Dos pistas (bloquean 30 s y 60 s).
+1. **Pista SSTV con variantes** (`especificaciones/reto1_variantes.md`): a cada grupo le toca al azar una de cinco
+   fotos históricas de la NASA (dominio público, en `recursos/imagenes/reto1_fotos/`), todas con «¿Quién hizo esta
+   fotografía?» en una franja oscura. En todas, el fotógrafo no sale en la foto y hay que razonar quién sostenía la
+   cámara. Las genera `herramientas/generar_pistas_reto1.py` (recorte a 640×496, franja con la pregunta, PD120 a
+   11 025 Hz y comprobación de ida y vuelta). La web solo carga la pista de su grupo (`reto1_pista_<letra>.js`).
+   Los grupos que ya jugaban con la foto única conservan la de Aldrin (variante a).
+2. Respuesta: quien hizo la foto (en `construir_web.py`, un grupo de respuestas por foto, como las variantes del
+   reto 2): solo la de su foto abre el reto. Dos pistas por foto (bloquean 30 s y 60 s), en `web/js/reto1.js`;
+   ninguna dice el nombre buscado ni el nombre de las misiones a la Luna (es la respuesta de una pregunta del reto 2).
 3. Puzle 3×3 con una foto al azar de 8 del espacio (NASA/ESA, en `recursos/imagenes/puzle/` con `fotos.json`).
    Se eligieron con `herramientas/medir_fotos_puzle.py` para que tengan una dificultad parecida (índice 8,9–13,2:
    ninguna pieza lisa y ningún par de piezas casi iguales), y el desorden está siempre a **exactamente 20

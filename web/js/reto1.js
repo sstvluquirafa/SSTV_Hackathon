@@ -1,6 +1,8 @@
 // Reto 1 · Mensaje desde 1969: pista SSTV → respuesta → puzle 3×3 → fragmento ORIÓN.
 // Basado en referencia/reto1_prototipo.html. La respuesta no está en el código: si es correcta,
 // abre la llave que descifra la foto del puzle y el audio de recompensa (ver base.js → Cripto).
+// Variantes (especificaciones/reto1_variantes.md): a cada grupo le toca al azar una de cinco fotos históricas, todas con
+// la pregunta «¿Quién hizo esta fotografía?» escrita encima. Solo la respuesta de su foto abre el reto (como el reto 2).
 // Estética: la sala de control de misión (especificaciones/reto1_estetica_control_mision.md). Una línea de fases
 // (Recepción · Identificación · Reconstrucción · Entrega) y, de cada fase, solo lo suyo: la acción en la pantalla mural
 // y los mandos en el puesto del equipo. Estilos en css/reto1.css; el reproductor usa el tema «control-mision».
@@ -10,13 +12,32 @@
   const { $, $$, Progreso, Cripto, cargarDatos, blobDesdeB64, urlDe, Sonido } = App;
   const ID = "reto1";
 
-  // Cada pista bloquea el reto un tiempo creciente (efectos.js → App.usarPista)
-  const PISTAS = [
-    { id: "p1", titulo: "Pista 1 · ¿Dónde y cuándo?",
-      texto: "La foto se tomó en la Luna en julio de 1969, durante la primera misión que llegó a la Luna. En ella solo dos astronautas pisaron la superficie." },
-    { id: "p2", titulo: "Pista 2 · Mirad el reflejo",
-      texto: "El astronauta de la foto es Buzz Aldrin. En el visor de su casco se refleja quien sostiene la cámara: su comandante, el primer ser humano que pisó la Luna." },
+  // Las cinco fotos de la pista (el orden es el de PISTAS_RETO1 en herramientas/construir_web.py) y sus dos pistas.
+  // Cada pista bloquea el reto un tiempo creciente (efectos.js → App.usarPista). Ninguna dice el nombre que se busca
+  // ni el nombre de las misiones a la Luna (es la respuesta de una pregunta del reto 2).
+  const pista = (titulo1, texto1, titulo2, texto2) => [
+    { id: "p1", titulo: `Pista 1 · ${titulo1}`, texto: texto1 },
+    { id: "p2", titulo: `Pista 2 · ${titulo2}`, texto: texto2 },
   ];
+  const VARIANTES = [
+    { letra: "a", pistas: pista(
+      "¿Dónde y cuándo?", "La foto se tomó en la Luna en julio de 1969, durante la primera misión que llegó a la Luna. En ella solo dos astronautas pisaron la superficie.",
+      "Mirad el reflejo", "El astronauta de la foto es Buzz Aldrin. En el visor de su casco se refleja quien sostiene la cámara: su comandante, el primer ser humano que pisó la Luna.") },
+    { letra: "b", pistas: pista(
+      "¿Dónde y cuándo?", "La foto se tomó en julio de 1969, en órbita alrededor de la Luna, durante la primera misión que llegó a la Luna. Iban tres astronautas.",
+      "¿Quién falta?", "Dentro del módulo lunar van los dos astronautas que acaban de pisar la Luna, y detrás está la Tierra con el resto de la humanidad. El único que no sale es el tercer tripulante, que se quedó en órbita pilotando la nave principal.") },
+    { letra: "c", pistas: pista(
+      "¿Dónde y cuándo?", "La foto se tomó en junio de 1965, en órbita alrededor de la Tierra. La nave era pequeña: solo cabían dos astronautas.",
+      "¿Quién falta?", "El que flota fuera es Ed White, el primer estadounidense que salió al espacio. La foto la hizo su compañero, que se quedó dentro de la nave: era el comandante de la misión.") },
+    { letra: "d", pistas: pista(
+      "¿Dónde y cuándo?", "La foto se tomó el 24 de diciembre de 1968, desde la primera nave tripulada que dio vueltas alrededor de la Luna (sin bajar). Iban tres astronautas.",
+      "¿Quién la hizo?", "Los tres eran Frank Borman, Jim Lovell y un novato que se llamaba William. Borman y Lovell iban pilotando la nave; el que llevaba la cámara junto a la ventanilla era el novato.") },
+    { letra: "e", pistas: pista(
+      "¿Dónde y cuándo?", "La foto se tomó en diciembre de 1972, en la última misión que ha pisado la Luna. En la Luna bajaron dos astronautas.",
+      "¿Quién falta?", "El astronauta de la foto es el comandante, Eugene Cernan. La foto la hizo el otro astronauta que bajó con él: el único científico (era geólogo) que ha pisado la Luna.") },
+  ];
+  /** La foto que le toca al grupo. Si ya jugaba con la única foto de antes, se queda con esa (la a). */
+  const variante = () => VARIANTES[estado().variante] || VARIANTES[0];
   // Las fases del plan de vuelo, con la orden que se da en cada una
   const FASES = [
     { nombre: "Recepción", orden: "Pulsad <b>RECIBIR TRANSMISIÓN</b> y decodificad la imagen con Black Cat SSTV." },
@@ -54,7 +75,10 @@
   function vista(el) {
     // El reloj de misión no corre mientras el tutorial está abierto la primera vez: arranca al cerrarlo
     const arrancarReloj = () => Progreso.cambiar(ID, (r) => { if (!r.inicio && !r.completado) r.inicio = Date.now(); });
-    Progreso.cambiar(ID, (r) => { r.empezado = true; });
+    Progreso.cambiar(ID, (r) => {
+      if (r.variante == null) r.variante = r.empezado ? 0 : Math.floor(Math.random() * VARIANTES.length);
+      r.empezado = true;
+    });
     if (App.Tutorial.visto(ID)) arrancarReloj();
     for (const k of Object.keys(preparadas)) delete preparadas[k];
     el.innerHTML = `
@@ -204,7 +228,7 @@
   async function cargarPista() {
     const caja = $("#r1-pista");
     try {
-      const b64 = await cargarDatos("reto1_pista");
+      const b64 = await cargarDatos(`reto1_pista_${variante().letra}`);
       if (!caja.isConnected) return;
       const url = urlDe(blobDesdeB64(b64, "audio/wav"));
       const audio = App.reproductor(caja, url, "pista_reto1.wav", "pista_reto1.wav", {
@@ -225,6 +249,7 @@
   function pintarPistas() {
     const e = estado(), caja = $("#r1-pistas"), recibidas = $("#r1-pistas-recibidas");
     if (!caja) return;
+    const PISTAS = variante().pistas;
     const abiertas = PISTAS.filter((p) => e.pistas.some((x) => x.id === p.id));
     recibidas.innerHTML = `<p class="r1-lista-tit">Pistas recibidas</p>${abiertas.length
       ? abiertas.map((p) => `<p class="r1-pista-texto"><b>${p.titulo}${/[?!]$/.test(p.titulo) ? "" : "."}</b> ${p.texto}</p>`).join("")
@@ -279,7 +304,8 @@
     if (!Cripto.normalizar(input.value)) { input.focus(); return; }
     $("#r1-comprobar").disabled = true;
     $("#r1-mensaje").textContent = "Comprobando…";
-    const llave = await Cripto.probar(window.DATOS.reto1_llaves, input.value).catch(() => null);
+    // Solo vale la respuesta de la foto de este grupo
+    const llave = await Cripto.probar(window.DATOS.reto1_llaves, input.value, estado().variante || 0).catch(() => null);
     $("#r1-comprobar").disabled = false;
     if (llave) {
       Sonido.exito();
