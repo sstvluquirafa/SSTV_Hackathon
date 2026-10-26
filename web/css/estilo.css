@@ -500,19 +500,39 @@ a { color: var(--ambar); }
 
 /* ---------- Portadas de las tarjetas ---------- */
 .tarjeta-sello { position: relative; overflow: hidden; }
+/* El estado (candado + ENCRIPTADO / EN CURSO / DESCIFRADO) va en una etiqueta abajo a la izquierda: el dibujo se ve entero */
+.tarjeta-sello { flex-direction: row !important; align-items: flex-end !important; justify-content: flex-start !important; gap: 0 !important; padding: 10px; }
 .tarjeta-sello > svg, .tarjeta-sello > span { position: relative; z-index: 1; }
-.tarjeta-sello > span { padding: 3px 10px; border-radius: 6px; background: rgba(3, 7, 18, 0.65); }
-.tarjeta-arte { position: absolute; inset: 0; opacity: 0.38; filter: blur(2px) saturate(0.8); transition: opacity 0.35s, filter 0.35s; }
+.tarjeta-sello > svg { width: 26px !important; height: 26px !important; padding: 5px 0 5px 8px; border-radius: 6px 0 0 6px; background: rgba(3, 7, 18, 0.8); }
+.tarjeta-sello > span { padding: 5px 10px 5px 7px; border-radius: 0 6px 6px 0; background: rgba(3, 7, 18, 0.8); font-size: 11px !important; line-height: 16px; }
+.tarjeta-arte { position: absolute; inset: 0; opacity: 0.72; filter: saturate(0.85); transition: opacity 0.35s, filter 0.35s; }
 .tarjeta-arte svg { width: 100%; height: 100%; display: block; }
-.tarjeta:hover .tarjeta-arte, .tarjeta.hecho .tarjeta-arte { opacity: 0.75; filter: none; }
-.tarjeta.pronto:hover .tarjeta-arte { opacity: 0.45; filter: blur(1px); }
-.arte-barrido { animation: barrido-arte 3.5s linear infinite; }
-@keyframes barrido-arte { from { transform: translateY(-68px); } to { transform: translateY(52px); } }
-.arte-cifrado {
-  margin: 0; padding: 4px 8px; font-family: var(--mono); font-size: 11px; line-height: 1.35; color: #fbbf24;
-  white-space: pre; animation: caer 14s linear infinite; font-variant-ligatures: none;
+.tarjeta:hover .tarjeta-arte, .tarjeta.hecho .tarjeta-arte { opacity: 1; filter: none; }
+/* Cada portada, con la escena de su reto (js/ilustraciones.js) */
+.arte-luz { animation: arte-parpadeo 1.6s steps(2) infinite; }
+@keyframes arte-parpadeo { 50% { fill: #2f402d; } }
+.arte-matrix { position: absolute; inset: 0; overflow: hidden; background: #040706; font-family: "JetBrains Mono", var(--mono); font-variant-ligatures: none; }
+/* (más específico que «.tarjeta-sello span», que es la etiqueta de estado) */
+.tarjeta-sello .arte-matrix span { font-weight: 400; letter-spacing: 0; color: #1b8a45 !important; }
+.arte-matrix span { position: absolute; top: 0; white-space: pre; font-size: 11px; line-height: 1.15; color: #1b8a45; animation: arte-caer linear infinite; }
+.arte-matrix span::first-line { color: #eafff1; }
+@keyframes arte-caer { from { transform: translateY(-100%); } to { transform: translateY(120px); } }
+.arte-matrix p { position: absolute; left: 0; right: 0; top: 50%; margin: 0; transform: translateY(-50%); text-align: center; font-size: 17px; letter-spacing: 0.06em;
+  color: #e4fbee; background: rgba(4, 7, 6, 0.85); padding: 6px 0; text-shadow: 0 0 12px rgba(110, 255, 170, 0.35); }
+.arte-matrix p b { font-weight: 400; color: #3dfa7a; }
+.arte-haz { transform-origin: 130px 38px; animation: arte-haz 6s ease-in-out infinite alternate; }
+@keyframes arte-haz { from { transform: rotate(-8deg); } to { transform: rotate(10deg); } }
+.arte-lampara { animation: arte-morse 2.4s steps(1) infinite; }
+@keyframes arte-morse { 0%, 8%, 22%, 30%, 40%, 70%, 100% { opacity: 1; } 4%, 18%, 26%, 36%, 60% { opacity: 0.25; } }
+.arte-ola { animation: arte-ola 3s ease-in-out infinite alternate; }
+@keyframes arte-ola { to { transform: translateX(-20px); } }
+.arte-hilo { stroke-dasharray: 220; stroke-dashoffset: 220; animation: arte-hilo 3s ease forwards 0.4s; }
+@keyframes arte-hilo { to { stroke-dashoffset: 0; } }
+.arte-lupa { animation: arte-lupa 5s ease-in-out infinite alternate; }
+@keyframes arte-lupa { to { transform: translate(-14px, 6px); } }
+@media (prefers-reduced-motion: reduce) {
+  .arte-luz, .arte-matrix span, .arte-haz, .arte-lampara, .arte-ola, .arte-hilo, .arte-lupa { animation: none; stroke-dashoffset: 0; }
 }
-@keyframes caer { from { transform: translateY(-50%); } to { transform: translateY(0); } }
 
 /* Glitch en ENCRIPTADO / PRÓXIMAMENTE: dos copias desplazadas que aparecen a ratos */
 .glitch { position: relative; display: inline-block; }

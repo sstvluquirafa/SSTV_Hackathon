@@ -1,5 +1,5 @@
 // Ilustraciones dibujadas en SVG/CSS (sin imágenes externas): la antena de la portada
-// y el arte de cada tarjeta de reto (difuminado tras el candado; se "descifra" al pasar el ratón).
+// y el arte de cada tarjeta de reto: la escena de su reto (sala de control, Matrix, faro y escritorio del detective).
 (function () {
   "use strict";
 
@@ -46,53 +46,73 @@
       <circle cx="177" cy="76" r="14" fill="url(#ant-brillo)" class="ant-parpadeo"/>
     </svg>`;
 
-  // ---------- Arte de las tarjetas ----------
-  // Reto 1: una imagen SSTV a medio recibir (la Luna sobre el horizonte, con líneas de escaneo)
-  const sstv = `
+  // ---------- Arte de las tarjetas: cada una, la escena de su reto ----------
+  // Reto 1 · la sala de control de misión: pantalla mural con la trayectoria a la Luna y una fila de consolas con luces
+  const control = `
     <svg viewBox="0 0 300 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <defs><linearGradient id="arte-cielo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1226"/><stop offset="1" stop-color="#1e293b"/></linearGradient></defs>
-      <rect width="300" height="120" fill="url(#arte-cielo)"/>
-      <circle cx="210" cy="44" r="26" fill="#e2e8f0"/><circle cx="200" cy="38" r="5" fill="#cbd5e1"/><circle cx="218" cy="54" r="7" fill="#cbd5e1"/><circle cx="222" cy="34" r="3" fill="#cbd5e1"/>
-      <path d="M0 92 Q60 78 120 88 T300 84 V120 H0Z" fill="#475569"/>
-      <path d="M40 92 l8 -14 l8 14 Z" fill="#94a3b8"/>
-      <rect y="70" width="300" height="50" fill="url(#arte-ruido)" opacity=".9"/>
-      <pattern id="arte-ruido" width="6" height="3" patternUnits="userSpaceOnUse"><rect width="6" height="1" fill="#d97706" opacity=".35"/><rect y="2" width="4" height="1" fill="#fbbf24" opacity=".25"/></pattern>
-      <rect class="arte-barrido" y="68" width="300" height="2" fill="#fbbf24"/>
+      <rect width="300" height="120" fill="#14171a"/>
+      <rect x="40" y="8" width="220" height="62" fill="#0b0d0e" stroke="#2a3136" stroke-width="5"/>
+      <g fill="#f3ead2" opacity=".55"><circle cx="70" cy="22" r=".9"/><circle cx="120" cy="16" r=".7"/><circle cx="198" cy="20" r=".8"/><circle cx="236" cy="50" r=".7"/><circle cx="96" cy="54" r=".6"/></g>
+      <circle cx="74" cy="50" r="10" fill="#3b6ea5"/><path d="M68 46 q4 -3 8 0 q-2 5 -6 4 Z" fill="#4f9a4a"/>
+      <circle cx="222" cy="28" r="7" fill="#cfcabb"/>
+      <path class="arte-trayectoria" d="M84 48 C120 20 170 14 215 26" fill="none" stroke="#e3a21a" stroke-width="1.6" stroke-dasharray="4 3"/>
+      <circle class="arte-nave" r="2.4" fill="#ff8a3d"><animateMotion dur="4s" repeatCount="indefinite" path="M84 48 C120 20 170 14 215 26"/></circle>
+      <rect x="48" y="62" width="36" height="5" fill="#050606"/><text x="50" y="66.5" font-family="monospace" font-size="5" fill="#ff8a3d">00:14:22</text>
+      <rect x="0" y="80" width="300" height="40" fill="#3c464d"/>
+      <rect x="0" y="80" width="300" height="3" fill="#56626a"/>
+      ${[16, 86, 156, 226].map((x) => `<rect x="${x}" y="88" width="58" height="24" fill="#b9bfbd"/>
+        <rect x="${x + 5}" y="92" width="22" height="9" fill="#050606"/>
+        <circle class="arte-luz" cx="${x + 36}" cy="96" r="2.6" fill="#4f9a4a"/><circle cx="${x + 44}" cy="96" r="2.6" fill="#e3a21a"/><circle cx="${x + 52}" cy="96" r="2.6" fill="#5a4a24"/>
+        <rect x="${x + 5}" y="104" width="48" height="4" fill="#d9dcd8"/>`).join("")}
     </svg>`;
 
-  // Reto 2: columnas de texto cifrado que caen
-  function cifrado() {
-    const abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-    const linea = () => Array.from({ length: 34 }, () => abc[Math.floor(Math.random() * abc.length)]).join("");
-    const lineas = Array.from({ length: 14 }, linea).join("\n");
-    return `<pre class="arte-cifrado" aria-hidden="true">${lineas}\n${lineas}</pre>`;
+  // Reto 2 · Matrix: lluvia de caracteres verdes y, en medio, una línea que se está descifrando
+  function matrix() {
+    const abc = "ｱｲｳｴｵｶｷｸｹｺｻｼｽ0123456789ABCDEF+/=";
+    const columna = () => Array.from({ length: 12 }, () => abc[Math.floor(Math.random() * abc.length)]).join("\n");
+    const columnas = Array.from({ length: 22 }, (_, i) => `<span style="left:${i * 4.6}%;animation-delay:-${(Math.random() * 6).toFixed(1)}s;animation-duration:${(4 + Math.random() * 4).toFixed(1)}s">${columna()}</span>`).join("");
+    return `<div class="arte-matrix" aria-hidden="true">${columnas}<p>OTYtT0lQT0<b>NTT1JDQ</b></p></div>`;
   }
 
-  // Reto 3: estática de radio (sin señal todavía)
-  const estatica = `
-    <svg viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true">
-      <filter id="arte-estatica"><feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="1" seed="4"/><feColorMatrix values="0 0 0 0 .6  0 0 0 0 .65  0 0 0 0 .75  0 0 0 1.6 -.5"/></filter>
-      <rect width="300" height="120" fill="#0b1120"/><rect width="300" height="120" filter="url(#arte-estatica)" opacity=".55"/>
-      <path d="M0 60 L40 60 L48 50 L56 70 L64 60 L300 60" stroke="#64748b" stroke-width="1.5" fill="none" opacity=".7"/>
+  // Reto 3 · el faro de noche: el haz barre el cielo y la lámpara destella en Morse
+  const faro = `
+    <svg viewBox="0 0 300 120" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
+      <rect width="300" height="120" fill="#0a1420"/>
+      <g fill="#efe6d2"><circle cx="160" cy="14" r=".9"/><circle cx="212" cy="30" r="1.1"/><circle cx="250" cy="12" r=".8"/><circle cx="276" cy="44" r=".9"/><circle cx="190" cy="52" r=".7"/><circle cx="120" cy="22" r=".7"/></g>
+      <g class="arte-haz"><polygon points="130,38 390,-30 390,70" fill="#ffd27a" opacity=".16"/></g>
+      <rect x="0" y="98" width="300" height="22" fill="#1b263b"/>
+      <path d="M0 104 q20 -4 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0" stroke="#2f3d55" stroke-width="1.5" fill="none" class="arte-ola"/>
+      <rect x="104" y="94" width="52" height="8" fill="#2b3445"/>
+      <path d="M118 46 L112 96 H148 L142 46 Z" fill="#efe6d2"/>
+      <path d="M116 62 H144 L145 72 H115 Z M114 80 H146 L147 90 H113 Z" fill="#c0392b"/>
+      <rect x="114" y="42" width="32" height="5" fill="#141414"/>
+      <rect x="119" y="28" width="22" height="14" fill="#1f2a38" stroke="#c9a227" stroke-width="1.2"/>
+      <path d="M116 28 L130 18 L144 28 Z" fill="#c0392b"/>
+      <circle class="arte-lampara" cx="130" cy="35" r="5" fill="#ffd27a"/>
+      <text x="168" y="88" font-family="monospace" font-size="12" font-weight="700" fill="#c9a227" letter-spacing="2">· – · ·  – · – –</text>
     </svg>`;
 
-  // Reto 4: un expediente con la lupa sobre el satélite saboteado
-  const caso = `
+  // Reto 4 · el escritorio del detective: corcho con fichas e hilo rojo, una carpeta y la lupa
+  const detective = `
     <svg viewBox="0 0 300 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <rect width="300" height="120" fill="#0b1226"/>
-      <rect x="62" y="16" width="120" height="92" rx="6" fill="#111a33" stroke="#334155" transform="rotate(-6 122 62)"/>
-      <rect x="74" y="14" width="120" height="92" rx="6" fill="#16213f" stroke="#475569"/>
-      <text x="84" y="32" fill="#fbbf24" font-size="9" font-family="monospace" font-weight="700">EXPEDIENTE #04</text>
-      <rect x="84" y="40" width="84" height="4" rx="2" fill="#334155"/><rect x="84" y="50" width="64" height="4" rx="2" fill="#334155"/>
-      <g transform="translate(124 80)"><rect x="-9" y="-6" width="18" height="12" rx="2" fill="#94a3b8"/>
-        <rect x="-33" y="-4" width="20" height="8" fill="#38bdf8" transform="rotate(90 -23 0)"/><rect x="13" y="-4" width="20" height="8" fill="#38bdf8" transform="rotate(90 23 0)"/></g>
-      <text x="146" y="96" fill="#ef4444" font-size="8" font-family="monospace" font-weight="700">SIN SEÑAL</text>
-      <g class="arte-lupa"><circle cx="222" cy="58" r="26" fill="rgba(251,191,36,.08)" stroke="#fbbf24" stroke-width="5"/>
-        <path d="M241 77 L262 98" stroke="#fbbf24" stroke-width="8" stroke-linecap="round"/></g>
+      <rect width="300" height="120" fill="#3a2a1e"/>
+      <path d="M0 30 H300 M0 64 H300 M0 96 H300" stroke="#2f2218" stroke-width="2"/>
+      <rect x="150" y="8" width="138" height="78" fill="#b4865a" stroke="#5a3b22" stroke-width="6"/>
+      <rect x="164" y="18" width="40" height="26" fill="#faf6ec" transform="rotate(-4 184 31)"/>
+      <rect x="226" y="16" width="44" height="28" fill="#faf6ec" transform="rotate(3 248 30)"/>
+      <rect x="176" y="52" width="40" height="26" fill="#faf6ec" transform="rotate(2 196 65)"/>
+      <rect x="232" y="52" width="40" height="26" fill="#faf6ec" transform="rotate(-3 252 65)"/>
+      <path class="arte-hilo" d="M184 22 L248 20 L252 56 L196 56 Z" fill="none" stroke="#b3261e" stroke-width="1.6"/>
+      <g fill="#8b1e1e"><circle cx="184" cy="22" r="3"/><circle cx="248" cy="20" r="3"/><circle cx="196" cy="56" r="3"/><circle cx="252" cy="56" r="3"/></g>
+      <g transform="rotate(-6 70 80)"><path d="M18 58 H52 L58 52 H120 V112 H18 Z" fill="#d9b98a"/><rect x="18" y="62" width="102" height="50" fill="#e4c69a"/>
+        <rect x="30" y="74" width="62" height="12" fill="#faf6ec"/><text x="34" y="83" font-family="monospace" font-size="8" font-weight="700" fill="#2b2118">EXP. N.º 04</text>
+        <rect x="80" y="92" width="34" height="14" fill="none" stroke="#8b1e1e" stroke-width="2" transform="rotate(-10 97 99)"/></g>
+      <g class="arte-lupa"><circle cx="128" cy="40" r="16" fill="rgba(255,255,255,.12)" stroke="#2b2118" stroke-width="4"/>
+        <path d="M140 52 L156 68" stroke="#2b2118" stroke-width="6" stroke-linecap="round"/></g>
     </svg>`;
 
   App.portadaReto = function (id) {
-    const arte = id === "reto1" ? sstv : id === "reto2" ? cifrado() : id === "reto4" ? caso : estatica;
-    return `<div class="tarjeta-arte">${arte}</div>`;
+    const arte = id === "reto1" ? control : id === "reto2" ? matrix() : id === "reto3" ? faro : detective;
+    return `<div class="tarjeta-arte tarjeta-arte-${id}">${arte}</div>`;
   };
 })();
