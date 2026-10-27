@@ -16,8 +16,8 @@
   const TRAMOS = [141, 143, 145, 147, 149, 151, 153, 155]; // de 2 en 2 MHz: el SDR ve unos 2 MHz de golpe
   // Pistas de radio (Sintonizar). La organización las ajusta a la frecuencia real del walkie (README, «Emitir la baliza»).
   const PISTAS_SINTONIA = [
-    { id: "s1", titulo: "Pista de radio 1 · ¿En qué zona?", texto: "Está en la banda de radioaficionados de 2 metros: entre 144 y 146 MHz." },
-    { id: "s2", titulo: "Pista de radio 2 · Más cerca", texto: "Está entre 145 y 146 MHz. Id despacio y ampliad la cascada." },
+    { id: "s1", titulo: "Pista de radio · ¿En qué zona?", texto: "Está en la banda de radioaficionados de 2 metros: entre 144 y 146 MHz." },
+    { id: "s2", titulo: "Pista de radio · Más cerca", texto: "Está entre 145 y 146 MHz. Id despacio y ampliad la cascada." },
   ];
 
   const MORSE = {
@@ -27,7 +27,7 @@
     8: "---..", 9: "----.",
   };
   const DESDE_MORSE = Object.fromEntries(Object.entries(MORSE).map(([l, m]) => [m, l]));
-  const LETRAS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", NUMEROS = "0123456789";
+  const LETRAS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   /** Dibujo de un código: punto = círculo, raya = barra el triple de larga. El mismo en todo el reto. */
   const dibujo = (m) => `<span class="r3-morse" aria-label="${m.replace(/\./g, "punto ").replace(/-/g, "raya ").trim()}">${[...m]
     .map((s) => `<i class="${s === "." ? "p" : "r"}"></i>`).join("")}</span>`;
@@ -45,25 +45,14 @@
     { id: "p3", titulo: "Pista 3 · La primera letra", texto: "La palabra empieza por C (– · – ·)." },
   ];
   const SINTONIA = [
-    "Conectad el receptor SDR y su antena al PC y abrid el programa del SDR (SDR#).",
-    "Elegid el modo <b>NFM</b> («FM estrecha», el de los walkies), pulsad <b>Play</b> y subid el volumen.",
-    "<b>Barred el rango por tramos:</b> poned 141 MHz, mirad la cascada unos segundos y subid 2 MHz cada vez (143, 145…) hasta 155. Pulsad cada tramo de la regla al mirarlo.",
-    "Buscad <b>una línea fija y continua</b> en la cascada (el walkie no deja de transmitir). Cuando la veáis, haced clic encima.",
-    "Escuchad: un <b>zumbido grave de fondo con pitidos agudos que se repiten</b>. Si suena así, es la baliza.",
-    "Apuntad la frecuencia en la que la habéis encontrado y pulsad <b>«Ya la oímos»</b>.",
+    "Abrid <b>SDR#</b> con el receptor y su antena conectados, elegid el modo <b>NFM</b> (el de los walkies) y pulsad <b>Play</b>.",
+    "Recorred la regla: poned cada frecuencia en SDR#, mirad la <b>cascada</b> (el dibujo que cae) unos segundos y tachadla aquí.",
+    "La baliza es <b>una línea fija</b> en la cascada y suena a <b>zumbido con pitidos</b>. Haced clic en ella para oírla bien.",
   ];
-  const NO_OIS = [
-    "Revisad que la antena está bien enroscada y el receptor enchufado.",
-    "Subid la ganancia (RF Gain) del programa. Si suena saturado o con mucho ruido, bajadla.",
-    "Ampliad la cascada al máximo (frecuencia de muestreo más alta) para ver más rango de golpe.",
-    "Podéis encontrar otras señales (radioaficionados, voces): la baliza es la que tiene <b>pitidos que se repiten con un zumbido de fondo</b>.",
-    "Para escuchar no hace falta el cable de audio virtual: el sonido sale por los altavoces.",
-    "Si nada funciona, avisad a la organización (modo de reserva).",
-  ];
-  // Práctica: dos letras al azar de estas seis y después dos palabras cortas al azar de la lista
+  // Práctica: una letra al azar de estas seis y después una palabra corta al azar de la lista
   const LETRAS_CURSO = ["E", "T", "A", "N", "S", "O"];
-  const PALABRAS_PRACTICA = ["SOL", "MAR", "LUZ", "OSO", "PAN", "RIO", "SAL", "DIA", "VOZ", "MES", "TEN", "NIDO", "GATO", "ROSA"];
-  const EJERCICIOS = 4;
+  const PALABRAS_PRACTICA = ["SOL", "MAR", "LUZ", "OSO", "PAN", "RIO", "SAL", "DIA", "VOZ", "MES", "TEN"];
+  const EJERCICIOS = 2;
   const sinEtiquetas = (h) => h.replace(/<[^>]+>/g, "");
 
   const estado = () => Progreso.reto(ID);
@@ -188,7 +177,7 @@
                 <p class="r3-mensaje" id="r3-mensaje" role="status"></p>
                 <p class="r3-intentos" id="r3-intentos"></p>
                 <div class="r3-pistas">
-                  <h3 class="r3-rotulo">Pistas <span class="r3-coste"></span></h3>
+                  <h3 class="r3-rotulo">Pistas</h3>
                   <div id="r3-pistas"></div>
                 </div>
               </div>
@@ -254,10 +243,10 @@
     let texto;
     if (faseVista === 0) texto = ahoraAprender();
     else if (faseVista === 1) {
-      const i = [0, 1, 2, 3, 4].find((k) => !e.sintonia.includes(k));
-      const t = tramoPendiente();
-      if (i === 2 && t != null) texto = `paso 3. Poned ${t} MHz en SDR#, mirad la cascada unos segundos y pulsad «${t}» en la regla. Si veis una línea fija, pasad al paso 4.`;
-      else texto = i == null ? sinEtiquetas(SINTONIA[5]) : `paso ${i + 1}. ${sinEtiquetas(SINTONIA[i])} Después, marcad la casilla.`;
+      const t = tramoPendiente(), vistos = (e.tramos || []).length;
+      texto = !vistos ? `abrid SDR# en modo NFM, pulsad Play y empezad por ${TRAMOS[0]} MHz. Mirad la cascada y tachad ${TRAMOS[0]} en la regla.`
+        : t != null ? `poned ${t} MHz en SDR# y mirad la cascada. ¿Una línea fija con zumbido y pitidos? Pulsad «Ya la oímos». Si no, tachad ${t}.`
+        : "si la habéis oído, pulsad «Ya la oímos». Si no, volved a recorrer la regla más despacio o abrid una pista de radio.";
     } else if (faseVista === 2) texto = ahoraEscuchar();
     else if (e.completado) texto = "Reproducid la transmisión por el cable virtual y guardad la imagen del fragmento LYRA para el montaje del mapa.";
     else texto = $("#r3-palabra") && $("#r3-palabra").value.trim() ? "Pulsad «Comprobar»." : "Escribid la palabra de la baliza y pulsad «Comprobar».";
@@ -271,62 +260,33 @@
   // ===================================== Fase 1: la escuela de Morse =====================================
   function htmlAprender() {
     return `
-      <div class="r3-bloque">
-        <div class="r3-bloque-cab"><h3 class="r3-bloque-titulo"><span>1</span> Cómo funciona</h3>
-          <button class="r3-boton r3-boton-sec" type="button" id="r3-saltar">Ya sabemos Morse: saltar el curso</button></div>
-        <div class="r3-como-funciona">
-          <ol class="r3-pasos">
-            <li>Cada letra se escribe con <b>pitidos cortos (punto)</b> y <b>largos (raya)</b>. Una raya dura tres veces lo que un punto.</li>
-            <li>Dentro de una letra, los pitidos van seguidos. <b>Entre letra y letra hay un silencio más largo.</b></li>
-            <li>Para leer Morse: separad los pitidos en letras y buscad cada letra en la chuleta (a la derecha).</li>
-          </ol>
-          <div class="r3-ejemplo">
-            <div class="r3-casilla r3-casilla-fija" id="r3-ejemplo-a"><span class="r3-casilla-letra">A</span>${dibujo(MORSE.A)}</div>
-            <p class="r3-ejemplo-texto">La A es un punto y una raya.</p>
-            <button class="r3-boton r3-boton-sec" type="button" id="r3-oir-a">Escuchar la A</button>
-          </div>
-        </div>
-      </div>
+      <p class="r3-regla-de-oro"><b>Punto</b> ${dibujo(".")} = pitido corto · <b>raya</b> ${dibujo("-")} = pitido largo ·
+        entre letras, <b>silencio largo</b>.
+        <button class="r3-palabra-boton" type="button" id="r3-saltar">Ya sabemos Morse</button></p>
 
       <div class="r3-bloque">
-        <h3 class="r3-bloque-titulo"><span>2</span> Traductor: escribid cualquier palabra</h3>
+        <h3 class="r3-bloque-titulo"><span>1</span> Escribid una palabra y escuchadla</h3>
         <div class="r3-traductor-fila">
-          <input class="r3-campo r3-campo-traductor" id="r3-traductor" maxlength="20" spellcheck="false"
-            placeholder="Escribid una palabra (por ejemplo, vuestro nombre)" aria-label="Palabra para traducir a Morse">
+          <input class="r3-campo r3-campo-traductor" id="r3-traductor" maxlength="16" spellcheck="false"
+            placeholder="Por ejemplo, vuestro nombre" aria-label="Palabra para traducir a Morse">
           <button class="r3-boton r3-boton-principal" type="button" id="r3-tr-escuchar">Escuchar</button>
-          <button class="r3-boton r3-boton-sec" type="button" id="r3-tr-parar">Parar</button>
         </div>
-        <div class="r3-traductor-fila r3-traductor-opciones">
-          <div class="r3-interruptor" role="group" aria-label="Velocidad">
-            <button type="button" data-ritmo="lento" aria-pressed="true">Lento</button><button type="button" data-ritmo="normal" aria-pressed="false">Normal</button>
-          </div>
-          <span class="r3-nota-corta">Lento: con más silencio entre letras, como la baliza.</span>
-          <span class="r3-ejemplos">Ejemplos: ${["SOS", "LUNA", "HOLA"].map((p) => `<button class="r3-boton r3-boton-sec" type="button" data-ejemplo="${p}">${p}</button>`).join("")}</span>
-        </div>
-        <div class="r3-casillas" id="r3-tr-casillas" aria-live="polite"></div>
+        <div class="r3-casillas r3-casillas-traductor" id="r3-tr-casillas" aria-live="polite"></div>
       </div>
 
       <div class="r3-bloque">
-        <h3 class="r3-bloque-titulo"><span>3</span> Practicad</h3>
-        <p class="r3-texto">La web hará sonar una letra. Apuntadla con <b>PUNTO</b> y <b>RAYA</b> y pulsad <b>Comprobar</b>.</p>
+        <h3 class="r3-bloque-titulo" id="r3-practica-titulo"><span>2</span> Ahora vosotros: ¿qué suena?</h3>
         <div id="r3-practica"></div>
       </div>`;
   }
 
-  let ritmo = "lento", traducida = false;
+  let traducida = false, turnoTraductor = 0;
   function enlazarAprender() {
     $("#r3-saltar").addEventListener("click", () => marcar("curso"));
-    $("#r3-oir-a").addEventListener("click", () => tocar(MORSE.A, { marcar: resaltar([$("#r3-ejemplo-a")]) }));
     const campo = $("#r3-traductor");
     campo.addEventListener("input", () => { parar(); pintarTraductor(); });
     campo.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); escucharTraductor(); } });
-    $("#r3-tr-escuchar").addEventListener("click", escucharTraductor);
-    $("#r3-tr-parar").addEventListener("click", parar);
-    $$("[data-ritmo]").forEach((b) => b.addEventListener("click", () => {
-      ritmo = b.dataset.ritmo;
-      $$("[data-ritmo]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-    }));
-    $$("[data-ejemplo]").forEach((b) => b.addEventListener("click", () => { campo.value = b.dataset.ejemplo; pintarTraductor(); escucharTraductor(); }));
+    $("#r3-tr-escuchar").addEventListener("click", (ev) => (ev.currentTarget.textContent === "Parar" ? parar() : escucharTraductor()));
     pintarTraductor();
     pintarEjercicio();
   }
@@ -347,19 +307,20 @@
     if (!texto) { $("#r3-traductor").focus(); return; }
     traducida = true;
     pintarAhora();
-    $("#r3-tr-casillas").scrollIntoView({ block: "nearest", behavior: "smooth" });
+    const boton = $("#r3-tr-escuchar");
     const secuencia = texto.split(" ").map((p) => [...p].map((c) => MORSE[c]).join(" ")).join(" / ");
-    tocar(secuencia, { entreLetras: ENTRE_LETRAS[ritmo], marcar: resaltar($$("#r3-tr-casillas .r3-casilla")) });
+    // Siempre con el silencio entre letras de la baliza: así suena igual que lo que van a oír por radio
+    const fin = tocar(secuencia, { entreLetras: ENTRE_LETRAS.lento, marcar: resaltar($$("#r3-tr-casillas .r3-casilla")) });
+    const turno = ++turnoTraductor;
+    boton.textContent = "Parar";
+    fin.then(() => { if (turno === turnoTraductor && boton.isConnected) boton.textContent = "Escuchar"; });
   }
 
-  // ---------- Practicad: dos letras y dos palabras (con el silencio entre letras de la baliza) ----------
+  // ---------- Practicad: una letra y una palabra (con el silencio entre letras de la baliza) ----------
   let ejercicio = 0, escrito = "", objetivo = [], fallosEj = 0, resuelto = null; // resuelto: "bien" | "solucion"
   function nuevoEjercicio() {
-    if (ejercicio < 2) {
-      const azar = () => LETRAS_CURSO[Math.floor(Math.random() * LETRAS_CURSO.length)];
-      let l = azar();
-      while (ejercicio === 1 && l === objetivo[0]) l = azar();
-      objetivo = [l];
+    if (ejercicio < 1) {
+      objetivo = [LETRAS_CURSO[Math.floor(Math.random() * LETRAS_CURSO.length)]];
     } else {
       const anterior = objetivo.join("");
       let p = anterior;
@@ -387,24 +348,27 @@
       return;
     }
     if (!objetivo.length) nuevoEjercicio();
-    const esPalabra = ejercicio >= 2, cosa = esPalabra ? "la palabra" : "la letra";
+    const esPalabra = ejercicio >= 1, cosa = esPalabra ? "la palabra" : "la letra", ultimo = ejercicio >= EJERCICIOS - 1;
     const casillasObjetivo = objetivo.map((l) => `<div class="r3-casilla r3-casilla-fija"><span class="r3-casilla-letra">${l}</span>${dibujo(MORSE[l])}</div>`).join("");
     caja.innerHTML = `
-      <p class="r3-ejercicio-num"><b>Ejercicio ${ejercicio + 1} de ${EJERCICIOS}.</b> ${esPalabra ? `Ahora una palabra de ${objetivo.length} letras: pulsad «Siguiente letra» en cada silencio entre letras.` : ""}</p>
       <div class="r3-ejercicio">
         <button class="r3-boton r3-boton-principal" type="button" id="r3-oir-ej">Oír ${cosa}</button>
         <div class="r3-casillas r3-escrito" id="r3-escrito">${resuelto ? casillasObjetivo : escritoHtml()}</div>
+        <div class="r3-ejercicio-resultado">
+          <p class="r3-mensaje ${mensaje ? mensaje.tipo : ""}" role="status">${mensaje ? mensaje.texto : ""}</p>
+          ${!resuelto && fallosEj >= 2 ? '<button class="r3-boton r3-boton-sec" type="button" id="r3-ver-letra">Ver la solución</button>' : ""}
+        </div>
       </div>
-      ${resuelto ? "" : `<div class="r3-teclado">
-        <button class="r3-tecla" type="button" data-ej="." aria-label="Punto">Punto <i class="r3-tecla-p"></i></button>
+      <div class="r3-teclado">${resuelto
+        ? (ultimo ? '<button class="r3-boton r3-boton-principal" type="button" id="r3-fin-curso">Ir a Sintonizar</button>'
+          : '<button class="r3-boton r3-boton-principal" type="button" id="r3-sigue-ej">Siguiente: una palabra</button>')
+        : `<button class="r3-tecla" type="button" data-ej="." aria-label="Punto">Punto <i class="r3-tecla-p"></i></button>
         <button class="r3-tecla" type="button" data-ej="-" aria-label="Raya">Raya <i class="r3-tecla-r"></i></button>
-        ${esPalabra ? '<button class="r3-boton r3-boton-sec" type="button" data-ej=" ">Siguiente letra</button>' : ""}
+        ${esPalabra ? '<button class="r3-tecla r3-tecla-ancha" type="button" data-ej=" ">Siguiente letra</button>' : ""}
         <button class="r3-boton r3-boton-sec" type="button" data-ej="borrar">Borrar</button>
-        <button class="r3-boton r3-boton-principal" type="button" id="r3-comprobar-ej">Comprobar</button>
-        ${fallosEj >= 2 ? '<button class="r3-boton r3-boton-sec" type="button" id="r3-ver-letra">Ver la solución</button>' : ""}
-      </div>`}
-      <p class="r3-mensaje ${mensaje ? mensaje.tipo : ""}" role="status">${mensaje ? mensaje.texto : ""}</p>
-      ${resuelto ? `<div class="r3-acciones"><button class="r3-boton r3-boton-principal" type="button" id="r3-sigue-ej">${ejercicio < EJERCICIOS - 1 ? "Siguiente ejercicio" : "Terminar la práctica"}</button></div>` : ""}`;
+        <button class="r3-boton r3-boton-principal" type="button" id="r3-comprobar-ej">Comprobar</button>`}
+      </div>`;
+    $("#r3-practica-titulo").innerHTML = `<span>2</span> Ahora vosotros: ¿qué ${esPalabra ? "palabra" : "letra"} suena? <small>${ejercicio + 1} de ${EJERCICIOS}</small>`;
     $("#r3-oir-ej").addEventListener("click", () => oirObjetivo(resuelto ? resaltar($$("#r3-escrito .r3-casilla")) : null));
     $$("[data-ej]", caja).forEach((b) => b.addEventListener("click", () => escribirEjercicio(b.dataset.ej)));
     const comprobarEj = $("#r3-comprobar-ej");
@@ -417,6 +381,8 @@
     });
     const sigue = $("#r3-sigue-ej");
     if (sigue) sigue.addEventListener("click", () => { ejercicio++; objetivo = []; pintarEjercicio(); });
+    const fin = $("#r3-fin-curso");
+    if (fin) fin.addEventListener("click", () => marcar("curso"));
     pintarAhora();
   }
   function escribirEjercicio(s) {
@@ -443,68 +409,38 @@
   }
 
   function ahoraAprender() {
-    if (!traducida && ejercicio === 0 && !escrito && !fallosEj && !resuelto) return "escribid una palabra en el traductor (bloque 2) y pulsad «Escuchar».";
+    if (!traducida && ejercicio === 0 && !escrito && !fallosEj && !resuelto) return "escribid una palabra arriba (por ejemplo, vuestro nombre) y pulsad «Escuchar».";
     if (ejercicio >= EJERCICIOS) return "pulsad «Terminar el curso e ir a Sintonizar».";
-    if (resuelto) return ejercicio < EJERCICIOS - 1 ? "pulsad «Siguiente ejercicio»." : "pulsad «Terminar la práctica».";
+    if (resuelto) return ejercicio < EJERCICIOS - 1 ? "pulsad «Siguiente: una palabra»." : "pulsad «Ir a Sintonizar».";
     if (fallosEj >= 2) return "escuchad otra vez o pulsad «Ver la solución».";
     if (escrito.trim()) return "cuando hayáis apuntado todo, pulsad «Comprobar».";
-    return `bajad a «Practicad» (bloque 3), pulsad «Oír ${ejercicio >= 2 ? "la palabra" : "la letra"}» y apuntadla con PUNTO y RAYA.`;
+    return ejercicio >= 1 ? `pulsad «Oír la palabra» y apuntadla con PUNTO y RAYA; en cada silencio, «Siguiente letra». Después, «Comprobar».`
+      : "pulsad «Oír la letra», apuntad lo que suena con PUNTO y RAYA y pulsad «Comprobar».";
   }
 
   // ===================================== Fase 2: sintonizar =====================================
   function htmlSintonizar() {
+    const paso = (i, extra = "") => `<li><span class="r3-paso-num">${i + 1}</span><div><p>${SINTONIA[i]}</p>${extra}</div></li>`;
     return `
-      <p class="r3-aclaracion">SDR: el receptor de radio USB con su antena. Lo que capta lo oís por los altavoces del PC.</p>
       <div class="r3-sintonia">
         <div class="r3-sintonia-placa">
           <div class="r3-placa">
             <p class="r3-placa-rotulo">La baliza emite entre</p>
             <p class="r3-frecuencia">${RANGO[0]} y ${RANGO[1]} <small>MHz</small></p>
-            <p class="r3-placa-rotulo">Modo NFM · la frecuencia exacta, buscadla</p>
+            <p class="r3-placa-rotulo">Modo NFM</p>
           </div>
-          <p class="r3-aclaracion">MHz (megahercios): la unidad de la frecuencia, el «canal» de radio en el que emite el walkie.</p>
-          <p class="r3-aclaracion">NFM: «FM estrecha», la forma en que emiten los walkies.</p>
-          <p class="r3-aclaracion">Cascada: el dibujo que baja por la pantalla de SDR#. Cada emisora es una línea vertical.</p>
-          <div class="r3-pistas r3-pistas-radio">
-            <h3 class="r3-rotulo">Pistas de radio <span class="r3-coste"></span></h3>
-            <div id="r3-pistas-radio"></div>
-          </div>
+          <p class="r3-aclaracion">¿No veis nada? Enroscad bien la antena y subid la ganancia (RF Gain) de SDR#.</p>
+          <div class="r3-pistas-radio" id="r3-pistas-radio"></div>
         </div>
-        <div>
-          <ol class="r3-lista" id="r3-lista">${SINTONIA.map((t, i) => `
-            <li><label class="r3-lista-paso"><input type="checkbox" data-paso="${i}" ${i === 5 ? "hidden" : ""}>
-              <span class="r3-lista-num">${i + 1}</span><span>${t}</span></label></li>`).join("")}</ol>
-          <div class="r3-regla" role="group" aria-labelledby="r3-regla-rotulo">
-            <p class="r3-regla-rotulo" id="r3-regla-rotulo">Regla de ${RANGO[0]} a ${RANGO[1]} MHz: pulsad cada tramo cuando lo hayáis mirado</p>
-            <div class="r3-regla-tramos">${TRAMOS.map((c) => `
-              <button class="r3-tramo" type="button" data-tramo="${c}" aria-pressed="false"><b>${c}</b><span>${c - 1}–${c + 1}</span></button>`).join("")}</div>
-          </div>
-          <div class="r3-apuntada">
-            <label for="r3-frec">Frecuencia en la que la habéis encontrado</label>
-            <span><input class="r3-campo r3-campo-frec" id="r3-frec" inputmode="decimal" spellcheck="false" autocomplete="off"> MHz</span>
-            <small>Solo para vosotros: la web no la comprueba.</small>
-          </div>
-          <div class="r3-acciones"><button class="r3-boton r3-boton-principal" id="r3-oida" type="button">Ya la oímos</button></div>
-          <details class="r3-desplegable">
-            <summary>¿No la encontráis?</summary>
-            <ul>${NO_OIS.map((t) => `<li>${t}</li>`).join("")}</ul>
-          </details>
-        </div>
+        <ol class="r3-sintonia-pasos">
+          ${paso(0)}
+          ${paso(1, `<div class="r3-regla-tramos" role="group" aria-label="Regla de ${RANGO[0]} a ${RANGO[1]} MHz">${TRAMOS.map((c) => `
+            <button class="r3-tramo" type="button" data-tramo="${c}" aria-pressed="false"><b>${c}</b><span>MHz</span></button>`).join("")}</div>`)}
+          ${paso(2, `<button class="r3-boton r3-boton-principal" id="r3-oida" type="button">Ya la oímos</button>`)}
+        </ol>
       </div>`;
   }
   function enlazarSintonizar() {
-    const marcadas = estado().sintonia;
-    $$("#r3-lista input").forEach((c) => {
-      c.checked = marcadas.includes(Number(c.dataset.paso));
-      c.closest("li").classList.toggle("hecho", c.checked);
-      c.addEventListener("change", () => {
-        const i = Number(c.dataset.paso);
-        guardar((r) => { r.sintonia = r.sintonia.filter((x) => x !== i); if (c.checked) r.sintonia.push(i); });
-        c.closest("li").classList.toggle("hecho", c.checked);
-        Sonido.tic();
-        pintarAhora();
-      });
-    });
     const pintarTramos = () => $$(".r3-tramo").forEach((b) => {
       const mirado = (estado().tramos || []).includes(Number(b.dataset.tramo));
       b.classList.toggle("mirado", mirado);
@@ -518,9 +454,6 @@
       pintarAhora();
     }));
     pintarTramos();
-    const frec = $("#r3-frec");
-    frec.value = estado().frecuenciaApuntada || "";
-    frec.addEventListener("input", () => guardar((r) => { r.frecuenciaApuntada = frec.value.slice(0, 12); }));
     $("#r3-oida").addEventListener("click", () => marcar("sintonizada"));
   }
   /** Siguiente tramo de la regla sin mirar (o null si ya están todos). */
@@ -529,45 +462,24 @@
   // ===================================== Fase 3: escuchar =====================================
   function htmlEscuchar() {
     return `
-      <div class="r3-hoja-cab">
-        <h3 class="r3-rotulo">Hoja de escucha</h3>
-        <div class="r3-formada">
-          <span class="r3-formada-rotulo">Palabra:</span>
-          <span class="r3-formada-palabra" id="r3-formada"></span>
-          <button class="r3-boton r3-boton-principal" id="r3-usar" type="button">Usar esta palabra</button>
-        </div>
+      <div class="r3-senal">
+        ${lineaDeTiempo()}
+        <p class="r3-senal-texto"><b>Pitido largo</b> = empieza la palabra · <b>silencio largo</b> = siguiente letra ·
+          el <b>zumbido grave</b> de fondo no cuenta.</p>
       </div>
       <div class="r3-casillas r3-hoja" id="r3-hoja"></div>
       <p class="r3-aviso" id="r3-aviso" hidden>«?»: esa combinación no es ninguna letra. Revisadla en otra vuelta.</p>
       <div class="r3-teclado">
-        <button class="r3-tecla" type="button" data-simbolo="." aria-label="Punto">Punto <i class="r3-tecla-p"></i></button>
-        <button class="r3-tecla" type="button" data-simbolo="-" aria-label="Raya">Raya <i class="r3-tecla-r"></i></button>
-        <button class="r3-tecla r3-tecla-ancha" type="button" id="r3-siguiente">Siguiente letra</button>
-        <button class="r3-boton r3-boton-sec" id="r3-borrar" type="button">Borrar</button>
-        <button class="r3-boton r3-boton-sec" id="r3-de-nuevo" type="button">Empezar de nuevo</button>
+        <button class="r3-tecla" type="button" data-simbolo="." aria-label="Punto" title="Tecla .">Punto <i class="r3-tecla-p"></i></button>
+        <button class="r3-tecla" type="button" data-simbolo="-" aria-label="Raya" title="Tecla -">Raya <i class="r3-tecla-r"></i></button>
+        <button class="r3-tecla r3-tecla-ancha" type="button" id="r3-siguiente" title="Barra espaciadora">Siguiente letra</button>
+        <button class="r3-boton r3-boton-sec" id="r3-borrar" type="button" title="Retroceso">Borrar</button>
       </div>
-      <div class="r3-pie-hoja">
-        <p class="r3-nota">Teclado: <b>.</b> punto · <b>-</b> raya · <b>espacio</b> siguiente letra · <b>retroceso</b> borrar.</p>
-        <button class="r3-boton r3-reserva" id="r3-reserva" type="button">Modo de reserva (organización)</button>
-      </div>
-      <div class="r3-escuchar-cab">
-        <div class="r3-senal">
-          <h3 class="r3-rotulo">Cómo es la señal</h3>
-          ${lineaDeTiempo()}
-          <p class="r3-senal-texto">Cada vuelta dura unos 17 s: <b>pitido muy largo</b> (marca el principio) → <b>la palabra,
-            letra a letra</b> (más de un segundo entre letras) → <b>otra vez el pitido largo</b>, y vuelta a empezar.</p>
-          <p class="r3-senal-texto">De fondo oiréis un <b>zumbido grave que no para nunca</b>: sirve para que el walkie no corte.
-            <b>No cuenta:</b> apuntad solo los pitidos agudos.</p>
-        </div>
-        <div>
-          <h3 class="r3-rotulo">Cómo hacerlo</h3>
-          <ol class="r3-pasos r3-pasos-cortos">
-            <li>Escuchad una vuelta entera sin apuntar. Esperad al pitido largo.</li>
-            <li>En la siguiente vuelta, apuntad solo puntos y rayas. Pulsad «Siguiente letra» en cada silencio largo.</li>
-            <li>Mirad qué letra sale debajo de cada casilla y usad otra vuelta para comprobar las dudosas.</li>
-          </ol>
-          <p class="r3-consejo">Repartíos: uno pulsa los botones y otro dice «¡letra!» en cada silencio.</p>
-        </div>
+      <div class="r3-formada">
+        <span class="r3-formada-rotulo">Palabra:</span>
+        <span class="r3-formada-palabra" id="r3-formada"></span>
+        <button class="r3-boton r3-boton-principal" id="r3-usar" type="button">Usar esta palabra</button>
+        <button class="r3-reserva" id="r3-reserva" type="button">Modo de reserva (organización)</button>
       </div>`;
   }
   /** Dibujo de una vuelta de la baliza, a escala (17 px por segundo). No dice nada de la palabra. */
@@ -632,12 +544,6 @@
     Sonido.tic();
     pintarHoja();
   }
-  function empezarDeNuevo() {
-    if (hoja().some(Boolean) && !confirm("Se borrará toda la hoja de escucha. ¿Empezamos de nuevo?")) return;
-    guardar((r) => { r.hoja = [""]; });
-    activa = null;
-    pintarHoja();
-  }
   function usarPalabra() {
     const palabra = hoja().filter(Boolean).map(letraDe).join("");
     if (!palabra) return;
@@ -651,13 +557,12 @@
     $$("[data-simbolo]").forEach((b) => b.addEventListener("click", () => anotarSimbolo(b.dataset.simbolo)));
     $("#r3-siguiente").addEventListener("click", siguienteLetra);
     $("#r3-borrar").addEventListener("click", borrar);
-    $("#r3-de-nuevo").addEventListener("click", empezarDeNuevo);
     $("#r3-usar").addEventListener("click", usarPalabra);
     $("#r3-reserva").addEventListener("click", reserva);
   }
   function ahoraEscuchar() {
     const letras = hoja().filter(Boolean).map(letraDe);
-    if (!letras.length) return "leed «Cómo es la señal» (debajo de los botones), esperad al pitido largo y, en la vuelta siguiente, pulsad PUNTO o RAYA con cada pitido.";
+    if (!letras.length) return "escuchad una vuelta entera hasta el pitido largo. Después, pulsad PUNTO o RAYA con cada pitido (mejor: uno pulsa y otro dice «¡letra!» en cada silencio).";
     if (letras.includes("?")) return "revisad las casillas con «?» en otra vuelta: pulsad la casilla para elegirla y corregidla.";
     return "pulsad «Siguiente letra» en cada silencio largo. Cuando tengáis la palabra entera, pulsad «Usar esta palabra».";
   }
@@ -672,31 +577,12 @@
       else if (ev.key === "Backspace") { ev.preventDefault(); borrar(); }
     } else if (faseVista === 0 && $("#r3-escrito") && !resuelto && ejercicio < EJERCICIOS) {
       if (simbolo) { ev.preventDefault(); escribirEjercicio(simbolo); }
-      else if (ev.key === " " && ejercicio >= 2) { ev.preventDefault(); escribirEjercicio(" "); }
+      else if (ev.key === " " && ejercicio >= 1) { ev.preventDefault(); escribirEjercicio(" "); }
       else if (ev.key === "Backspace") { ev.preventDefault(); escribirEjercicio("borrar"); }
     }
   });
 
   // ===================================== La chuleta =====================================
-  /** Árbol del Morse: desde arriba, punto a la izquierda y raya a la derecha, hasta cuatro símbolos. */
-  function arbol() {
-    const ANCHO = 300, FILA = 34, y = (n) => 14 + n * FILA, x = (n, i) => ((i + 0.5) * ANCHO) / 2 ** n;
-    let lineas = "", nodos = "";
-    for (let n = 0; n <= 4; n++) {
-      for (let i = 0; i < 2 ** n; i++) {
-        const codigo = n ? i.toString(2).padStart(n, "0").replace(/0/g, ".").replace(/1/g, "-") : "";
-        if (n < 4) {
-          lineas += `<path class="r3-arbol-p" d="M${x(n, i)} ${y(n)} L${x(n + 1, 2 * i)} ${y(n + 1)}"/>`;
-          lineas += `<path class="r3-arbol-r" d="M${x(n, i)} ${y(n)} L${x(n + 1, 2 * i + 1)} ${y(n + 1)}"/>`;
-        }
-        const letra = n ? DESDE_MORSE[codigo] || "" : "";
-        nodos += n ? (letra ? `<text x="${x(n, i)}" y="${y(n) + 5}">${letra}</text>` : "")
-          : `<circle cx="${x(0, 0)}" cy="${y(0)}" r="5" class="r3-arbol-raiz"/>`;
-      }
-    }
-    return `<svg class="r3-arbol" viewBox="0 -4 ${ANCHO} ${y(4) + 14}" role="img" aria-label="Árbol del Morse">
-      ${lineas}<g class="r3-arbol-letras">${nodos}</g></svg>`;
-  }
   function htmlChuleta() {
     const fila = (l) => `<button class="r3-chuleta-fila" type="button" data-oir-letra="${l}" aria-label="Oír la ${l}">
       <span class="r3-chuleta-letra">${l}</span>${dibujo(MORSE[l])}</button>`;
@@ -704,13 +590,7 @@
       <div class="r3-chuleta-cab"><h3>Chuleta de Morse</h3>
         <button class="r3-boton r3-boton-sec r3-chuleta-cerrar" id="r3-chuleta-cerrar" type="button">Cerrar</button></div>
       <p class="r3-chuleta-ayuda">Pulsad una letra para oírla.</p>
-      <div class="r3-chuleta-letras">${[...LETRAS].map(fila).join("")}</div>
-      <div class="r3-chuleta-letras r3-chuleta-numeros">${[...NUMEROS].map(fila).join("")}</div>
-      <details class="r3-desplegable r3-truco">
-        <summary>Truco: el árbol del Morse</summary>
-        <p>Empezad arriba. Cada <b>punto</b> baja a la <b>izquierda</b> y cada <b>raya</b> a la <b>derecha</b>: donde acabéis, esa es la letra.</p>
-        ${arbol()}
-      </details>`;
+      <div class="r3-chuleta-letras">${[...LETRAS].map(fila).join("")}</div>`;
   }
   function enlazarChuleta() {
     $$("[data-oir-letra]").forEach((b) => b.addEventListener("click", () => tocar(MORSE[b.dataset.oirLetra], { marcar: resaltar([b]) })));
@@ -766,22 +646,24 @@
   /** Dos listas de pistas con el mismo bloqueo creciente: las de radio (Sintonizar) y las de la palabra (Responder). */
   function pintarPistas() {
     const e = estado();
-    const coste = e.completado ? "" : `cada una bloquea el reto un rato: la próxima, ${App.proximoBloqueo(ID)} s`;
-    $$(".r3-coste").forEach((c) => { c.textContent = coste; });
+    const coste = e.completado ? "" : `bloquea el reto ${App.proximoBloqueo(ID)} s`;
     [[PISTAS, $("#r3-pistas")], [PISTAS_SINTONIA, $("#r3-pistas-radio")]].forEach(([lista, caja]) => {
       if (!caja) return;
       caja.innerHTML = lista.map((p, i) => {
         const abierta = e.pistas.some((x) => x.id === p.id);
         const anterior = i === 0 || e.pistas.some((x) => x.id === lista[i - 1].id);
-        return abierta
-          ? `<p class="r3-pista abierta"><b>${p.titulo}${/[?.]$/.test(p.titulo) ? "" : "."}</b> ${p.texto}</p>`
-          : `<p class="r3-pista"><button class="r3-boton r3-boton-sec" type="button" data-pista="${p.id}" ${anterior && !e.completado ? "" : "disabled"}>${p.titulo}</button></p>`;
+        if (abierta) return `<p class="r3-pista abierta"><b>${p.titulo}${/[?.]$/.test(p.titulo) ? "" : "."}</b> ${p.texto}</p>`;
+        // Solo se ve la siguiente pista que se puede abrir: nada de botones apagados
+        return anterior && !e.completado
+          ? `<p class="r3-pista"><button class="r3-boton r3-boton-sec" type="button" data-pista="${p.id}">${p.titulo}</button>
+              <span class="r3-coste"></span></p>` : "";
       }).join("");
       $$("[data-pista]", caja).forEach((btn) => btn.addEventListener("click", () => {
         const p = lista.find((x) => x.id === btn.dataset.pista);
         if (App.usarPista(ID, p.id, `Vais a abrir «${p.titulo}».`, `<b>${p.titulo}:</b> ${p.texto}`)) pintarPistas();
       }));
     });
+    $$(".r3-coste").forEach((c) => { c.textContent = coste; });
   }
 
   let ultimo = null;
@@ -852,7 +734,7 @@
   }
 
   App.VISTAS[ID] = (el) => {
-    ejercicio = 0; escrito = ""; objetivo = []; fallosEj = 0; resuelto = null; traducida = false; ritmo = "lento";
+    ejercicio = 0; escrito = ""; objetivo = []; fallosEj = 0; resuelto = null; traducida = false;
     activa = null; ultimo = null; reservaAudio = null;
     vista(el);
   };

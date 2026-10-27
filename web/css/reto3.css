@@ -143,8 +143,8 @@ button.r3-casilla { cursor: pointer; }
 .r3-boton-principal:active:not(:disabled) { transform: translateY(3px); box-shadow: inset 0 0 0 2px #e4c766, 0 1px 0 #6b5216; }
 .r3-boton-principal:disabled { cursor: not-allowed; color: #4a4a40; background: #6b6a5e; box-shadow: none; }
 .r3-plan .r3-boton { min-height: 40px; padding: 0 12px; font-size: 15px; }
-.r3-reserva { margin-left: auto; min-height: 36px; padding: 0 10px; font-size: 14px; color: var(--r3-gris); background: none; border: 1px dashed #3a4352; }
-.r3-reserva:hover { color: var(--r3-esmalte); border-color: var(--r3-laton-2); }
+.r3-reserva { margin-left: auto; padding: 4px 6px; cursor: pointer; font: 400 13px var(--r3-texto); color: #6f7a87; background: none; border: 0; text-decoration: underline; text-underline-offset: 3px; }
+.r3-reserva:hover { color: var(--r3-esmalte); }
 
 /* Pulsadores PUNTO, RAYA y SIGUIENTE LETRA, como un manipulador de latón */
 .r3-teclado { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; }
@@ -160,43 +160,46 @@ button.r3-casilla { cursor: pointer; }
 .r3-tecla:active { transform: translateY(4px); box-shadow: inset 0 0 0 2px #e4c766, 0 1px 0 #6b5216, 0 1px 0 2px #000; }
 
 /* ---------- Aprender: la escuela de Morse en tres bloques ---------- */
-.r3-bloque { padding: 4px 0 18px; }
-.r3-bloque + .r3-bloque { padding-top: 16px; border-top: 1px solid #2c3442; }
-.r3-bloque-cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.r3-bloque-cab .r3-boton { min-height: 38px; font-size: 15px; }
+.r3-bloque { padding: 2px 0 12px; }
+.r3-bloque + .r3-bloque { padding-top: 12px; border-top: 1px solid #2c3442; }
+.r3-regla-de-oro { margin: 0 0 12px; padding: 8px 12px; font-size: 18px; line-height: 1.5; background: var(--r3-noche-2); border-radius: 4px; }
+.r3-regla-de-oro b { color: var(--r3-luz); }
+.r3-regla-de-oro .r3-morse { font-size: 15px; vertical-align: middle; }
+.r3-regla-de-oro .r3-palabra-boton { float: right; margin: 2px 0 0 12px; font-size: 15px; color: var(--r3-gris); }
+.r3-casillas-traductor { margin-top: 10px; min-height: 80px; }
+.r3-escrito { min-height: 84px; }
+.r3-bloque .r3-teclado { margin-top: 10px; }
 .r3-bloque-titulo { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; font: 700 19px var(--r3-rotulo-f); letter-spacing: 0.06em; color: var(--r3-laton); }
+.r3-bloque-titulo small { margin-left: 4px; font: 400 14px var(--r3-texto); letter-spacing: 0; color: var(--r3-gris); }
 .r3-bloque-titulo span { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font: 700 14px var(--r3-mono); color: var(--r3-baquelita); background: var(--r3-laton); }
-.r3-como-funciona { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: center; }
-.r3-ejemplo { display: grid; justify-items: center; gap: 8px; padding: 10px 16px; background: var(--r3-noche-2); border-radius: 4px; }
-.r3-ejemplo-texto { margin: 0; font-size: 15px; color: var(--r3-gris); }
 .r3-traductor-fila { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-.r3-traductor-opciones { margin: 10px 0 12px; gap: 10px 16px; }
 .r3-campo.r3-campo-traductor { flex: 1 1 320px; width: auto; text-transform: none; letter-spacing: 0.04em; font-size: 22px; }
 .r3-campo-traductor::placeholder { font: 400 17px var(--r3-texto); letter-spacing: 0; color: #6f7a87; }
-.r3-interruptor { display: inline-flex; border: 1px solid var(--r3-laton-2); border-radius: 3px; overflow: hidden; }
-.r3-interruptor button { min-height: 38px; padding: 0 14px; cursor: pointer; border: 0; background: none; font: 600 15px var(--r3-texto); color: var(--r3-gris); }
-.r3-interruptor button[aria-pressed="true"] { color: #1b1406; background: var(--r3-laton); }
-.r3-nota-corta { font-size: 14px; color: var(--r3-gris); }
-.r3-ejemplos { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; font-size: 15px; color: var(--r3-gris); }
-.r3-ejemplos .r3-boton { min-height: 36px; padding: 0 12px; font: 700 15px var(--r3-mono); }
-.r3-ejercicio-num { margin: 0 0 10px; font-size: 17px; }
-.r3-ejercicio { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.r3-ejercicio-num { margin: 0 0 8px; font-size: 17px; }
+.r3-ejercicio { display: flex; align-items: center; gap: 16px; }
+.r3-ejercicio-resultado { flex: 1 1 0; display: grid; gap: 8px; justify-items: start; min-width: 0; }
+.r3-ejercicio-resultado .r3-mensaje { margin: 0; font-size: 17px; line-height: 1.35; }
 .r3-escrito { min-height: 84px; }
 .r3-mensaje { min-height: 1.4em; margin: 10px 0 0; font-size: 18px; color: var(--r3-esmalte); }
 .r3-mensaje.ok { color: var(--r3-luz); }
 .r3-mensaje.error { color: #f0a59a; }
 
 /* ---------- Sintonizar: la placa esmaltada y la lista de comprobación ---------- */
-.r3-sintonia { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 28px; align-items: start; }
-.r3-sintonia-placa { max-width: 340px; }
+.r3-sintonia { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 28px; align-items: start; }
+.r3-sintonia-placa .r3-aclaracion { margin-top: 4px; font-size: 16px; }
+.r3-pistas-radio .r3-pista { font-size: 16px; }
+.r3-pista .r3-coste { display: block; margin-top: 4px; font-size: 13px; color: var(--r3-gris); }
+.r3-pistas-radio .r3-pista .r3-boton { min-height: 40px; font-size: 15px; }
+.r3-sintonia-pasos { margin: 0; padding: 0; list-style: none; display: grid; gap: 18px; }
+.r3-sintonia-pasos li { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 12px; align-items: start; }
+.r3-sintonia-pasos p { margin: 3px 0 10px; font-size: 18px; line-height: 1.4; }
+.r3-sintonia-pasos b { color: var(--r3-luz); }
+.r3-paso-num { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; font: 700 16px var(--r3-mono); color: var(--r3-baquelita); background: var(--r3-laton); }
+.r3-regla-tramos { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); border: 2px solid var(--r3-laton-2); border-radius: 4px; background: var(--r3-baquelita); }
 .r3-placa { display: inline-grid; gap: 4px; margin: 6px 0 14px 5px; padding: 12px 22px 14px; color: var(--r3-baquelita); background: var(--r3-esmalte); border: 3px solid var(--r3-laton-2); border-radius: 6px; box-shadow: 0 0 0 4px var(--r3-baquelita), 0 0 0 5px var(--r3-laton-2); }
 .r3-placa-rotulo { margin: 0; font: 700 14px var(--r3-rotulo-f); letter-spacing: 0.08em; }
-.r3-frecuencia { margin: 0; font: 700 40px/1.1 var(--r3-mono); color: var(--r3-baquelita); }
+.r3-frecuencia { margin: 0; white-space: nowrap; font: 700 32px/1.15 var(--r3-mono); color: var(--r3-baquelita); }
 .r3-frecuencia small { font-size: 20px; }
-/* Regla de tramos 140–155 MHz: cada tramo se tacha al mirarlo */
-.r3-regla { margin: 14px 0 4px; }
-.r3-regla-rotulo { margin: 0 0 6px; font: 700 14px var(--r3-rotulo-f); letter-spacing: 0.06em; color: var(--r3-laton); }
-.r3-regla-tramos { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); border: 2px solid var(--r3-laton-2); border-radius: 4px; background: var(--r3-baquelita); }
 .r3-tramo { display: grid; gap: 2px; padding: 8px 2px 6px; cursor: pointer; text-align: center; color: var(--r3-esmalte); background: none; border: 0; border-left: 1px solid var(--r3-laton-2); font: inherit; }
 .r3-tramo:first-child { border-left: 0; }
 .r3-tramo b { font: 700 18px/1 var(--r3-mono); color: var(--r3-luz); }
@@ -206,27 +209,9 @@ button.r3-casilla { cursor: pointer; }
 .r3-tramo.mirado { background: var(--r3-laton-2); }
 .r3-tramo.mirado b { color: var(--r3-baquelita); text-decoration: line-through 2px; }
 .r3-tramo.mirado span { color: var(--r3-baquelita); }
-.r3-apuntada { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 12px 0 4px; font-size: 16px; }
-.r3-apuntada label { flex-basis: 100%; font: 700 14px var(--r3-rotulo-f); letter-spacing: 0.06em; color: var(--r3-laton); }
-.r3-apuntada small { flex-basis: 100%; font-size: 13px; color: var(--r3-gris); }
-.r3-campo.r3-campo-frec { width: 7em; font-size: 20px; }
-.r3-pistas-radio { margin-top: 18px; }
-.r3-lista { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
-.r3-lista-paso { display: flex; align-items: flex-start; gap: 12px; padding: 7px 10px; cursor: pointer; font-size: 17px; line-height: 1.35; border: 1px solid #2c3442; border-radius: 4px; }
-.r3-lista-paso:hover { border-color: var(--r3-laton-2); }
-.r3-lista-paso input { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--r3-laton); cursor: pointer; }
-.r3-lista-paso input[hidden] { display: block; visibility: hidden; }
-.r3-lista-num { flex: none; font: 700 15px/22px var(--r3-mono); color: var(--r3-laton); }
-.r3-lista .hecho .r3-lista-paso { color: var(--r3-gris); border-color: transparent; }
-.r3-lista .hecho .r3-lista-paso b { color: inherit; }
-.r3-desplegable { margin-top: 14px; border: 1px solid #3a4352; border-radius: 4px; }
-.r3-desplegable summary { padding: 9px 14px; cursor: pointer; font: 700 15px var(--r3-rotulo-f); letter-spacing: 0.06em; color: var(--r3-laton); }
-.r3-desplegable[open] summary { border-bottom: 1px solid #3a4352; }
-.r3-desplegable ul { margin: 10px 0; padding: 0 16px 0 34px; display: grid; gap: 6px; font-size: 16px; line-height: 1.4; }
-
 /* ---------- Escuchar: cómo es la señal, cómo hacerlo, hoja de escucha ---------- */
-.r3-escuchar-cab { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); gap: 18px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #2c3442; }
-.r3-senal { padding: 8px 12px 10px; border: 1px solid #3a4352; border-radius: 4px; background: #0a1420; }
+.r3-senal { margin-bottom: 12px; padding: 6px 12px 8px; border: 1px solid #3a4352; border-radius: 4px; background: #0a1420; }
+.r3-senal .r3-tiempo { max-height: 104px; }
 .r3-tiempo { display: block; width: 100%; height: auto; }
 .r3-tiempo text { font: 600 10px var(--r3-texto); fill: var(--r3-esmalte); }
 .r3-tiempo .r3-tiempo-peque { font-size: 9px; fill: var(--r3-gris); }
@@ -238,17 +223,11 @@ button.r3-casilla { cursor: pointer; }
 .r3-tiempo-punta { fill: var(--r3-laton-2); }
 .r3-tiempo-zumbido { fill: none; stroke: var(--r3-gris); stroke-width: 1; }
 .r3-senal-texto { margin: 4px 0 0; font-size: 15px; line-height: 1.35; }
-.r3-pasos-cortos { font-size: 15px; gap: 3px; line-height: 1.35; }
-.r3-consejo { margin: 6px 0 0; padding-left: 10px; font-size: 15px; font-style: italic; color: var(--r3-gris); border-left: 3px solid var(--r3-laton-2); }
-.r3-hoja-cab { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: 8px; }
-.r3-hoja-cab .r3-rotulo { margin: 0; }
 .r3-hoja .r3-morse { font-size: 15px; }
-.r3-pie-hoja { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 8px; }
-.r3-pie-hoja .r3-nota { margin: 0; }
 .r3-hoja { min-height: 84px; }
 .r3-aviso { margin: 8px 0 0; font-size: 15px; color: #f0a59a; }
 .r3-aviso[hidden] { display: none; }
-.r3-formada { display: flex; align-items: center; gap: 12px; padding: 4px 4px 4px 14px; background: var(--r3-noche-2); border-radius: 4px; }
+.r3-formada { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 14px; padding: 6px 6px 6px 14px; background: var(--r3-noche-2); border-radius: 4px; }
 .r3-formada .r3-boton-principal { min-height: 42px; font-size: 15px; }
 .r3-formada-rotulo { font: 700 15px var(--r3-rotulo-f); letter-spacing: 0.1em; color: var(--r3-laton); }
 .r3-formada-palabra { min-width: 130px; font: 700 24px var(--r3-mono); letter-spacing: 0.2em; color: var(--r3-luz); }
@@ -280,7 +259,6 @@ button.r3-casilla { cursor: pointer; }
 .r3-chuleta .r3-boton-sec { color: var(--r3-baquelita); border-color: var(--r3-baquelita); }
 .r3-chuleta-ayuda { margin: 0 0 4px; font-size: 13px; color: #5a5446; }
 .r3-chuleta-letras { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 4px; }
-.r3-chuleta-numeros { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 4px; padding-top: 4px; border-top: 1px solid #d6cbb4; }
 .r3-chuleta-fila {
   display: flex; align-items: center; gap: 6px; min-height: 24px; padding: 1px 4px; cursor: pointer; text-align: left;
   border: 1px solid transparent; border-radius: 3px; background: none; color: inherit;
@@ -291,16 +269,6 @@ button.r3-casilla { cursor: pointer; }
 .r3-chuleta-letra { width: 1em; font: 700 17px var(--r3-rotulo-f); }
 .r3-chuleta .r3-morse { gap: 0.28em; font-size: 10px; color: var(--r3-baquelita); }
 .r3-chuleta .r3-morse i.r3-sonando { background: var(--r3-luz); }
-.r3-truco { margin-top: 10px; border-color: #c9bb9b; }
-.r3-truco summary { color: var(--r3-baquelita); }
-.r3-truco[open] summary { border-bottom-color: #c9bb9b; }
-.r3-truco p { margin: 8px 10px; font-size: 14px; line-height: 1.4; }
-.r3-arbol { display: block; width: 100%; height: auto; margin-bottom: 6px; }
-.r3-arbol-p { stroke: var(--r3-laton-2); stroke-width: 1.5; }
-.r3-arbol-r { stroke: var(--r3-baquelita); stroke-width: 1.5; stroke-dasharray: 6 3; }
-.r3-arbol-raiz { fill: var(--r3-baquelita); }
-.r3-arbol-letras text { text-anchor: middle; font: 700 14px var(--r3-rotulo-f); fill: var(--r3-baquelita); paint-order: stroke; stroke: var(--r3-esmalte); stroke-width: 4px; }
-
 /* ---------- Capas comunes: bloqueo por pista y tutorial ---------- */
 body[data-vista="reto3"] .bloqueo-pista { background: rgba(10, 20, 32, 0.9); backdrop-filter: none; }
 body[data-vista="reto3"] .bloqueo-caja { border: 2px solid var(--r3-laton-2); border-radius: 4px; color: var(--r3-esmalte); font-family: var(--r3-texto); background: var(--r3-baquelita); box-shadow: 0 0 0 5px var(--r3-noche-2); }
@@ -354,5 +322,5 @@ body[data-vista="reto3"] .tut-entendido { border-radius: 3px; font: 700 18px var
   }
   .r3-chuleta.abierta { transform: none; visibility: visible; }
   .r3-chuleta-cerrar { display: inline-flex; }
-  .r3-como-funciona, .r3-escuchar-cab, .r3-sintonia { grid-template-columns: 1fr; }
+  .r3-sintonia { grid-template-columns: 1fr; }
 }

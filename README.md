@@ -327,24 +327,23 @@ leyendo solo la pantalla.
 - **Reglas de claridad:** cada fase abre con una frase de objetivo grande y el pie **«Ahora:»** dice siempre la siguiente
   acción concreta. Punto = círculo y raya = barra el triple de larga, con el mismo dibujo en el traductor, la práctica, la
   hoja de escucha y la chuleta; cuando suena un pitido se ilumina su símbolo y destella la lámpara del faro.
+- **Simplificación (v2.1):** cada fase cabe en una pantalla a 1366×768 sin scroll, sin desplegables y con los
+  mínimos botones; las pistas solo enseñan la siguiente que se puede abrir.
 - **Chuleta** siempre a la vista en Aprender y Escuchar (columna fija a la derecha; con la ventana estrecha, cajón con el
-  botón «Chuleta»): A–Z y 0–9 dibujados, cada letra se oye al pulsarla, y el desplegable «Truco: el árbol del Morse».
-- **Aprender («Escuela de Morse»)**, tres bloques uno debajo de otro: cómo funciona (tres líneas y la A con «Escuchar
-  la A») · **traductor** «Escribid cualquier palabra» (casilla por letra, «Escuchar» resalta la casilla y el símbolo que
-  suena, «Parar», interruptor Lento/Normal —lento = 1,5 s entre letras, como la baliza; entre palabras, 4 s en lento y 1,2 s en normal— y ejemplos SOS, LUNA y HOLA; no
-  detecta la palabra de la baliza) · **Practicad** (dos letras al azar y dos palabras cortas al azar —SOL, MAR, LUZ, GATO…—, siempre con 1,5 s entre letras como la baliza; al fallar, «Casi…»; tras dos
-  fallos aparece «Ver la solución», que la enseña y la hace sonar). «Ya sabemos Morse» salta el curso.
-- **Sintonizar (buscar la baliza):** placa con el rango «entre 140 y 155 MHz», líneas que explican SDR, MHz, NFM y
-  cascada, lista de 6 pasos con casillas (conectar, NFM y Play, barrer, cómo se ve, cómo se oye, apuntar), una **regla
-  de tramos** 141, 143… 155 MHz (de 2 en 2: el SDR ve unos 2 MHz de golpe) que se tachan al mirarlos, un campo para
-  apuntar la frecuencia encontrada (no se comprueba), «Ya la oímos» y el desplegable «¿No la encontráis?». Dos
-  **pistas de radio** con el mismo bloqueo creciente que las demás (`PISTAS_SINTONIA`: ajustadlas a vuestra frecuencia).
-  Todo se guarda en el progreso.
-- **Escuchar:** hoja de escucha arriba (botones PUNTO, RAYA y SIGUIENTE LETRA, Borrar y Empezar de nuevo; teclado `.`
-  `-` espacio y retroceso; cada casilla dice su letra, o «?» si la combinación no existe, con un aviso), la palabra que se
-  va formando con **«Usar esta palabra»** (la copia en Responder) y, debajo, «Cómo es la señal» (línea de tiempo de una
-  vuelta: pitido largo → palabra → otra vez el pitido largo, con el zumbido de fondo que «no cuenta»; sin pistas sobre la palabra) y «Cómo hacerlo» (tres pasos y el consejo de repartirse el trabajo). A 1366×768
-  con la barra del navegador no cabe todo: la hoja va primero para que los botones se vean sin desplazarse.
+  botón «Chuleta»): solo A–Z dibujadas, y cada letra se oye al pulsarla.
+- **Aprender:** una línea con la regla del Morse (punto = pitido corto, raya = pitido largo, silencio largo entre
+  letras) y el enlace «Ya sabemos Morse» · **1. Escribid una palabra y escuchadla** (traductor: un campo y un botón
+  Escuchar/Parar; siempre con 1,5 s entre letras, como la baliza; resalta la casilla y el símbolo que suena) ·
+  **2. Ahora vosotros** (una letra al azar y una palabra de tres letras al azar; tras dos fallos aparece «Ver la
+  solución»; al acabar, «Ir a Sintonizar»).
+- **Sintonizar (buscar la baliza):** placa «entre 140 y 155 MHz · NFM», una línea para cuando no se ve nada (antena y
+  ganancia) y la pista de radio; a la derecha, tres pasos: abrir SDR# en NFM, recorrer la **regla** 141, 143… 155 MHz
+  (se tachan al mirarlos; el pie «Ahora:» dice la siguiente) y reconocer la baliza (línea fija, zumbido con pitidos)
+  → «Ya la oímos». Pistas de radio en `PISTAS_SINTONIA` (ajustadlas a vuestra frecuencia).
+- **Escuchar:** arriba, la línea de tiempo de una vuelta (pitido largo → palabra → pitido largo, con el zumbido de
+  fondo que no cuenta) y una sola línea de texto; debajo, la hoja de escucha (PUNTO, RAYA, SIGUIENTE LETRA y Borrar;
+  teclado `.` `-` espacio y retroceso), la palabra que se forma con «Usar esta palabra» y, discreto, el enlace del
+  modo de reserva.
 - **Responder:** 5 intentos, 3 pistas con bloqueo; fallo: «No es la palabra. Revisad las letras con "?" o escuchad otra
   vuelta.» → audio de LYRA.
 - **Audio para el walkie (el que se usa):** `herramientas/generar_baliza_walkie.py` → `generado/reto3/walkie/`:

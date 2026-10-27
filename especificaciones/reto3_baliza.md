@@ -8,6 +8,15 @@
 > tiene que entender qué hacer en cada momento leyendo solo la pantalla, sin que nadie le explique nada.
 > Usa la skill `nuevo-reto` como referencia y termina con `probar-web`.
 
+
+> **Revisión v2.1 (simplificación).** La interfaz tenía demasiada información. Ahora cada fase cabe en una pantalla
+> (1366×768) sin scroll ni desplegables y con los mínimos botones. Aprender: una línea con la regla, el traductor (campo
+> y Escuchar/Parar, siempre lento) y dos ejercicios (letra y palabra corta). Sintonizar: placa con el rango y tres pasos
+> con la regla de tramos; sin casillas, sin campo de frecuencia y sin «¿No la encontráis?» (queda una línea sobre la
+> antena y la ganancia). Escuchar: línea de tiempo con una línea de texto y la hoja; se quitan «Cómo hacerlo», el
+> teclado escrito y «Empezar de nuevo». Chuleta: solo A–Z, sin números ni árbol. Pistas: solo se ve la siguiente.
+> Donde lo que sigue diga otra cosa, manda esta nota.
+
 ## 0. Reglas de claridad para todo el reto
 
 - **Cada fase empieza con una frase de objetivo**, grande: qué vais a conseguir en esta fase.
