@@ -74,7 +74,8 @@
     const pasos = [];
     let t = 0, letra = 0;
     secuencia.trim().split(/\s+/).forEach((codigo, k, todos) => {
-      if (codigo === "/") { t += entreLetras * (4 / 3); return; }   // entre palabras: algo más que entre letras
+      // Entre palabras: el silencio entre letras, otro tanto y un tercio, y medio segundo más para que se distingan bien
+      if (codigo === "/") { t += entreLetras * (4 / 3) + 0.5; return; }
       [...codigo].forEach((s, j) => {
         const dur = s === "." ? UNIDAD : 3 * UNIDAD;
         pasos.push([t, dur, letra, j]);

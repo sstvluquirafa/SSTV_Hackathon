@@ -328,7 +328,7 @@ leyendo solo la pantalla.
   botón «Chuleta»): A–Z y 0–9 dibujados, cada letra se oye al pulsarla, y el desplegable «Truco: el árbol del Morse».
 - **Aprender («Escuela de Morse»)**, tres bloques uno debajo de otro: cómo funciona (tres líneas y la A con «Escuchar
   la A») · **traductor** «Escribid cualquier palabra» (casilla por letra, «Escuchar» resalta la casilla y el símbolo que
-  suena, «Parar», interruptor Lento/Normal —lento = 1,5 s entre letras, como la baliza— y ejemplos SOS, LUNA y HOLA; no
+  suena, «Parar», interruptor Lento/Normal —lento = 1,5 s entre letras, como la baliza; entre palabras, 4 s en lento y 1,2 s en normal— y ejemplos SOS, LUNA y HOLA; no
   detecta la palabra de la baliza) · **Practicad** (dos letras al azar y la palabra SOL; al fallar, «Casi…»; tras dos
   fallos aparece «Ver la solución», que la enseña y la hace sonar). «Ya sabemos Morse» salta el curso.
 - **Sintonizar:** placa con la frecuencia y botón «Copiar» (copia `446006250`, en hercios, como la pide SDR#), una línea
