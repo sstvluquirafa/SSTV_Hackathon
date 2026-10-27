@@ -221,6 +221,7 @@ button.r3-casilla { cursor: pointer; }
 .r3-tiempo-llave { fill: none; stroke: var(--r3-gris); stroke-width: 1; }
 .r3-tiempo-vuelta { fill: none; stroke: var(--r3-laton-2); stroke-width: 1.2; stroke-dasharray: 4 3; }
 .r3-tiempo-punta { fill: var(--r3-laton-2); }
+.r3-tiempo-silencio { fill: none; stroke: var(--r3-gris); stroke-width: 1; stroke-dasharray: 3 3; }
 .r3-tiempo-zumbido { fill: none; stroke: var(--r3-gris); stroke-width: 1; }
 .r3-senal-texto { margin: 4px 0 0; font-size: 15px; line-height: 1.35; }
 .r3-hoja .r3-morse { font-size: 15px; }

@@ -79,7 +79,7 @@ Lista con casillas que el grupo marca:
 3. **Barred el rango poco a poco.** El receptor solo ve unos 2 MHz de golpe, así que id por tramos: poned
    **141 MHz**, mirad la cascada unos segundos y subid **2 MHz** cada vez (143, 145, 147…) hasta **155 MHz**.
    En la web, una **regla de 140 a 155 MHz** con un tramo por casilla para ir tachando los que ya habéis mirado.
-4. **Cómo se ve la baliza:** una **línea fija y continua** en la cascada (el walkie no deja de transmitir). Cuando la
+4. **Cómo se ve la baliza:** una **línea** en la cascada que dura unos 16 s y se apaga 10 s (el walkie descansa): en cada tramo hay que mirar unos 30 s. Cuando la
    veáis, haced clic encima para sintonizarla.
 5. **Cómo se oye:** un zumbido grave de fondo con pitidos agudos encima que se repiten. Si oís eso, es ella.
 6. **Apuntad la frecuencia** en la que la habéis encontrado (campo de la web, solo para vosotros: no se comprueba) y
@@ -112,10 +112,9 @@ Desplegable **«¿No la encontráis?»**:
 Objetivo: «Escuchad la baliza y apuntad la palabra letra a letra.»
 
 **Cómo es la señal** (recuadro con un dibujo de la línea de tiempo, siempre visible):
-> La baliza repite el mensaje una y otra vez (cada vuelta dura unos 17 segundos):
-> **un pitido muy largo** (marca el principio) → **la palabra, letra a letra** (con más de un segundo entre letras) →
-> **otra vez el pitido largo**, y vuelta a empezar.
-> De fondo oiréis un **zumbido grave y suave que no para nunca**: sirve para que el walkie no corte la emisión.
+> La baliza repite el mensaje una y otra vez: **un pitido muy largo** (marca el principio) → **la palabra, letra a
+> letra** (con más de un segundo entre letras) → **10 segundos de silencio** (el walkie descansa), y vuelta a empezar.
+> Mientras suena la palabra, de fondo hay un **zumbido grave y suave**: sirve para que el walkie no corte.
 > **No cuenta:** apuntad solo los pitidos agudos.
 
 **Cómo hacerlo** (tres pasos numerados, se mantienen con este texto):
@@ -139,12 +138,13 @@ fallo claro: «No es la palabra. Revisad las letras con "?" o escuchad otra vuel
 
 ## 6 bis. Audio para el walkie con VOX (ya generado)
 
-`herramientas/generar_baliza_walkie.py` → `generado/reto3/walkie/`: `baliza_walkie.wav` (recomendado, 34 s) y
-`baliza_walkie_lenta.wav` (2,5 s entre letras, 44 s). Cada archivo tiene **dos vueltas** y está hecho para
-reproducirse **en bucle** sin hueco ni chasquido.
-- Zumbido de fondo continuo a 441 Hz, bastante más bajo que los pitidos (700 Hz): mantiene el VOX abierto, el walkie
-  transmite sin cortes y desaparece el ruido de cola del receptor entre letras y entre vueltas.
-- Cada vuelta: pitido largo 2 s · 1,5 s · palabra · 2 s · pitido largo de la siguiente vuelta.
+`herramientas/generar_baliza_walkie.py` → `generado/reto3/walkie/`: `baliza_walkie.wav` (recomendado) y
+`baliza_walkie_lenta.wav` (2,5 s entre letras, 62 s). Cada archivo tiene **dos vueltas** y está hecho para
+reproducirse **en bucle**. `baliza_walkie.wav` dura 52 s.
+- Zumbido de fondo a 441 Hz mientras suena la palabra, bastante más bajo que los pitidos (700 Hz): mantiene el VOX
+  abierto entre letras.
+- Cada vuelta: zumbido 0,5 s · pitido largo 2 s · 1,5 s · palabra · zumbido 0,6 s · **10 s de silencio total** (el walkie
+  deja de transmitir y se enfría; el ruido de cola del receptor cae en el silencio, lejos del Morse).
 - El script verifica la palabra en cada vuelta escuchando solo los 700 Hz, y también el empalme del bucle.
 
 **En la web:** los textos que describen la señal (sección 5, curso y «Cómo funciona») deben coincidir con este audio.
@@ -154,17 +154,18 @@ Para que el **modo de reserva** suene igual que la radio, úsalo con `baliza_wal
 ## 7. Guía para el organizador: emitir la baliza
 
 Añade al `README.md` una sección «Emitir la baliza con el walkie»:
-1. Copiad `generado/reto3/walkie/baliza_walkie.wav` al móvil y reproducidlo **en bucle** (34 s, dos vueltas).
+1. Copiad `generado/reto3/walkie/baliza_walkie.wav` al móvil y reproducidlo **en bucle** (52 s, dos vueltas: cada
+   palabra dura unos 16 s y le siguen 10 s de silencio para que el walkie se enfríe).
    Si a los grupos les cuesta, usad `baliza_walkie_lenta.wav`.
 2. Walkie en la frecuencia elegida, **entre 140 y 155 MHz** (apuntadla en la constante `FRECUENCIA` de
    `web/js/reto3.js` y ajustad el texto de las pistas de sintonía), **con el código de privacidad (CTCSS/DCS) apagado**
    y la potencia más baja que llegue a toda la sala.
 3. Conectad el móvil al walkie con un cable de manos libres compatible, o poned el altavoz del móvil pegado al micrófono.
-4. **VOX:** el zumbido de fondo lo mantiene siempre abierto. Ajustad la sensibilidad para que se active con el zumbido;
-   el indicador de transmisión debe quedarse encendido todo el rato. Sin VOX, mantened pulsado el botón de hablar.
-5. Probad desde el otro extremo de la sala con un SDR: debe verse una línea continua en la cascada y oírse los
+4. **VOX:** el zumbido lo mantiene abierto mientras suena la palabra. Ajustad la sensibilidad para que se active con
+   el zumbido; el indicador de transmisión debe quedarse encendido toda la palabra y apagarse en los 10 s de silencio.
+5. Probad desde el otro extremo de la sala con un SDR: debe verse una línea en la cascada unos 16 s (se apaga 10 s) y oírse los
    pitidos claros sobre el zumbido. Si satura, alejad el walkie o bajad la potencia.
-6. El walkie transmite sin parar: si se calienta, haced pausas de un minuto entre turnos.
+6. Si aun así el walkie se calienta, haced pausas de un minuto entre turnos.
 7. **Licencia:** entre 144 y 146 MHz es la banda de radioaficionados; emitir ahí requiere licencia (el indicativo de
    GranaSAT). Fuera de esa banda, comprobad que la frecuencia está autorizada.
 

@@ -46,8 +46,8 @@
   ];
   const SINTONIA = [
     "Abrid <b>SDR#</b> con el receptor y su antena conectados, elegid el modo <b>NFM</b> (el de los walkies) y pulsad <b>Play</b>.",
-    "Recorred la regla: poned cada frecuencia en SDR#, mirad la <b>cascada</b> (el dibujo que cae) unos segundos y tachadla aquí.",
-    "La baliza es <b>una línea fija</b> en la cascada y suena a <b>zumbido con pitidos</b>. Haced clic en ella para oírla bien.",
+    "Recorred la regla: poned cada frecuencia en SDR#, mirad la <b>cascada</b> (el dibujo que cae) <b>30 segundos</b> (la baliza descansa 10 s entre palabras) y tachadla aquí.",
+    "La baliza es <b>una línea</b> en la cascada que dura unos 16 s y se apaga 10 s, y suena a <b>zumbido con pitidos</b>. Haced clic en ella para oírla bien.",
   ];
   // Práctica: una letra al azar de estas seis y después una palabra corta al azar de la lista
   const LETRAS_CURSO = ["E", "T", "A", "N", "S", "O"];
@@ -244,8 +244,8 @@
     if (faseVista === 0) texto = ahoraAprender();
     else if (faseVista === 1) {
       const t = tramoPendiente(), vistos = (e.tramos || []).length;
-      texto = !vistos ? `abrid SDR# en modo NFM, pulsad Play y empezad por ${TRAMOS[0]} MHz. Mirad la cascada y tachad ${TRAMOS[0]} en la regla.`
-        : t != null ? `poned ${t} MHz en SDR# y mirad la cascada. ¿Una línea fija con zumbido y pitidos? Pulsad «Ya la oímos». Si no, tachad ${t}.`
+      texto = !vistos ? `abrid SDR# en modo NFM, pulsad Play y empezad por ${TRAMOS[0]} MHz. Mirad la cascada 30 s y tachad ${TRAMOS[0]} en la regla.`
+        : t != null ? `poned ${t} MHz en SDR# y mirad la cascada 30 s. ¿Una línea con zumbido y pitidos? Pulsad «Ya la oímos». Si no, tachad ${t}.`
         : "si la habéis oído, pulsad «Ya la oímos». Si no, volved a recorrer la regla más despacio o abrid una pista de radio.";
     } else if (faseVista === 2) texto = ahoraEscuchar();
     else if (e.completado) texto = "Reproducid la transmisión por el cable virtual y guardad la imagen del fragmento LYRA para el montaje del mapa.";
@@ -464,8 +464,8 @@
     return `
       <div class="r3-senal">
         ${lineaDeTiempo()}
-        <p class="r3-senal-texto"><b>Pitido largo</b> = empieza la palabra · <b>silencio largo</b> = siguiente letra ·
-          el <b>zumbido grave</b> de fondo no cuenta.</p>
+        <p class="r3-senal-texto"><b>Pitido largo</b> = empieza la palabra · <b>silencio corto</b> = siguiente letra ·
+          <b>10 s de silencio</b> = la palabra ha terminado · el <b>zumbido grave</b> de fondo no cuenta.</p>
       </div>
       <div class="r3-casillas r3-hoja" id="r3-hoja"></div>
       <p class="r3-aviso" id="r3-aviso" hidden>«?»: esa combinación no es ninguna letra. Revisadla en otra vuelta.</p>
@@ -482,29 +482,29 @@
         <button class="r3-reserva" id="r3-reserva" type="button">Modo de reserva (organización)</button>
       </div>`;
   }
-  /** Dibujo de una vuelta de la baliza, a escala (17 px por segundo). No dice nada de la palabra. */
+  /** Dibujo de una vuelta de la baliza, a escala aproximada. No dice nada de la palabra. */
   function lineaDeTiempo() {
     const grupo = (x) => `<rect x="${x}" y="26" width="7" height="10" rx="2"/><circle cx="${x + 11.5}" cy="31" r="2.5"/><rect x="${x + 16}" y="26" width="7" height="10" rx="2"/>`;
     let zumbido = "M6 72";
-    for (let x = 6; x < 330; x += 6) zumbido += ` q1.5 -2.4 3 0 t3 0`;
-    return `<svg class="r3-tiempo" viewBox="0 0 340 92" role="img" aria-label="Una vuelta: pitido largo, la palabra letra a letra y otra vez el pitido largo; debajo, el zumbido de fondo">
+    for (let x = 6; x < 258; x += 6) zumbido += " q1.5 -2.4 3 0 t3 0";
+    return `<svg class="r3-tiempo" viewBox="0 0 340 92" role="img" aria-label="Una vuelta: pitido largo, la palabra letra a letra y diez segundos de silencio; el zumbido de fondo suena solo mientras hay palabra">
       <defs><marker id="r3-flecha" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" class="r3-tiempo-punta"/></marker></defs>
-      <path class="r3-tiempo-vuelta" d="M309 20 V8 H23 V20" marker-end="url(#r3-flecha)"/>
-      <text x="166" y="6" text-anchor="middle" class="r3-tiempo-peque">es el mismo pitido: vuelta a empezar</text>
+      <path class="r3-tiempo-vuelta" d="M330 31 V8 H23 V20" marker-end="url(#r3-flecha)"/>
+      <text x="176" y="6" text-anchor="middle" class="r3-tiempo-peque">vuelta a empezar</text>
       <path class="r3-tiempo-eje" d="M6 31 H330"/>
       <rect class="r3-tiempo-largo" x="6" y="23" width="34" height="16" rx="2"/>
       <g class="r3-tiempo-letra">${grupo(68)}${grupo(116)}${grupo(164)}</g>
       <text class="r3-tiempo-puntos" x="206" y="36">· · ·</text>
-      <path class="r3-tiempo-llave" d="M66 44 v5 H258 v-5"/>
+      <path class="r3-tiempo-llave" d="M66 44 v5 H246 v-5"/>
+      <rect class="r3-tiempo-silencio" x="262" y="25" width="64" height="12" rx="2"/>
       <text x="4" y="60">pitido largo</text>
-      <text x="162" y="62" text-anchor="middle">la palabra, letra a letra</text>
-      <rect class="r3-tiempo-largo" x="292" y="23" width="34" height="16" rx="2"/>
-      <text x="275" y="36" text-anchor="middle" class="r3-tiempo-peque">2 s</text>
-      <text x="336" y="60" text-anchor="end">pitido largo</text>
+      <text x="156" y="62" text-anchor="middle">la palabra, letra a letra</text>
+      <text x="294" y="60" text-anchor="middle">10 s de silencio</text>
       <path class="r3-tiempo-zumbido" d="${zumbido}"/>
-      <text x="168" y="88" text-anchor="middle" class="r3-tiempo-peque">zumbido grave de fondo, siempre: no cuenta</text>
+      <text x="132" y="88" text-anchor="middle" class="r3-tiempo-peque">zumbido grave de fondo mientras suena: no cuenta</text>
     </svg>`;
   }
+
 
   let activa = null; // casilla seleccionada (por defecto, la última)
   const hoja = () => estado().hoja;
@@ -562,7 +562,7 @@
   }
   function ahoraEscuchar() {
     const letras = hoja().filter(Boolean).map(letraDe);
-    if (!letras.length) return "escuchad una vuelta entera hasta el pitido largo. Después, pulsad PUNTO o RAYA con cada pitido (mejor: uno pulsa y otro dice «¡letra!» en cada silencio).";
+    if (!letras.length) return "esperad al pitido largo. Después, pulsad PUNTO o RAYA con cada pitido (mejor: uno pulsa y otro dice «¡letra!» en cada silencio).";
     if (letras.includes("?")) return "revisad las casillas con «?» en otra vuelta: pulsad la casilla para elegirla y corregidla.";
     return "pulsad «Siguiente letra» en cada silencio largo. Cuando tengáis la palabra entera, pulsad «Usar esta palabra».";
   }
