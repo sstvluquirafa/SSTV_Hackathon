@@ -1,152 +1,141 @@
-# Reto 3 · «La baliza» → fragmento LYRA (propuesta para revisar)
+# Reto 3 · «La baliza» (versión 2: cristalina) → fragmento LYRA
 
-> **Estado: propuesta.** No se implementa hasta que la organización la revise.
-> Sustituye a la tarjeta «Expediente clasificado · próximamente». Usa la skill `nuevo-reto` y termina con `probar-web`.
+> **Modifica la implementación actual del reto 3** (`web/js/reto3.js`, `web/css/reto3.css`), descrita en
+> `descartadas/reto3_baliza_v1.md`. Se mantiene todo lo que ya funciona: la palabra y el audio de
+> `herramientas/generar_baliza_reto3.py` (no los cambies), la frecuencia, la estética del faro, la lámpara que destella,
+> el modo de reserva, la comprobación cifrada, las pistas y la entrega de LYRA.
+> **Objetivo de esta versión: que todo sea cristalino.** Un grupo de 14 años que no sabe nada de Morse ni de radio
+> tiene que entender qué hacer en cada momento leyendo solo la pantalla, sin que nadie le explique nada.
+> Usa la skill `nuevo-reto` como referencia y termina con `probar-web`.
 
-## 1. La idea
+## 0. Reglas de claridad para todo el reto
 
-Es el único reto en el que la señal **llega de verdad por el aire**. Un walkie de la organización emite en bucle una
-palabra en código Morse. Los grupos la captan con el SDR, la escuchan, la descifran y escriben la palabra en la web.
-Como casi nadie sabe Morse, la web incluye un **curso corto** para aprender a escucharlo antes de ponerse con la baliza.
+- **Cada fase empieza con una frase de objetivo**, grande: qué vais a conseguir en esta fase.
+- **La línea «Ahora:» del pie** dice siempre la siguiente acción concreta («Escribid una palabra y pulsad Escuchar»).
+- **Las instrucciones van numeradas y con verbos** («Escribid», «Pulsad», «Apuntad»). Frases de una línea.
+- **Lo que se ve y lo que se oye coinciden siempre:** cuando suena un pitido, se ilumina su símbolo y destella la
+  lámpara del faro. Punto = círculo; raya = barra el triple de larga. El mismo dibujo en el traductor, la práctica,
+  la hoja de escucha y la chuleta.
+- **La chuleta siempre a la vista** en las fases Aprender y Escuchar (ver sección 4).
+- Sin jerga sin explicar: la primera vez que aparecen «SDR», «NFM» o «frecuencia», una línea en pequeño dice qué son.
+- Sin emoticonos ni iconos genéricos, como en el resto de la web.
 
-Duración objetivo: **15 minutos** (curso ~5, sintonía ~3, escucha y descifrado ~5, respuesta ~2). Dificultad: media.
-Todos los grupos oyen la misma palabra: como compiten entre ellos, no se la van a pasar.
+## 1. Fases (se mantienen)
 
-## 2. El montaje físico (organización)
+**Aprender · Sintonizar · Escuchar · Responder.** Las terminadas se pueden reabrir.
 
-- **Emisora:** un walkie PMR446 (uso libre en España), con el audio de la baliza reproduciéndose en bucle junto a su
-  micrófono o, mejor, por la entrada de audio si el walkie la tiene. Canal fijo durante toda la actividad.
-- **Frecuencia:** la del canal elegido (por ejemplo, canal 1 = **446,00625 MHz**). La organización la escribe en
-  `web/js/reto3.js` (constante `FRECUENCIA`), y la web la muestra en la fase de sintonía.
-- **Recepción:** el SDR de cada grupo con el programa que ya tenga instalado (SDR#, SDR++…), en **FM estrecha (NFM)**.
-- **Audio de la baliza:** lo genera `herramientas/generar_baliza_reto3.py` (sección 6) en `generado/reto3/baliza.wav`.
+## 2. Aprender: «Escuela de Morse» (reorganizada)
 
-## 3. Fases en la web
+Objetivo: «Aprended cómo suena el Morse antes de escuchar la baliza.»
 
-Como en el reto 1, una línea de fases arriba y solo la fase actual en pantalla:
-**Aprender · Sintonizar · Escuchar · Responder** (las terminadas se pueden reabrir).
+Tres bloques, en este orden, visibles uno debajo de otro:
 
-### 3.1 Aprender: curso de Morse «Aprended a escuchar» (~5 min)
+### 2.1 Cómo funciona (tres líneas y un ejemplo)
+> 1. Cada letra se escribe con **pitidos cortos (punto)** y **largos (raya)**. Una raya dura tres veces lo que un punto.
+> 2. Dentro de una letra, los pitidos van seguidos. **Entre letra y letra hay un silencio más largo.**
+> 3. Para leer Morse: separad los pitidos en letras y buscad cada letra en la chuleta.
 
-Cada sonido del curso va acompañado del **destello de la lámpara del faro** (corto para el punto, largo para la raya):
-se oye y se ve a la vez.
+Ejemplo animado: la letra **A** (punto, raya) con su botón «Escuchar».
 
-1. **Qué es el Morse.** «Cada letra es una mezcla de pitidos cortos (punto) y largos (raya). Entre letra y letra hay un
-   silencio más largo.» Ejemplo: la **A** es «· –» (botón para oírla).
-2. **Escuchad la diferencia.** Seis letras con su botón, para coger el oído: **E** (·), **T** (–), **A** (· –),
-   **N** (– ·), **S** (· · ·), **O** (– – –). Se pueden oír tantas veces como se quiera.
-3. **Practicad.** Tres ejercicios cortos: la web hace sonar algo y el grupo lo escribe con dos teclas grandes,
-   **PUNTO** y **RAYA** (también con las teclas `.` y `-` del teclado). Si acierta, pasa al siguiente; si no, puede volver
-   a oírlo. Sin puntos ni penalización.
-   - Ejercicio 1: una letra de las seis (al azar).
-   - Ejercicio 2: otra letra de las seis.
-   - Ejercicio 3: la palabra **SOL**, letra a letra.
-4. **El método para la baliza** (tres frases, también en la fase Escuchar):
-   1. Escuchad una vuelta entera sin escribir: buscad el **pitido largo** que marca el principio.
-   2. En la siguiente vuelta apuntad **solo puntos y rayas**, sin intentar traducir.
-   3. Traducid con la tabla al final, y usad otra vuelta para comprobar las letras dudosas.
+### 2.2 Traductor: «Escribid cualquier palabra» (nuevo, lo más importante)
+- Campo grande: «Escribid una palabra (por ejemplo, vuestro nombre)». Acepta letras y números; ignora tildes y espacios
+  extra (los espacios separan palabras).
+- Debajo, **una casilla por letra**: la letra arriba, grande, y sus puntos y rayas debajo, dibujados.
+- Botón **«Escuchar»**: suena la palabra y, a la vez, **se resalta la casilla de la letra que suena y el símbolo
+  exacto**, y destella la lámpara. Botón «Parar».
+- Interruptor **«Lento / Normal»** (lento = más silencio entre letras, como la baliza).
+- Botones de ejemplo: **SOS**, **LUNA**, **HOLA**.
+- No hay nada que acertar: es para jugar y entender. Si escriben la palabra de la baliza, se traduce como cualquier otra
+  (no se detecta ni se avisa).
 
-El curso se puede saltar («Ya sabemos Morse») y repetir. Se marca como hecho al terminar el ejercicio 3 o al saltarlo.
+### 2.3 Practicad (se mantienen los tres ejercicios, con más ayuda)
+- Enunciado claro: «La web hará sonar una letra. Apuntadla con PUNTO y RAYA y pulsad Comprobar.»
+- Al acertar: «Correcto» y el siguiente. Al fallar: «Casi. Escuchad otra vez y comparad con la chuleta.»
+  **Tras dos fallos** en el mismo ejercicio aparece «Ver la solución», que muestra la letra con sus símbolos y la hace
+  sonar; después se pasa al siguiente. El objetivo es aprender, no bloquear.
+- Se mantiene «Ya sabemos Morse» para saltar el curso.
 
-### 3.2 Sintonizar (~3 min)
+## 3. Sintonizar: lista de comprobación
 
-Pasos cortos, con la frecuencia grande en un display:
-1. Abrid el programa del SDR y conectad la antena.
-2. Poned la frecuencia **446,00625 MHz** (o la que diga la web) y el modo **NFM** (FM estrecha).
-3. Subid el volumen: cuando oigáis pitidos que se repiten, ya tenéis la baliza.
+Objetivo: «Encontrad la señal de la baliza con el receptor de radio.»
+Línea pequeña: «SDR: el receptor de radio USB con su antena. Lo que capta lo oís por los altavoces del PC.»
 
-Botón «Ya la oímos» para pasar a la siguiente fase (no se comprueba nada: es para avanzar).
+Lista con casillas que el grupo marca (cada paso en una línea):
+1. Conectad el receptor SDR y su antena al PC y abrid el programa del SDR (SDR#).
+2. Escribid la frecuencia **446,00625 MHz** (en el display grande, con botón «Copiar»: copia `446006250`, en hercios).
+3. Elegid el modo **NFM** («FM estrecha», el de los walkies).
+4. Pulsad **Play** y subid el volumen.
+5. Buscad la señal en la cascada: una línea que se enciende y se apaga. Si está un poco desplazada, haced clic encima.
+6. Cuando oigáis pitidos que se repiten, pulsad **«Ya la oímos»**.
 
-### 3.3 Escuchar y descifrar (~5 min)
+Desplegable **«¿No oís nada?»**:
+- Revisad que la antena está bien enroscada y el receptor enchufado.
+- Subid la ganancia (RF Gain) del programa. Si suena saturado o con mucho ruido, bajadla.
+- El receptor puede estar algo desviado: moved la frecuencia poco a poco arriba y abajo mirando la cascada.
+- Para escuchar no hace falta el cable de audio virtual: el sonido sale por los altavoces.
+- Si nada funciona, avisad a la organización (modo de reserva).
 
-- **Hoja de escucha:** una fila de casillas, una por letra (se pueden añadir y quitar). En cada casilla el grupo marca
-  puntos y rayas con las teclas PUNTO / RAYA (o `.` y `-`), y debajo la web muestra **qué letra es** ese grupo de
-  símbolos («?» si no existe). Lo difícil, oír y separar los pitidos, lo hacen ellos.
-- **Tabla de Morse** siempre a mano, en un cajón lateral («Tabla»), con todas las letras (sin Ñ ni tildes) y los
-  números.
-- Recordatorio del método de 3 pasos.
+## 4. La chuleta
 
-### 3.4 Responder y entrega
+- **Siempre visible** en Aprender y Escuchar, como columna fija a la derecha (en vez del cajón actual). Con la ventana
+  estrecha puede volver a ser cajón.
+- Tabla **A–Z en orden alfabético** y números 0–9, con los símbolos dibujados igual que en el traductor, y un botón
+  pequeño en cada letra para oírla.
+- Debajo, desplegable **«Truco: el árbol del Morse»** (punto hacia la izquierda, raya hacia la derecha).
 
-- Campo para la palabra y botón **COMPROBAR**. Normalizada (sin tildes, mayúsculas ni espacios) y **cifrada** como en
-  los otros retos: nunca en claro en `web/`.
-- **5 intentos**, después bloqueo de 1 minuto. Cada fallo resta puntos, como siempre.
-- Al acertar: «Señal recibida» y el audio del fragmento **LYRA** (`generado/mapa/fragmento_1_lyra.wav`) con el
-  reproductor común en un tema nuevo **`faro`** (sección 5).
+## 5. Escuchar: hoja de escucha
 
-## 4. Pistas (bloqueo creciente, como en los otros retos)
+Objetivo: «Escuchad la baliza y apuntad la palabra letra a letra.»
 
-1. **«¿Cuántas letras?»** La palabra tiene **6 letras** y está relacionada con el espacio.
-2. **«¿Dónde empieza?»** Justo después del pitido largo viene la primera letra. Las letras de la palabra empiezan
-   siempre por **raya** o por **punto**: si una casilla os sale vacía, os habéis saltado un silencio.
-3. **«La primera letra.»** La palabra empieza por **C** (– · – ·).
+**Cómo es la señal** (recuadro con un dibujo de la línea de tiempo, siempre visible):
+> La baliza repite el mensaje una y otra vez (cada vuelta dura unos 19 segundos):
+> **un pitido muy largo** (marca el principio) → **la palabra, letra a letra** (con más de un segundo de silencio
+> entre letras) → **silencio** → vuelve a empezar.
 
-## 5. Estética: la cabina de radio de un faro
+**Cómo hacerlo** (tres pasos numerados, se mantienen con este texto):
+1. Escuchad una vuelta entera sin apuntar. Esperad al pitido largo.
+2. En la siguiente vuelta, apuntad solo puntos y rayas. Pulsad «Siguiente letra» en cada silencio largo.
+3. Mirad qué letra sale debajo de cada casilla y usad otra vuelta para comprobar las dudosas.
+Consejo: «Repartíos: uno pulsa los botones y otro dice "¡letra!" en cada silencio.»
 
-Cada reto es una época distinta (1969, Matrix, detective). Este es **la sala de radio de un faro, de noche**: el mar
-oscuro, latón, baquelita negra, rótulos esmaltados y un manipulador Morse sobre la mesa. Nada de papel envejecido
-(reto 4), de consola gris (reto 1) ni de verde Matrix (reto 2).
+**Hoja de escucha:**
+- Tres botones grandes: **PUNTO**, **RAYA** y **SIGUIENTE LETRA**, más **Borrar** y **Empezar de nuevo**.
+  Teclado: `.` = punto, `-` = raya, espacio = siguiente letra, retroceso = borrar.
+- Casillas de letras como en el traductor; debajo de cada una, la letra que corresponde según la chuleta, o «?» si esa
+  combinación no existe (con la nota «Esa combinación no es ninguna letra: revisadla en otra vuelta»).
+- Debajo de la hoja, la palabra que se va formando, con el botón **«Usar esta palabra»** que la copia al campo de
+  respuesta y pasa a la fase Responder.
 
-- **Paleta:** noche marina `#0d1b2a` y `#1b263b`, latón `#c9a227` / `#b08d57`, baquelita `#141414`, esmalte crema
-  `#efe6d2` para rótulos, luz de la lámpara `#ffd27a`, rojo de señal `#c0392b`.
-- **Firma visual:** la **lámpara del faro**, arriba, que destella al ritmo del Morse cuando suena (curso, práctica y
-  modo de reserva). En reposo, un haz tenue que gira despacio (y quieto con «reducir animaciones»).
-- **Controles:** las teclas PUNTO / RAYA como **pulsadores de latón**; los diales y la frecuencia, en una placa
-  esmaltada; la tabla de Morse, en un cajón como una tarjeta plastificada de bitácora.
-- **Tipografía** (descargada a `web/assets/fonts/`): una capital grabada para rótulos (*Cinzel*), una sans clara para
-  leer (*Source Sans 3*) y una monoespaciada para puntos, rayas y frecuencias (*Space Mono*).
-- **Reproductor común:** tema nuevo `faro` (latón y noche; la cascada en ámbar de la lámpara). Añadirlo a
-  `reproductor_temas.md`.
-- **Cabecera común**, como en los otros retos: con los materiales de la escena y la misma altura.
-- Mismas reglas anti-IA: sin emoticonos, degradados decorativos, píldoras ni iconos genéricos; texto mínimo 18 px.
+## 6. Responder (se mantiene)
 
-## 6. El audio de la baliza (`herramientas/generar_baliza_reto3.py`)
+Campo, «Comprobar», 5 intentos y bloqueo de 1 minuto, pistas con bloqueo creciente y entrega de LYRA. Mensaje de
+fallo claro: «No es la palabra. Revisad las letras con "?" o escuchad otra vuelta.»
 
-- **Palabra propuesta: COMETA** (6 letras sin tildes, con letras cortas y largas: – · – · / – – – / – – / · / – / · –).
-  Alternativas: ANTENA, PLANETA, RADAR. La palabra solo está en este script y en `construir_web.py`, nunca en la web.
-- **Velocidad para aprender:** cada letra a 12 palabras por minuto (punto = 100 ms, raya = 300 ms, silencio dentro de la
-  letra = 100 ms), pero con **1,5 s de silencio entre letras** (método Farnsworth) para que dé tiempo a apuntar.
-- **Inicio de cada vuelta:** un pitido largo de 2 s y 1,5 s de silencio. **Final:** 4 s de silencio.
-- **Tono:** 700 Hz, con rampas de 5 ms para que no chasquee. WAV mono, 16 bits, 11 025 Hz.
-- Una vuelta dura unos **19 s**; el archivo lleva 10 vueltas seguidas (~3 min) para reproducirlo en bucle sin cortes.
-- El script también genera una **versión lenta** (2,5 s entre letras) por si a los grupos les cuesta.
-- Comprobación automática: el script decodifica su propio audio (detecta los pitidos y sus duraciones) y verifica que
-  sale la palabra.
+## 7. Guía para el organizador: emitir la baliza
 
-## 7. Modo de reserva (si falla el walkie o el SDR)
+Añade al `README.md` una sección «Emitir la baliza con el walkie» con estos pasos:
+1. Copiad `generado/reto3/baliza.wav` al móvil (3 min en bucle). Si a los grupos les cuesta, usad `baliza_lenta.wav`.
+2. Walkie PMR446 en el **canal 1** (el de la constante `FRECUENCIA`), **con el código de privacidad (CTCSS/DCS) en 0**.
+3. Conectad el móvil al walkie con un cable de manos libres compatible, o poned el altavoz del móvil pegado al micrófono.
+4. **Con VOX:** activadlo con sensibilidad media; el pitido largo del principio de cada vuelta lo despierta antes de la
+   palabra. **Sin VOX:** mantened pulsado el botón de hablar (se puede sujetar con una goma).
+5. Reproducid en bucle y probad desde el otro extremo del aula con un SDR: debe oírse claro. Si satura, alejad el walkie.
+6. Si el walkie se calienta, haced pausas: cada vuelta dura 19 s.
+7. Si hay interferencias, cambiad de canal y actualizad `FRECUENCIA` en `web/js/reto3.js`.
 
-Un botón discreto **solo para la organización** (como «Reiniciar progreso»: con confirmación) hace sonar la baliza en la
-propia web, con el destello de la lámpara. El audio va dentro de `web/assets/data/` (es parte del reto: descifrarlo de
-oído es justo lo que se pide, así que no hace falta cifrarlo).
+## 8. Tutoriales y panel
 
-## 8. Cambios en el resto de la web
-
-- **Panel:** la tarjeta del reto 3 pasa a «La baliza» (deja de estar en «próximamente»), con su resumen:
-  «Captad una señal de radio con el SDR y descifrad el mensaje en Morse.»
-- **Tutoriales** (`tutoriales_retos.md`): la línea del reto 3 en la bienvenida pasa a «La baliza: captad una señal de
-  radio con el SDR y descifrad la palabra en Morse.» y se añade su «Cómo funciona»:
-  1. **Aprended Morse.** Haced el curso corto: escuchad las letras y practicad.
-  2. **Sintonizad la baliza.** Poned el SDR en la frecuencia que os da la web y escuchad los pitidos.
-  3. **Descifrad la palabra.** Apuntad puntos y rayas en la hoja de escucha y escribid la palabra.
-  Al final: la transmisión del fragmento **LYRA**.
-- **README:** sección del reto 3 y asignación de fragmentos (ya está: reto 3 → LYRA).
+Revisa que el «Cómo funciona» del reto 3 y la línea de la bienvenida (`tutoriales_retos.md`) coinciden con esta
+versión: 1. Aprended Morse con el traductor y la práctica. 2. Sintonizad la baliza con el SDR. 3. Apuntad la palabra
+en la hoja de escucha y escribidla. Al final: LYRA.
 
 ## 9. Pruebas
 
-- La palabra y la respuesta no aparecen en claro en `web/` (busca «cometa»).
-- El script de la baliza verifica su propio audio (sección 6).
-- Curso: los tres ejercicios aceptan lo correcto y dejan repetir; la hoja de escucha traduce bien todas las letras de la
-  tabla.
-- Recorrido completo: aprender, sintonizar (en la web basta con «Ya la oímos»), escuchar con el modo de reserva,
-  fallo, bloqueo, pista y acierto con el audio de LYRA.
-- A 1366×768, cada fase sin scroll. Capturas de cada fase. `probar-web` al final.
-- **Prueba real (organización):** el walkie emitiendo y un SDR del aula recibiéndolo en NFM; comprobar que se oyen los
-  pitidos limpios y que el bucle no se corta.
-
-## 10. Decisiones para la organización
-
-1. **La palabra:** COMETA u otra de la lista.
-2. **El canal del walkie** y, por tanto, la frecuencia que muestra la web.
-3. **¿Cómo se conecta el audio al walkie?** Por cable (si tiene entrada) o con un altavoz junto al micrófono (funciona,
-   pero entra ruido de la sala). Afecta a lo limpia que llega la señal.
-4. **Velocidad:** la normal (1,5 s entre letras) o la lenta (2,5 s).
+1. **Traductor:** todas las letras y números se traducen igual que en `generar_baliza_reto3.py`; el resaltado sigue al
+   sonido (comprueba los tiempos con la misma unidad que el audio).
+2. **Práctica:** «Ver la solución» aparece tras dos fallos y solo entonces.
+3. **Hoja de escucha:** «Siguiente letra», borrar, teclado y «Usar esta palabra»; «?» en combinaciones inexistentes.
+4. La palabra de la baliza no aparece en claro en `web/`.
+5. **Prueba de claridad:** capturas a 1366×768 de cada fase y bloque. En cada una, ¿se entiende en 3 segundos qué
+   hacer? ¿La chuleta está a la vista? ¿«Ahora:» dice la siguiente acción?
+6. `probar-web`: recorrido completo con el modo de reserva.

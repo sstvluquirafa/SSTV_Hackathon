@@ -150,7 +150,7 @@ git push                      # 5. subir
   analizador de espectro verde azulado con retícula y displays de segmentos), `matrix` (reto 2, verde Matrix y blanco menta,
   como la maqueta) y `cuaderno` (reto 4, registrador gráfico de papel). Sin tema se ve con el estilo general de GranaSAT.
 - **Escenas de los retos:** al entrar en un reto, `app.js` marca la vista en `body[data-vista]` y la hoja del reto
-  (`css/reto1.css`, `css/reto2.css`, `css/reto4.css`) cambia la escena entera; al salir se vuelve a la base GranaSAT.
+  (`css/reto1.css`, `css/reto2.css`, `css/reto3.css`, `css/reto4.css`) cambia la escena entera; al salir se vuelve a la base GranaSAT.
 - **Efectos** (`js/efectos.js`): línea de tiempo de los pasos, expediente que se escribe como en un terminal,
   estrellas que titilan y celebración al desbloquear un fragmento. Se desactivan si Windows pide reducir animaciones.
 - Para regenerar los datos: `python herramientas/reto2_generador.py --exportar` y `python herramientas/construir_web.py`.
@@ -163,8 +163,10 @@ Bienvenida general y desplegable «Cómo funciona» en cada reto: `especificacio
 
 - **Panel principal:** bienvenida «Desbloquead el mapa» (qué son los fragmentos, una línea por prueba y el aviso de
   abrir Black Cat SSTV con el cable virtual).
-- **Retos 1 y 2 y montaje del mapa:** tres pasos numerados y qué se gana al final, con la estética de su escena
-  (sala de control en el reto 1, Matrix en el reto 2, GranaSAT en el panel y el montaje).
+- **Retos 1, 2 y 3 y montaje del mapa:** tres pasos numerados y qué se gana al final, con la estética de su escena
+  (sala de control en el reto 1, Matrix en el reto 2, el faro en el reto 3, GranaSAT en el panel y el montaje). El del
+  reto 3: aprended Morse con el traductor y la práctica, sintonizad la baliza con el SDR y apuntad la palabra en la hoja
+  de escucha → LYRA.
 - **Reto 4:** su carta de instrucciones del caso hace de «Cómo funciona» (historia del expediente y los tres pasos);
   se abre con la solapa lateral o con la palabra «Cómo funciona» de la cabecera.
 - Se abren solos **la primera vez** (queda guardado en el progreso, en `tutoriales`) y después con el botón
@@ -313,24 +315,53 @@ que incluye huellas SHA-256 de cada etapa para que las pistas sepan por dónde v
 
 ## Reto 3 · "La baliza" → LYRA (duración objetivo: ~15 min)
 
-Especificación: `especificaciones/reto3_baliza.md`. Un walkie PMR446 de la organización emite en bucle una palabra en
-Morse; los grupos la captan con el SDR (NFM, canal 1 = 446,00625 MHz, constante `FRECUENCIA` en `web/js/reto3.js`),
-la descifran y la escriben en la web. Todos oyen la misma palabra (compiten entre ellos).
+Especificación: `especificaciones/reto3_baliza.md` (versión 2, «cristalina»; la v1 está en `especificaciones/descartadas/`).
+Un walkie PMR446 de la organización emite en bucle una palabra en Morse; los grupos la captan con el SDR (NFM, canal 1 =
+446,00625 MHz, constante `FRECUENCIA` en `web/js/reto3.js`), la descifran y la escriben en la web. Todos oyen la misma
+palabra (compiten entre ellos). Objetivo de la v2: que un grupo que no sabe nada de Morse ni de radio entienda qué hacer
+leyendo solo la pantalla.
 
-- **Cuatro fases:** Aprender (curso corto: qué es el Morse, seis letras para coger el oído, tres ejercicios con las
-  teclas PUNTO y RAYA y el método de tres pasos; se puede saltar) · Sintonizar (frecuencia y modo del SDR) · Escuchar
-  (hoja de escucha: una casilla por letra donde se marcan puntos y rayas y la web dice qué letra es; tabla de Morse en
-  un cajón; teclado `.` `-` espacio y retroceso) · Responder (5 intentos, 3 pistas con bloqueo) → audio de LYRA.
+- **Reglas de claridad:** cada fase abre con una frase de objetivo grande y el pie **«Ahora:»** dice siempre la siguiente
+  acción concreta. Punto = círculo y raya = barra el triple de larga, con el mismo dibujo en el traductor, la práctica, la
+  hoja de escucha y la chuleta; cuando suena un pitido se ilumina su símbolo y destella la lámpara del faro.
+- **Chuleta** siempre a la vista en Aprender y Escuchar (columna fija a la derecha; con la ventana estrecha, cajón con el
+  botón «Chuleta»): A–Z y 0–9 dibujados, cada letra se oye al pulsarla, y el desplegable «Truco: el árbol del Morse».
+- **Aprender («Escuela de Morse»)**, tres bloques uno debajo de otro: cómo funciona (tres líneas y la A con «Escuchar
+  la A») · **traductor** «Escribid cualquier palabra» (casilla por letra, «Escuchar» resalta la casilla y el símbolo que
+  suena, «Parar», interruptor Lento/Normal —lento = 1,5 s entre letras, como la baliza— y ejemplos SOS, LUNA y HOLA; no
+  detecta la palabra de la baliza) · **Practicad** (dos letras al azar y la palabra SOL; al fallar, «Casi…»; tras dos
+  fallos aparece «Ver la solución», que la enseña y la hace sonar). «Ya sabemos Morse» salta el curso.
+- **Sintonizar:** placa con la frecuencia y botón «Copiar» (copia `446006250`, en hercios, como la pide SDR#), una línea
+  que explica SDR, frecuencia y NFM, lista de 6 pasos con casillas (se guardan en el progreso), «Ya la oímos» y el
+  desplegable «¿No oís nada?» con 5 consejos.
+- **Escuchar:** hoja de escucha arriba (botones PUNTO, RAYA y SIGUIENTE LETRA, Borrar y Empezar de nuevo; teclado `.`
+  `-` espacio y retroceso; cada casilla dice su letra, o «?» si la combinación no existe, con un aviso), la palabra que se
+  va formando con **«Usar esta palabra»** (la copia en Responder) y, debajo, «Cómo es la señal» (línea de tiempo de una
+  vuelta, sin pistas sobre la palabra) y «Cómo hacerlo» (tres pasos y el consejo de repartirse el trabajo). A 1366×768
+  con la barra del navegador no cabe todo: la hoja va primero para que los botones se vean sin desplazarse.
+- **Responder:** 5 intentos, 3 pistas con bloqueo; fallo: «No es la palabra. Revisad las letras con "?" o escuchad otra
+  vuelta.» → audio de LYRA.
 - **Audio de la baliza:** `herramientas/generar_baliza_reto3.py` → `generado/reto3/baliza.wav` (para el walkie, 10
-  vueltas, ~3 min), `baliza_lenta.wav` (más silencio entre letras) y `baliza_vuelta.wav` (una vuelta, para la web).
-  Letras a 12 palabras por minuto con 1,5 s entre letras, tono de 700 Hz, pitido largo de inicio en cada vuelta. El
-  script decodifica su propio audio y comprueba la palabra. La palabra solo está en ese script (y `construir_web.py`
-  la importa): nunca en la web.
+  vueltas, ~3 min), `baliza_lenta.wav` (2,5 s entre letras) y `baliza_vuelta.wav` (una vuelta, para la web).
+  Letras a 12 palabras por minuto (punto de 0,1 s) con 1,5 s entre letras, tono de 700 Hz, pitido largo de inicio en
+  cada vuelta (~19 s por vuelta). El script decodifica su propio audio y comprueba la palabra. La palabra solo está en ese
+  script (y `construir_web.py` la importa): nunca en la web. El traductor usa la misma tabla y la misma unidad.
 - **Modo de reserva:** botón «Modo de reserva (organización)», con confirmación, que hace sonar la baliza en el propio
   ordenador si falla el walkie o el SDR.
 - **Estética:** la sala de radio de un faro de noche (`web/css/reto3.css`): latón, baquelita y rótulos esmaltados; la
   lámpara del faro destella al ritmo del Morse (también en el modo de reserva, siguiendo el sonido). Reproductor con el
   tema `faro`. Fuentes: Cinzel, Source Sans 3 y Space Mono.
+
+### Emitir la baliza con el walkie
+
+1. Copiad `generado/reto3/baliza.wav` al móvil (3 min en bucle). Si a los grupos les cuesta, usad `baliza_lenta.wav`.
+2. Walkie PMR446 en el **canal 1** (el de la constante `FRECUENCIA`), **con el código de privacidad (CTCSS/DCS) en 0**.
+3. Conectad el móvil al walkie con un cable de manos libres compatible, o poned el altavoz del móvil pegado al micrófono.
+4. **Con VOX:** activadlo con sensibilidad media; el pitido largo del principio de cada vuelta lo despierta antes de la
+   palabra. **Sin VOX:** mantened pulsado el botón de hablar (se puede sujetar con una goma).
+5. Reproducid en bucle y probad desde el otro extremo del aula con un SDR: debe oírse claro. Si satura, alejad el walkie.
+6. Si el walkie se calienta, haced pausas: cada vuelta dura 19 s.
+7. Si hay interferencias, cambiad de canal y actualizad `FRECUENCIA` en `web/js/reto3.js`.
 
 ## Reto 4 · "¿Quién saboteó el GranaSAT-II?" (versión 2) → ANDRÓMEDA (duración objetivo: 15–18 min)
 

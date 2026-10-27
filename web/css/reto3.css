@@ -1,4 +1,4 @@
-/* Reto 3 · La baliza — «la sala de radio de un faro, de noche» (especificaciones/reto3_baliza.md).
+/* Reto 3 · La baliza — «la sala de radio de un faro, de noche» (especificaciones/reto3_baliza.md, versión 2).
    El mar oscuro, latón, baquelita negra y rótulos esmaltados. La firma es la lámpara del faro, a la izquierda, que
    destella al ritmo del Morse. Todo va bajo body[data-vista="reto3"] o con el prefijo .r3-; el reproductor usa el tema
    «faro» (css/reproductor.css). Sin degradados decorativos, sin iconos y sin emoticonos. */
@@ -44,12 +44,12 @@ body[data-vista="reto3"] .nav a.activo { color: var(--r3-esmalte); background: v
 body[data-vista="reto3"] .chip { border-radius: 3px; border: 1px solid var(--r3-laton-2); background: transparent; color: var(--r3-esmalte); font: 400 13px var(--r3-mono); }
 body[data-vista="reto3"] .chip-ambar, body[data-vista="reto3"] .chip-verde { color: var(--r3-luz); }
 
-/* ---------- La sala ---------- */
+/* ---------- La sala: plan de fases, objetivo, cuerpo (faro · mesa · chuleta) y pie «Ahora:» ---------- */
 .r3-sala {
-  display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 10px; color: var(--r3-esmalte);
+  display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 8px; color: var(--r3-esmalte);
   height: calc(100vh - var(--alto-cabecera, 66px) - 26px); min-height: 540px;
 }
-.r3-plan { display: flex; align-items: center; gap: 16px; padding: 8px 14px; background: var(--r3-baquelita); border: 1px solid var(--r3-laton-2); border-radius: 4px; }
+.r3-plan { display: flex; align-items: center; gap: 16px; padding: 6px 14px; background: var(--r3-baquelita); border: 1px solid var(--r3-laton-2); border-radius: 4px; }
 .r3-titulo { margin: 0; white-space: nowrap; font: 700 24px/1 var(--r3-rotulo-f); letter-spacing: 0.08em; color: var(--r3-luz); }
 .r3-fases { display: flex; align-items: center; gap: 4px; margin: 0 auto; padding: 0; list-style: none; }
 .r3-fases li + li::before { content: ""; display: inline-block; width: 16px; height: 2px; margin: 0 4px 4px; vertical-align: middle; background: #3a4352; }
@@ -64,19 +64,48 @@ body[data-vista="reto3"] .chip-ambar, body[data-vista="reto3"] .chip-verde { col
 .r3-fase.actual .r3-fase-num { background: var(--r3-luz); }
 .r3-fase[aria-current]:not(.actual) { border-color: var(--r3-laton-2); color: var(--r3-luz); }
 .r3-fase:disabled { cursor: default; }
-.r3-orden { margin: 0; padding: 0 4px; font-size: 19px; line-height: 1.4; color: var(--r3-esmalte); }
-.r3-palabra-boton { margin-left: 8px; padding: 0; border: 0; background: none; cursor: pointer; font: 600 17px var(--r3-texto); color: var(--r3-luz); text-decoration: underline; text-underline-offset: 4px; }
+.r3-objetivo { margin: 0; padding: 0 4px; font: 600 25px/1.25 var(--r3-texto); color: var(--r3-luz); }
+.r3-ahora {
+  margin: 0; padding: 8px 14px; font-size: 18px; line-height: 1.35; color: var(--r3-esmalte);
+  background: var(--r3-baquelita); border: 1px solid var(--r3-laton-2); border-left: 6px solid var(--r3-luz); border-radius: 4px;
+}
+.r3-ahora > b { margin-right: 6px; font: 700 15px var(--r3-rotulo-f); letter-spacing: 0.12em; color: var(--r3-luz); }
+.r3-palabra-boton { margin-left: 10px; padding: 0; border: 0; background: none; cursor: pointer; font: 600 16px var(--r3-texto); color: var(--r3-luz); text-decoration: underline; text-underline-offset: 4px; }
 
-.r3-cuerpo { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 16px; min-height: 0; }
-.r3-mesa { min-height: 0; overflow-y: auto; padding: 18px 24px 20px; background: var(--r3-baquelita); border: 2px solid var(--r3-laton-2); border-radius: 4px; box-shadow: inset 0 0 0 5px var(--r3-noche-2); }
+.r3-cuerpo { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px; min-height: 0; }
+.r3-cuerpo.con-chuleta { grid-template-columns: 150px minmax(0, 1fr) 340px; }
+.r3-mesa { min-height: 0; overflow-y: auto; padding: 14px 22px 18px; background: var(--r3-baquelita); border: 2px solid var(--r3-laton-2); border-radius: 4px; box-shadow: inset 0 0 0 5px var(--r3-noche-2); }
 .r3-fase-panel[hidden] { display: none; }
-.r3-texto { margin: 0 0 14px; max-width: 70ch; font-size: 19px; line-height: 1.5; }
-.r3-texto b, .r3-pasos b, .r3-metodo b { color: var(--r3-luz); }
-.r3-rotulo { margin: 16px 0 10px; font: 700 17px var(--r3-rotulo-f); letter-spacing: 0.1em; color: var(--r3-laton); }
+.r3-texto { margin: 0 0 12px; max-width: 70ch; font-size: 18px; line-height: 1.45; }
+.r3-texto b, .r3-pasos b, .r3-lista b, .r3-senal-texto b { color: var(--r3-luz); }
+.r3-rotulo { margin: 0 0 8px; font: 700 16px var(--r3-rotulo-f); letter-spacing: 0.1em; color: var(--r3-laton); }
 .r3-rotulo span { margin-left: 8px; font: 400 15px var(--r3-texto); letter-spacing: 0; color: var(--r3-gris); }
-.r3-nota { margin: 8px 0 0; font-size: 16px; color: var(--r3-gris); }
+.r3-nota { margin: 8px 0 0; font-size: 15px; color: var(--r3-gris); }
 .r3-nota b { color: var(--r3-esmalte); font-family: var(--r3-mono); }
-.r3-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 18px; }
+.r3-aclaracion { margin: 0 0 10px; font-size: 15px; line-height: 1.4; color: var(--r3-gris); }
+.r3-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 14px; }
+.r3-pasos { margin: 0; padding-left: 24px; display: grid; gap: 6px; max-width: 76ch; font-size: 18px; line-height: 1.4; }
+
+/* ---------- El dibujo del Morse: punto = círculo, raya = barra el triple de larga (en todo el reto) ---------- */
+.r3-morse { display: inline-flex; align-items: center; gap: 0.32em; min-height: 0.5em; font-size: 20px; color: var(--r3-luz); }
+.r3-morse i { display: block; width: 1.5em; height: 0.5em; border-radius: 0.25em; background: currentColor; transition: background 0.04s, box-shadow 0.04s; }
+.r3-morse i.p { width: 0.5em; border-radius: 50%; }
+.r3-morse i.r3-sonando { background: #fff; box-shadow: 0 0 0 3px rgba(255, 210, 122, 0.55), 0 0 14px var(--r3-luz); }
+
+/* Casillas: la letra arriba, grande, y su dibujo debajo (traductor, práctica, hoja de escucha) */
+.r3-casillas { display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px; }
+.r3-casilla {
+  display: grid; justify-items: center; align-content: start; gap: 8px; min-width: 76px; padding: 8px 12px 12px;
+  background: #0a1420; border: 2px solid #3a4352; border-radius: 4px; color: inherit; font: inherit;
+}
+button.r3-casilla { cursor: pointer; }
+.r3-casilla-letra { font: 700 30px/1 var(--r3-rotulo-f); color: var(--r3-esmalte); }
+.r3-casilla.activa { border-color: var(--r3-luz); background: var(--r3-noche-2); }
+.r3-casilla.dudosa .r3-casilla-letra { color: #f0a59a; }
+.r3-casilla.r3-sonando { border-color: var(--r3-luz); background: #2a2a1c; }
+.r3-casilla-vacia { border-style: dashed; }
+.r3-hueco { width: 26px; }
+.r3-vacio { margin: 0; padding: 18px 4px; font-size: 16px; color: var(--r3-gris); }
 
 /* ---------- El faro y su lámpara ---------- */
 .r3-faro { position: relative; display: grid; grid-template-rows: minmax(0, 1fr) auto; overflow: hidden; border: 2px solid var(--r3-laton-2); border-radius: 4px; background: #0a1420; }
@@ -96,7 +125,7 @@ body[data-vista="reto3"] .chip-ambar, body[data-vista="reto3"] .chip-verde { col
 .r3-franja { fill: var(--r3-rojo); }
 .r3-roca { fill: #2b3445; }
 .r3-mar { fill: #1b263b; }
-.r3-faro-rotulo { margin: 0; padding: 8px 10px; text-align: center; font: 700 14px var(--r3-mono); color: var(--r3-luz); background: var(--r3-baquelita); border-top: 1px solid var(--r3-laton-2); }
+.r3-faro-rotulo { margin: 0; padding: 8px 6px; text-align: center; font: 700 13px/1.4 var(--r3-mono); color: var(--r3-luz); background: var(--r3-baquelita); border-top: 1px solid var(--r3-laton-2); }
 
 /* ---------- Botones de latón ---------- */
 .r3-boton {
@@ -107,7 +136,7 @@ body[data-vista="reto3"] .chip-ambar, body[data-vista="reto3"] .chip-verde { col
 .r3-boton-sec:hover:not(:disabled) { background: var(--r3-noche-2); border-color: var(--r3-laton); }
 .r3-boton-sec:disabled { cursor: not-allowed; opacity: 0.45; }
 .r3-boton-principal {
-  min-height: 52px; padding: 0 24px; border: 0; color: #1b1406; background: var(--r3-laton); font: 700 18px var(--r3-rotulo-f); letter-spacing: 0.06em;
+  min-height: 50px; padding: 0 22px; border: 0; color: #1b1406; background: var(--r3-laton); font: 700 17px var(--r3-rotulo-f); letter-spacing: 0.06em;
   box-shadow: inset 0 0 0 2px #e4c766, 0 4px 0 #6b5216;
 }
 .r3-boton-principal:hover:not(:disabled) { background: #d6b13a; }
@@ -117,84 +146,142 @@ body[data-vista="reto3"] .chip-ambar, body[data-vista="reto3"] .chip-verde { col
 .r3-reserva { margin-left: auto; min-height: 36px; padding: 0 10px; font-size: 14px; color: var(--r3-gris); background: none; border: 1px dashed #3a4352; }
 .r3-reserva:hover { color: var(--r3-esmalte); border-color: var(--r3-laton-2); }
 
-/* Pulsadores PUNTO y RAYA, como un manipulador de latón */
-.r3-teclado { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 14px; }
+/* Pulsadores PUNTO, RAYA y SIGUIENTE LETRA, como un manipulador de latón */
+.r3-teclado { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; }
 .r3-tecla {
-  display: inline-grid; justify-items: center; min-width: 120px; min-height: 64px; padding: 6px 18px; cursor: pointer; border: 0; border-radius: 6px;
-  font: 700 16px var(--r3-rotulo-f); letter-spacing: 0.08em; color: #1b1406; background: var(--r3-laton);
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-width: 110px; min-height: 60px; padding: 6px 14px; cursor: pointer;
+  border: 0; border-radius: 6px; font: 700 17px var(--r3-rotulo-f); letter-spacing: 0.04em; text-transform: uppercase; color: #1b1406; background: var(--r3-laton);
   box-shadow: inset 0 0 0 2px #e4c766, 0 5px 0 #6b5216, 0 5px 0 2px #000; transition: transform 0.05s, box-shadow 0.05s;
 }
-.r3-tecla span { font: 700 26px/1 var(--r3-mono); }
+.r3-tecla-ancha { min-width: 0; }
+.r3-tecla-p, .r3-tecla-r { display: block; width: 12px; height: 12px; border-radius: 50%; background: #1b1406; }
+.r3-tecla-r { width: 36px; border-radius: 6px; }
 .r3-tecla:hover { background: #d6b13a; }
 .r3-tecla:active { transform: translateY(4px); box-shadow: inset 0 0 0 2px #e4c766, 0 1px 0 #6b5216, 0 1px 0 2px #000; }
 
-/* ---------- Curso ---------- */
-.r3-pestanas { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
-.r3-pestana { padding: 8px 14px; cursor: pointer; border: 1px solid #3a4352; border-radius: 3px; background: none; font: 600 16px var(--r3-texto); color: var(--r3-gris); }
-.r3-pestana:hover { color: var(--r3-esmalte); border-color: var(--r3-laton-2); }
-.r3-pestana[aria-selected="true"] { color: var(--r3-luz); border-color: var(--r3-laton); background: var(--r3-noche-2); }
-.r3-ejemplo { display: flex; align-items: center; gap: 20px; padding: 14px 18px; background: var(--r3-noche-2); border-radius: 4px; max-width: 520px; }
-.r3-letra { font: 700 34px/1 var(--r3-rotulo-f); color: var(--r3-esmalte); }
-.r3-simbolos { font: 700 26px var(--r3-mono); letter-spacing: 0.06em; color: var(--r3-luz); }
-.r3-letras { display: grid; grid-template-columns: repeat(3, minmax(0, 200px)); gap: 12px; }
-.r3-letra-boton {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; cursor: pointer;
-  border: 1px solid var(--r3-laton-2); border-radius: 4px; background: var(--r3-noche-2); color: inherit;
-}
-.r3-letra-boton:hover { border-color: var(--r3-luz); }
-.r3-ejercicio { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
-.r3-escrito { min-width: 260px; min-height: 52px; margin: 0; padding: 8px 16px; display: flex; align-items: center; font: 700 28px var(--r3-mono); color: var(--r3-luz); background: #0a1420; border: 1px solid #3a4352; border-radius: 3px; }
-.r3-mensaje { min-height: 1.4em; margin: 12px 0 0; font-size: 18px; color: var(--r3-esmalte); }
+/* ---------- Aprender: la escuela de Morse en tres bloques ---------- */
+.r3-bloque { padding: 4px 0 18px; }
+.r3-bloque + .r3-bloque { padding-top: 16px; border-top: 1px solid #2c3442; }
+.r3-bloque-cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.r3-bloque-cab .r3-boton { min-height: 38px; font-size: 15px; }
+.r3-bloque-titulo { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; font: 700 19px var(--r3-rotulo-f); letter-spacing: 0.06em; color: var(--r3-laton); }
+.r3-bloque-titulo span { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; font: 700 14px var(--r3-mono); color: var(--r3-baquelita); background: var(--r3-laton); }
+.r3-como-funciona { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: center; }
+.r3-ejemplo { display: grid; justify-items: center; gap: 8px; padding: 10px 16px; background: var(--r3-noche-2); border-radius: 4px; }
+.r3-ejemplo-texto { margin: 0; font-size: 15px; color: var(--r3-gris); }
+.r3-traductor-fila { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.r3-traductor-opciones { margin: 10px 0 12px; gap: 10px 16px; }
+.r3-campo.r3-campo-traductor { flex: 1 1 320px; width: auto; text-transform: none; letter-spacing: 0.04em; font-size: 22px; }
+.r3-campo-traductor::placeholder { font: 400 17px var(--r3-texto); letter-spacing: 0; color: #6f7a87; }
+.r3-interruptor { display: inline-flex; border: 1px solid var(--r3-laton-2); border-radius: 3px; overflow: hidden; }
+.r3-interruptor button { min-height: 38px; padding: 0 14px; cursor: pointer; border: 0; background: none; font: 600 15px var(--r3-texto); color: var(--r3-gris); }
+.r3-interruptor button[aria-pressed="true"] { color: #1b1406; background: var(--r3-laton); }
+.r3-nota-corta { font-size: 14px; color: var(--r3-gris); }
+.r3-ejemplos { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; font-size: 15px; color: var(--r3-gris); }
+.r3-ejemplos .r3-boton { min-height: 36px; padding: 0 12px; font: 700 15px var(--r3-mono); }
+.r3-ejercicio-num { margin: 0 0 10px; font-size: 17px; }
+.r3-ejercicio { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.r3-escrito { min-height: 84px; }
+.r3-mensaje { min-height: 1.4em; margin: 10px 0 0; font-size: 18px; color: var(--r3-esmalte); }
 .r3-mensaje.ok { color: var(--r3-luz); }
 .r3-mensaje.error { color: #f0a59a; }
-.r3-metodo, .r3-pasos { margin: 0 0 6px; padding-left: 26px; display: grid; gap: 8px; max-width: 76ch; font-size: 19px; line-height: 1.45; }
 
-/* ---------- Sintonía: la placa esmaltada con la frecuencia ---------- */
-.r3-placa { display: inline-grid; gap: 4px; margin-bottom: 20px; padding: 14px 26px 16px; color: var(--r3-baquelita); background: var(--r3-esmalte); border: 3px solid var(--r3-laton-2); border-radius: 6px; box-shadow: 0 0 0 4px var(--r3-baquelita), 0 0 0 5px var(--r3-laton-2); }
-.r3-placa-rotulo { margin: 0; font: 700 15px var(--r3-rotulo-f); letter-spacing: 0.08em; }
-.r3-frecuencia { margin: 0; font: 700 46px/1.1 var(--r3-mono); color: var(--r3-baquelita); }
-.r3-frecuencia small { font-size: 22px; }
+/* ---------- Sintonizar: la placa esmaltada y la lista de comprobación ---------- */
+.r3-sintonia { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 28px; align-items: start; }
+.r3-sintonia-placa { max-width: 340px; }
+.r3-placa { display: inline-grid; gap: 4px; margin: 6px 0 14px 5px; padding: 12px 22px 14px; color: var(--r3-baquelita); background: var(--r3-esmalte); border: 3px solid var(--r3-laton-2); border-radius: 6px; box-shadow: 0 0 0 4px var(--r3-baquelita), 0 0 0 5px var(--r3-laton-2); }
+.r3-placa-rotulo { margin: 0; font: 700 14px var(--r3-rotulo-f); letter-spacing: 0.08em; }
+.r3-frecuencia { margin: 0; font: 700 40px/1.1 var(--r3-mono); color: var(--r3-baquelita); }
+.r3-frecuencia small { font-size: 20px; }
+.r3-copiar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-size: 14px; line-height: 1.35; color: var(--r3-gris); }
+.r3-lista { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.r3-lista-paso { display: flex; align-items: flex-start; gap: 12px; padding: 7px 10px; cursor: pointer; font-size: 17px; line-height: 1.35; border: 1px solid #2c3442; border-radius: 4px; }
+.r3-lista-paso:hover { border-color: var(--r3-laton-2); }
+.r3-lista-paso input { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--r3-laton); cursor: pointer; }
+.r3-lista-paso input[hidden] { display: block; visibility: hidden; }
+.r3-lista-num { flex: none; font: 700 15px/22px var(--r3-mono); color: var(--r3-laton); }
+.r3-lista .hecho .r3-lista-paso { color: var(--r3-gris); border-color: transparent; }
+.r3-lista .hecho .r3-lista-paso b { color: inherit; }
+.r3-desplegable { margin-top: 14px; border: 1px solid #3a4352; border-radius: 4px; }
+.r3-desplegable summary { padding: 9px 14px; cursor: pointer; font: 700 15px var(--r3-rotulo-f); letter-spacing: 0.06em; color: var(--r3-laton); }
+.r3-desplegable[open] summary { border-bottom: 1px solid #3a4352; }
+.r3-desplegable ul { margin: 10px 0; padding: 0 16px 0 34px; display: grid; gap: 6px; font-size: 16px; line-height: 1.4; }
 
-/* ---------- Hoja de escucha ---------- */
-.r3-hoja { display: flex; flex-wrap: wrap; gap: 10px; }
-.r3-casilla {
-  display: grid; justify-items: center; gap: 4px; min-width: 96px; padding: 10px 12px 8px; cursor: pointer;
-  background: #0a1420; border: 2px solid #3a4352; border-radius: 4px; color: inherit;
-}
-.r3-casilla.activa { border-color: var(--r3-luz); }
-.r3-casilla-simbolos { min-height: 30px; font: 700 22px var(--r3-mono); color: var(--r3-luz); }
-.r3-casilla-letra { font: 700 26px/1 var(--r3-rotulo-f); color: var(--r3-esmalte); }
+/* ---------- Escuchar: cómo es la señal, cómo hacerlo, hoja de escucha ---------- */
+.r3-escuchar-cab { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); gap: 18px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #2c3442; }
+.r3-senal { padding: 8px 12px 10px; border: 1px solid #3a4352; border-radius: 4px; background: #0a1420; }
+.r3-tiempo { display: block; width: 100%; height: auto; }
+.r3-tiempo text { font: 600 10px var(--r3-texto); fill: var(--r3-esmalte); }
+.r3-tiempo .r3-tiempo-peque { font-size: 9px; fill: var(--r3-gris); }
+.r3-tiempo .r3-tiempo-puntos { font: 700 13px var(--r3-mono); fill: var(--r3-luz); }
+.r3-tiempo-eje { stroke: #3a4352; stroke-width: 1.5; }
+.r3-tiempo-largo, .r3-tiempo-letra rect, .r3-tiempo-letra circle { fill: var(--r3-luz); }
+.r3-tiempo-llave { fill: none; stroke: var(--r3-gris); stroke-width: 1; }
+.r3-tiempo-vuelta { fill: none; stroke: var(--r3-laton-2); stroke-width: 1.2; stroke-dasharray: 4 3; }
+.r3-tiempo-punta { fill: var(--r3-laton-2); }
+.r3-senal-texto { margin: 4px 0 0; font-size: 15px; line-height: 1.35; }
+.r3-pasos-cortos { font-size: 15px; gap: 3px; line-height: 1.35; }
+.r3-consejo { margin: 6px 0 0; padding-left: 10px; font-size: 15px; font-style: italic; color: var(--r3-gris); border-left: 3px solid var(--r3-laton-2); }
+.r3-hoja-cab { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: 8px; }
+.r3-hoja-cab .r3-rotulo { margin: 0; }
+.r3-hoja .r3-morse { font-size: 15px; }
+.r3-pie-hoja { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 8px; }
+.r3-pie-hoja .r3-nota { margin: 0; }
+.r3-hoja { min-height: 84px; }
+.r3-aviso { margin: 8px 0 0; font-size: 15px; color: #f0a59a; }
+.r3-aviso[hidden] { display: none; }
+.r3-formada { display: flex; align-items: center; gap: 12px; padding: 4px 4px 4px 14px; background: var(--r3-noche-2); border-radius: 4px; }
+.r3-formada .r3-boton-principal { min-height: 42px; font-size: 15px; }
+.r3-formada-rotulo { font: 700 15px var(--r3-rotulo-f); letter-spacing: 0.1em; color: var(--r3-laton); }
+.r3-formada-palabra { min-width: 130px; font: 700 24px var(--r3-mono); letter-spacing: 0.2em; color: var(--r3-luz); }
 
-/* ---------- Respuesta y entrega ---------- */
+/* ---------- Responder y entrega ---------- */
 .r3-respuesta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
 .r3-respuesta label { flex-basis: 100%; font: 700 17px var(--r3-rotulo-f); letter-spacing: 0.08em; color: var(--r3-laton); }
 .r3-campo {
-  width: min(380px, 100%); min-height: 52px; padding: 0 16px; border: 2px solid var(--r3-laton-2); border-radius: 3px; background: #0a1420;
+  width: min(380px, 100%); min-height: 50px; padding: 0 16px; border: 2px solid var(--r3-laton-2); border-radius: 3px; background: #0a1420;
   font: 700 24px var(--r3-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--r3-luz); caret-color: var(--r3-luz);
 }
 .r3-campo:disabled { color: var(--r3-gris); }
 .r3-intentos { margin: 6px 0 0; font-size: 16px; color: var(--r3-gris); }
-.r3-pistas { margin-top: 10px; }
+.r3-pistas { margin-top: 18px; }
 .r3-pista { margin: 0 0 10px; font-size: 18px; line-height: 1.45; max-width: 76ch; }
 .r3-pista.abierta b { color: var(--r3-luz); }
 .r3-entrega[hidden], .r3-responder[hidden] { display: none; }
 .r3-recibida { margin: 0 0 10px; font: 700 30px var(--r3-rotulo-f); letter-spacing: 0.1em; color: var(--r3-luz); }
 
-/* ---------- Tabla de Morse en un cajón ---------- */
-.r3-tabla {
-  position: fixed; z-index: 60; top: 0; right: 0; bottom: 0; width: min(380px, 90vw); overflow-y: auto; padding: 20px 22px;
-  color: var(--r3-baquelita); background: var(--r3-esmalte); border-left: 4px solid var(--r3-laton-2); box-shadow: -20px 0 40px rgba(0, 0, 0, 0.5);
-  transform: translateX(105%); transition: transform 0.22s ease;
+/* ---------- La chuleta: columna fija a la derecha en Aprender y Escuchar ---------- */
+.r3-chuleta {
+  display: none; min-height: 0; overflow-y: auto; padding: 10px 12px; color: var(--r3-baquelita); background: var(--r3-esmalte);
+  border: 3px solid var(--r3-laton-2); border-radius: 4px;
 }
-.r3-tabla.abierta { transform: none; }
-.r3-tabla-cab { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
-.r3-tabla-cab h2 { margin: 0; font: 700 20px var(--r3-rotulo-f); letter-spacing: 0.08em; }
-.r3-tabla .r3-boton-sec { color: var(--r3-baquelita); border-color: var(--r3-baquelita); }
-.r3-tabla .r3-boton-sec:hover { background: #e0d5bd; }
-.r3-tabla dl { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; }
-.r3-tabla dl div { display: flex; align-items: baseline; gap: 12px; padding: 3px 0; border-bottom: 1px solid #d6cbb4; }
-.r3-tabla dt { width: 1.4em; font: 700 20px var(--r3-rotulo-f); }
-.r3-tabla dd { margin: 0; font: 700 18px var(--r3-mono); }
+.con-chuleta .r3-chuleta { display: block; }
+.r3-chuleta-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.r3-chuleta-cab h3 { margin: 0; font: 700 18px var(--r3-rotulo-f); letter-spacing: 0.08em; }
+.r3-chuleta-cerrar, .r3-chuleta-abrir { display: none; }
+.r3-chuleta .r3-boton-sec { color: var(--r3-baquelita); border-color: var(--r3-baquelita); }
+.r3-chuleta-ayuda { margin: 0 0 4px; font-size: 13px; color: #5a5446; }
+.r3-chuleta-letras { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 4px; }
+.r3-chuleta-numeros { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 4px; padding-top: 4px; border-top: 1px solid #d6cbb4; }
+.r3-chuleta-fila {
+  display: flex; align-items: center; gap: 6px; min-height: 24px; padding: 1px 4px; cursor: pointer; text-align: left;
+  border: 1px solid transparent; border-radius: 3px; background: none; color: inherit;
+}
+.r3-chuleta-fila:hover { border-color: var(--r3-laton-2); background: #e6dcc4; }
+.r3-chuleta-fila.r3-sonando { background: var(--r3-baquelita); }
+.r3-chuleta-fila.r3-sonando .r3-chuleta-letra { color: var(--r3-luz); }
+.r3-chuleta-letra { width: 1em; font: 700 17px var(--r3-rotulo-f); }
+.r3-chuleta .r3-morse { gap: 0.28em; font-size: 10px; color: var(--r3-baquelita); }
+.r3-chuleta .r3-morse i.r3-sonando { background: var(--r3-luz); }
+.r3-truco { margin-top: 10px; border-color: #c9bb9b; }
+.r3-truco summary { color: var(--r3-baquelita); }
+.r3-truco[open] summary { border-bottom-color: #c9bb9b; }
+.r3-truco p { margin: 8px 10px; font-size: 14px; line-height: 1.4; }
+.r3-arbol { display: block; width: 100%; height: auto; margin-bottom: 6px; }
+.r3-arbol-p { stroke: var(--r3-laton-2); stroke-width: 1.5; }
+.r3-arbol-r { stroke: var(--r3-baquelita); stroke-width: 1.5; stroke-dasharray: 6 3; }
+.r3-arbol-raiz { fill: var(--r3-baquelita); }
+.r3-arbol-letras text { text-anchor: middle; font: 700 14px var(--r3-rotulo-f); fill: var(--r3-baquelita); paint-order: stroke; stroke: var(--r3-esmalte); stroke-width: 4px; }
 
 /* ---------- Capas comunes: bloqueo por pista y tutorial ---------- */
 body[data-vista="reto3"] .bloqueo-pista { background: rgba(10, 20, 32, 0.9); backdrop-filter: none; }
@@ -219,15 +306,35 @@ body[data-vista="reto3"] .tut-final { border-top-color: #3a4352; color: var(--r3
 body[data-vista="reto3"] .tut-final b { color: var(--r3-luz) !important; }
 body[data-vista="reto3"] .tut-entendido { border-radius: 3px; font: 700 18px var(--r3-rotulo-f); letter-spacing: 0.06em; color: #1b1406; background: var(--r3-laton); box-shadow: inset 0 0 0 2px #e4c766, 0 4px 0 #6b5216; }
 
-/* ---------- Movimiento reducido y pantallas estrechas ---------- */
+/* ---------- Movimiento reducido y pantallas pequeñas ---------- */
 @media (prefers-reduced-motion: reduce) {
   .r3-haz { animation: none; opacity: 0.6; }
-  .r3-boton, .r3-tecla, .r3-tabla, .r3-lampara, .r3-lampara-halo { transition: none; }
+  .r3-boton, .r3-tecla, .r3-chuleta, .r3-lampara, .r3-lampara-halo, .r3-morse i { transition: none; }
 }
+/* Poca altura (portátil con la barra del navegador): todo un poco más compacto */
+@media (max-height: 720px) {
+  .r3-sala { gap: 6px; }
+  .r3-objetivo { font-size: 21px; }
+  .r3-ahora { padding: 6px 12px; font-size: 16px; }
+  .r3-mesa { padding: 10px 18px 14px; }
+  .r3-tecla { min-height: 52px; }
+  .r3-casilla { padding: 6px 10px 10px; gap: 6px; }
+  .r3-casilla-letra { font-size: 26px; }
+  .r3-chuleta-fila { min-height: 23px; }
+}
+/* Ventana estrecha: el faro arriba y la chuleta vuelve a ser un cajón */
 @media (max-width: 1100px) {
   .r3-sala { height: auto; }
   .r3-plan { flex-wrap: wrap; }
   .r3-fases { order: 3; width: 100%; flex-wrap: wrap; }
-  .r3-cuerpo { grid-template-columns: 1fr; }
-  .r3-faro { height: 220px; }
+  .r3-cuerpo, .r3-cuerpo.con-chuleta { grid-template-columns: 1fr; }
+  .r3-faro { height: 200px; }
+  .r3-plan .r3-chuleta-abrir { display: inline-flex; }
+  .r3-chuleta, .con-chuleta .r3-chuleta {
+    display: block; position: fixed; z-index: 60; top: 0; right: 0; bottom: 0; width: min(360px, 92vw); border-radius: 0;
+    box-shadow: -20px 0 40px rgba(0, 0, 0, 0.5); transform: translateX(105%); visibility: hidden; transition: transform 0.22s ease, visibility 0.22s;
+  }
+  .r3-chuleta.abierta { transform: none; visibility: visible; }
+  .r3-chuleta-cerrar { display: inline-flex; }
+  .r3-como-funciona, .r3-escuchar-cab, .r3-sintonia { grid-template-columns: 1fr; }
 }

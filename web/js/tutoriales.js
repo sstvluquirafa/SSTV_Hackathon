@@ -1,5 +1,5 @@
 // Tutoriales «De qué va cada prueba» (especificaciones/tutoriales_retos.md): bienvenida general en el panel y un
-// desplegable «Cómo funciona» en los retos 1 y 2 y en el montaje. El reto 4 usa su propia pantalla de instrucciones.
+// desplegable «Cómo funciona» en los retos 1, 2 y 3 y en el montaje. El reto 4 usa su propia pantalla de instrucciones.
 // Se abren solos la primera vez (queda guardado en el progreso, y «Reiniciar progreso» los vuelve a mostrar) y después
 // con el botón «Cómo funciona». Se cierran con «Entendido», con Escape o con un clic fuera.
 // La capa toma la estética de la escena en la que está (css/tutoriales.css, según body[data-vista]).
@@ -53,9 +53,9 @@
       etiqueta: "Cómo funciona",
       titulo: "La baliza",
       cuerpo: pasos([
-        ["Aprended Morse.", "Haced el curso corto: escuchad las letras y practicad."],
-        ["Sintonizad la baliza.", "Poned el SDR en la frecuencia que os da la web y escuchad los pitidos."],
-        ["Descifrad la palabra.", "Apuntad puntos y rayas en la hoja de escucha y escribid la palabra."],
+        ["Aprended Morse", "con el traductor y la práctica: escribid palabras, escuchadlas y mirad sus puntos y rayas."],
+        ["Sintonizad la baliza", "con el SDR, el receptor de radio, siguiendo la lista paso a paso."],
+        ["Apuntad la palabra", "en la hoja de escucha, letra a letra, y escribidla para comprobarla."],
       ]) + final("LYRA"),
     }),
     montaje: () => ({
