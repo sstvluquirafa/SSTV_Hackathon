@@ -53,8 +53,10 @@
     "Para escuchar no hace falta el cable de audio virtual: el sonido sale por los altavoces.",
     "Si nada funciona, avisad a la organización (modo de reserva).",
   ];
-  // Práctica: dos letras al azar de estas seis y después la palabra SOL
+  // Práctica: dos letras al azar de estas seis y después dos palabras cortas al azar de la lista
   const LETRAS_CURSO = ["E", "T", "A", "N", "S", "O"];
+  const PALABRAS_PRACTICA = ["SOL", "MAR", "LUZ", "OSO", "PAN", "RIO", "SAL", "DIA", "VOZ", "MES", "TEN", "NIDO", "GATO", "ROSA"];
+  const EJERCICIOS = 4;
   const sinEtiquetas = (h) => h.replace(/<[^>]+>/g, "");
 
   const estado = () => Progreso.reto(ID);
@@ -341,7 +343,7 @@
     tocar(secuencia, { entreLetras: ENTRE_LETRAS[ritmo], marcar: resaltar($$("#r3-tr-casillas .r3-casilla")) });
   }
 
-  // ---------- Practicad: tres ejercicios ----------
+  // ---------- Practicad: dos letras y dos palabras (con el silencio entre letras de la baliza) ----------
   let ejercicio = 0, escrito = "", objetivo = [], fallosEj = 0, resuelto = null; // resuelto: "bien" | "solucion"
   function nuevoEjercicio() {
     if (ejercicio < 2) {
@@ -349,9 +351,16 @@
       let l = azar();
       while (ejercicio === 1 && l === objetivo[0]) l = azar();
       objetivo = [l];
-    } else objetivo = ["S", "O", "L"];
+    } else {
+      const anterior = objetivo.join("");
+      let p = anterior;
+      while (p === anterior) p = PALABRAS_PRACTICA[Math.floor(Math.random() * PALABRAS_PRACTICA.length)];
+      objetivo = [...p];
+    }
     escrito = ""; fallosEj = 0; resuelto = null;
   }
+  /** La práctica suena siempre en «Lento»: con el mismo silencio entre letras que la baliza. */
+  const oirObjetivo = (marcar) => tocar(objetivo.map((l) => MORSE[l]).join(" "), { entreLetras: ENTRE_LETRAS.lento, marcar });
   const escritoHtml = () => {
     const letras = escrito.trim() ? escrito.trim().split(/\s+/) : [];
     const casillas = letras.map((m) => `<div class="r3-casilla r3-casilla-fija"><span class="r3-casilla-letra">${DESDE_MORSE[m] || "?"}</span>${dibujo(m)}</div>`);
@@ -361,7 +370,7 @@
   function pintarEjercicio(mensaje) {
     const caja = $("#r3-practica");
     if (!caja) return;
-    if (ejercicio > 2) {
+    if (ejercicio >= EJERCICIOS) {
       caja.innerHTML = `<p class="r3-mensaje ok">Habéis terminado la práctica: ya distinguís puntos, rayas y letras.</p>
         <div class="r3-acciones"><button class="r3-boton r3-boton-principal" type="button" id="r3-fin-curso">Terminar el curso e ir a Sintonizar</button></div>`;
       $("#r3-fin-curso").addEventListener("click", () => marcar("curso"));
@@ -369,10 +378,10 @@
       return;
     }
     if (!objetivo.length) nuevoEjercicio();
-    const esPalabra = ejercicio === 2, cosa = esPalabra ? "la palabra" : "la letra";
+    const esPalabra = ejercicio >= 2, cosa = esPalabra ? "la palabra" : "la letra";
     const casillasObjetivo = objetivo.map((l) => `<div class="r3-casilla r3-casilla-fija"><span class="r3-casilla-letra">${l}</span>${dibujo(MORSE[l])}</div>`).join("");
     caja.innerHTML = `
-      <p class="r3-ejercicio-num"><b>Ejercicio ${ejercicio + 1} de 3.</b> ${esPalabra ? "Ahora una palabra de tres letras: pulsad «Siguiente letra» entre letra y letra." : ""}</p>
+      <p class="r3-ejercicio-num"><b>Ejercicio ${ejercicio + 1} de ${EJERCICIOS}.</b> ${esPalabra ? `Ahora una palabra de ${objetivo.length} letras: pulsad «Siguiente letra» en cada silencio entre letras.` : ""}</p>
       <div class="r3-ejercicio">
         <button class="r3-boton r3-boton-principal" type="button" id="r3-oir-ej">Oír ${cosa}</button>
         <div class="r3-casillas r3-escrito" id="r3-escrito">${resuelto ? casillasObjetivo : escritoHtml()}</div>
@@ -386,9 +395,8 @@
         ${fallosEj >= 2 ? '<button class="r3-boton r3-boton-sec" type="button" id="r3-ver-letra">Ver la solución</button>' : ""}
       </div>`}
       <p class="r3-mensaje ${mensaje ? mensaje.tipo : ""}" role="status">${mensaje ? mensaje.texto : ""}</p>
-      ${resuelto ? `<div class="r3-acciones"><button class="r3-boton r3-boton-principal" type="button" id="r3-sigue-ej">${ejercicio < 2 ? "Siguiente ejercicio" : "Terminar la práctica"}</button></div>` : ""}`;
-    $("#r3-oir-ej").addEventListener("click", () => tocar(objetivo.map((l) => MORSE[l]).join(" "),
-      { marcar: resuelto ? resaltar($$("#r3-escrito .r3-casilla")) : null }));
+      ${resuelto ? `<div class="r3-acciones"><button class="r3-boton r3-boton-principal" type="button" id="r3-sigue-ej">${ejercicio < EJERCICIOS - 1 ? "Siguiente ejercicio" : "Terminar la práctica"}</button></div>` : ""}`;
+    $("#r3-oir-ej").addEventListener("click", () => oirObjetivo(resuelto ? resaltar($$("#r3-escrito .r3-casilla")) : null));
     $$("[data-ej]", caja).forEach((b) => b.addEventListener("click", () => escribirEjercicio(b.dataset.ej)));
     const comprobarEj = $("#r3-comprobar-ej");
     if (comprobarEj) comprobarEj.addEventListener("click", comprobarEjercicio);
@@ -396,7 +404,7 @@
     if (botonVer) botonVer.addEventListener("click", () => {
       resuelto = "solucion";
       pintarEjercicio({ tipo: "", texto: `Era ${objetivo.length > 1 ? "la palabra" : "la letra"} ${objetivo.join("")}. Escuchad cómo suena mientras miráis el dibujo.` });
-      tocar(objetivo.map((l) => MORSE[l]).join(" "), { marcar: resaltar($$("#r3-escrito .r3-casilla")) });
+      oirObjetivo(resaltar($$("#r3-escrito .r3-casilla")));
     });
     const sigue = $("#r3-sigue-ej");
     if (sigue) sigue.addEventListener("click", () => { ejercicio++; objetivo = []; pintarEjercicio(); });
@@ -427,11 +435,11 @@
 
   function ahoraAprender() {
     if (!traducida && ejercicio === 0 && !escrito && !fallosEj && !resuelto) return "escribid una palabra en el traductor (bloque 2) y pulsad «Escuchar».";
-    if (ejercicio > 2) return "pulsad «Terminar el curso e ir a Sintonizar».";
-    if (resuelto) return ejercicio < 2 ? "pulsad «Siguiente ejercicio»." : "pulsad «Terminar la práctica».";
+    if (ejercicio >= EJERCICIOS) return "pulsad «Terminar el curso e ir a Sintonizar».";
+    if (resuelto) return ejercicio < EJERCICIOS - 1 ? "pulsad «Siguiente ejercicio»." : "pulsad «Terminar la práctica».";
     if (fallosEj >= 2) return "escuchad otra vez o pulsad «Ver la solución».";
     if (escrito.trim()) return "cuando hayáis apuntado todo, pulsad «Comprobar».";
-    return `bajad a «Practicad» (bloque 3), pulsad «Oír ${ejercicio === 2 ? "la palabra" : "la letra"}» y apuntadla con PUNTO y RAYA.`;
+    return `bajad a «Practicad» (bloque 3), pulsad «Oír ${ejercicio >= 2 ? "la palabra" : "la letra"}» y apuntadla con PUNTO y RAYA.`;
   }
 
   // ===================================== Fase 2: sintonizar =====================================
@@ -628,9 +636,9 @@
       if (simbolo) { ev.preventDefault(); anotarSimbolo(simbolo); }
       else if (ev.key === " ") { ev.preventDefault(); siguienteLetra(); }
       else if (ev.key === "Backspace") { ev.preventDefault(); borrar(); }
-    } else if (faseVista === 0 && $("#r3-escrito") && !resuelto && ejercicio <= 2) {
+    } else if (faseVista === 0 && $("#r3-escrito") && !resuelto && ejercicio < EJERCICIOS) {
       if (simbolo) { ev.preventDefault(); escribirEjercicio(simbolo); }
-      else if (ev.key === " " && ejercicio === 2) { ev.preventDefault(); escribirEjercicio(" "); }
+      else if (ev.key === " " && ejercicio >= 2) { ev.preventDefault(); escribirEjercicio(" "); }
       else if (ev.key === "Backspace") { ev.preventDefault(); escribirEjercicio("borrar"); }
     }
   });
