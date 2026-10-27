@@ -168,10 +168,11 @@ def main(solo=None):
     if not solo or "reto1" in solo:
         pistas_reto1()
     if not solo or "reto3" in solo:
-        # Una vuelta de la baliza para el modo de reserva (sin cifrar: descifrarla de oído ES el reto)
-        vuelta = RAIZ / "generado" / "reto3" / "baliza_vuelta.wav"
+        # Modo de reserva: el mismo audio que emite el walkie (dos vueltas con zumbido, en bucle en la web).
+        # Sin cifrar: descifrarlo de oído ES el reto.
+        vuelta = RAIZ / "generado" / "reto3" / "walkie" / "baliza_walkie.wav"
         if not vuelta.exists():
-            sys.exit("Falta generado/reto3/baliza_vuelta.wav: ejecuta herramientas/generar_baliza_reto3.py.")
+            sys.exit("Falta generado/reto3/walkie/baliza_walkie.wav: ejecuta herramientas/generar_baliza_walkie.py.")
         tam = escribir_js("reto3_baliza", "reto3_baliza", b64(vuelta.read_bytes()))
         print(f"reto3_baliza.js           {tam / 1e6:5.2f} MB")
     if not solo or "reto4" in solo:

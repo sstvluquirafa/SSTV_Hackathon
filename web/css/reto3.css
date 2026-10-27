@@ -193,7 +193,24 @@ button.r3-casilla { cursor: pointer; }
 .r3-placa-rotulo { margin: 0; font: 700 14px var(--r3-rotulo-f); letter-spacing: 0.08em; }
 .r3-frecuencia { margin: 0; font: 700 40px/1.1 var(--r3-mono); color: var(--r3-baquelita); }
 .r3-frecuencia small { font-size: 20px; }
-.r3-copiar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-size: 14px; line-height: 1.35; color: var(--r3-gris); }
+/* Regla de tramos 140–155 MHz: cada tramo se tacha al mirarlo */
+.r3-regla { margin: 14px 0 4px; }
+.r3-regla-rotulo { margin: 0 0 6px; font: 700 14px var(--r3-rotulo-f); letter-spacing: 0.06em; color: var(--r3-laton); }
+.r3-regla-tramos { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); border: 2px solid var(--r3-laton-2); border-radius: 4px; background: var(--r3-baquelita); }
+.r3-tramo { display: grid; gap: 2px; padding: 8px 2px 6px; cursor: pointer; text-align: center; color: var(--r3-esmalte); background: none; border: 0; border-left: 1px solid var(--r3-laton-2); font: inherit; }
+.r3-tramo:first-child { border-left: 0; }
+.r3-tramo b { font: 700 18px/1 var(--r3-mono); color: var(--r3-luz); }
+.r3-tramo span { font-size: 11px; color: var(--r3-gris); }
+.r3-tramo:hover { background: #222a36; }
+.r3-tramo:focus-visible { outline: 3px solid var(--r3-luz); outline-offset: -3px; }
+.r3-tramo.mirado { background: var(--r3-laton-2); }
+.r3-tramo.mirado b { color: var(--r3-baquelita); text-decoration: line-through 2px; }
+.r3-tramo.mirado span { color: var(--r3-baquelita); }
+.r3-apuntada { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 12px 0 4px; font-size: 16px; }
+.r3-apuntada label { flex-basis: 100%; font: 700 14px var(--r3-rotulo-f); letter-spacing: 0.06em; color: var(--r3-laton); }
+.r3-apuntada small { flex-basis: 100%; font-size: 13px; color: var(--r3-gris); }
+.r3-campo.r3-campo-frec { width: 7em; font-size: 20px; }
+.r3-pistas-radio { margin-top: 18px; }
 .r3-lista { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
 .r3-lista-paso { display: flex; align-items: flex-start; gap: 12px; padding: 7px 10px; cursor: pointer; font-size: 17px; line-height: 1.35; border: 1px solid #2c3442; border-radius: 4px; }
 .r3-lista-paso:hover { border-color: var(--r3-laton-2); }
@@ -219,6 +236,7 @@ button.r3-casilla { cursor: pointer; }
 .r3-tiempo-llave { fill: none; stroke: var(--r3-gris); stroke-width: 1; }
 .r3-tiempo-vuelta { fill: none; stroke: var(--r3-laton-2); stroke-width: 1.2; stroke-dasharray: 4 3; }
 .r3-tiempo-punta { fill: var(--r3-laton-2); }
+.r3-tiempo-zumbido { fill: none; stroke: var(--r3-gris); stroke-width: 1; }
 .r3-senal-texto { margin: 4px 0 0; font-size: 15px; line-height: 1.35; }
 .r3-pasos-cortos { font-size: 15px; gap: 3px; line-height: 1.35; }
 .r3-consejo { margin: 6px 0 0; padding-left: 10px; font-size: 15px; font-style: italic; color: var(--r3-gris); border-left: 3px solid var(--r3-laton-2); }

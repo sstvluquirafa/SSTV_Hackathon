@@ -3,16 +3,22 @@
 // Cuatro fases (Aprender · Sintonizar · Escuchar · Responder): la escuela de Morse (cómo funciona, traductor y práctica),
 // la lista de sintonía del SDR, la hoja de escucha y la respuesta → fragmento LYRA. Cada fase abre con su objetivo y el
 // pie «Ahora:» dice siempre la siguiente acción. La chuleta queda a la vista, a la derecha, en Aprender y Escuchar.
+// La web NO dice la frecuencia: solo el rango (140–155 MHz); los grupos la buscan barriendo con el SDR.
 // La palabra no está en la web: la respuesta abre, cifrada, el audio de recompensa (base.js → Cripto). La baliza de
-// reserva (reto3_baliza.js) es audio: descifrarla de oído es justo el reto.
+// reserva (reto3_baliza.js = generado/reto3/walkie/baliza_walkie.wav, en bucle) es audio: descifrarla de oído es justo el reto.
 // Estética: la sala de radio de un faro de noche (css/reto3.css). La lámpara destella al ritmo del Morse.
 (function () {
   "use strict";
   const { $, $$, escapar, Progreso, Cripto, cargarDatos, blobDesdeB64, urlDe, Sonido } = App;
   const ID = "reto3";
-  const FRECUENCIA = "446,00625"; // MHz · canal 1 de PMR446: cambiadla si el walkie emite en otro canal
-  const FRECUENCIA_HZ = String(Math.round(parseFloat(FRECUENCIA.replace(",", ".")) * 1e6)); // lo que copia «Copiar»
-  const CANAL = 1;
+  // La frecuencia exacta no está en la web: descubrirla es parte del reto. Solo se muestra el rango.
+  const RANGO = [140, 155]; // MHz
+  const TRAMOS = [141, 143, 145, 147, 149, 151, 153, 155]; // de 2 en 2 MHz: el SDR ve unos 2 MHz de golpe
+  // Pistas de radio (Sintonizar). La organización las ajusta a la frecuencia real del walkie (README, «Emitir la baliza»).
+  const PISTAS_SINTONIA = [
+    { id: "s1", titulo: "Pista de radio 1 · ¿En qué zona?", texto: "Está en la banda de radioaficionados de 2 metros: entre 144 y 146 MHz." },
+    { id: "s2", titulo: "Pista de radio 2 · Más cerca", texto: "Está entre 145 y 146 MHz. Id despacio y ampliad la cascada." },
+  ];
 
   const MORSE = {
     A: ".-", B: "-...", C: "-.-.", D: "-..", E: ".", F: "..-.", G: "--.", H: "....", I: "..", J: ".---", K: "-.-", L: ".-..",
@@ -29,7 +35,7 @@
 
   const FASES = [
     { nombre: "Aprender", objetivo: "Aprended cómo suena el Morse antes de escuchar la baliza." },
-    { nombre: "Sintonizar", objetivo: "Encontrad la señal de la baliza con el receptor de radio." },
+    { nombre: "Sintonizar", objetivo: "La baliza emite en algún punto entre 140 y 155 MHz. Encontradla con el receptor de radio." },
     { nombre: "Escuchar", objetivo: "Escuchad la baliza y apuntad la palabra letra a letra." },
     { nombre: "Responder", objetivo: "Escribid la palabra de la baliza para recibir el fragmento LYRA." },
   ];
@@ -40,16 +46,17 @@
   ];
   const SINTONIA = [
     "Conectad el receptor SDR y su antena al PC y abrid el programa del SDR (SDR#).",
-    `Escribid la frecuencia <b>${FRECUENCIA} MHz</b> (está en la placa, con el botón «Copiar»).`,
-    "Elegid el modo <b>NFM</b> («FM estrecha», el de los walkies).",
-    "Pulsad <b>Play</b> y subid el volumen.",
-    "Buscad la señal en la cascada: una línea que se enciende y se apaga. Si está un poco desplazada, haced clic encima.",
-    "Cuando oigáis pitidos que se repiten, pulsad <b>«Ya la oímos»</b>.",
+    "Elegid el modo <b>NFM</b> («FM estrecha», el de los walkies), pulsad <b>Play</b> y subid el volumen.",
+    "<b>Barred el rango por tramos:</b> poned 141 MHz, mirad la cascada unos segundos y subid 2 MHz cada vez (143, 145…) hasta 155. Pulsad cada tramo de la regla al mirarlo.",
+    "Buscad <b>una línea fija y continua</b> en la cascada (el walkie no deja de transmitir). Cuando la veáis, haced clic encima.",
+    "Escuchad: un <b>zumbido grave de fondo con pitidos agudos que se repiten</b>. Si suena así, es la baliza.",
+    "Apuntad la frecuencia en la que la habéis encontrado y pulsad <b>«Ya la oímos»</b>.",
   ];
   const NO_OIS = [
     "Revisad que la antena está bien enroscada y el receptor enchufado.",
     "Subid la ganancia (RF Gain) del programa. Si suena saturado o con mucho ruido, bajadla.",
-    "El receptor puede estar algo desviado: moved la frecuencia poco a poco arriba y abajo mirando la cascada.",
+    "Ampliad la cascada al máximo (frecuencia de muestreo más alta) para ver más rango de golpe.",
+    "Podéis encontrar otras señales (radioaficionados, voces): la baliza es la que tiene <b>pitidos que se repiten con un zumbido de fondo</b>.",
     "Para escuchar no hace falta el cable de audio virtual: el sonido sale por los altavoces.",
     "Si nada funciona, avisad a la organización (modo de reserva).",
   ];
@@ -164,7 +171,7 @@
               <rect x="40" y="300" width="120" height="14" class="r3-roca"/>
               <path d="M0 316 Q25 308 50 316 T100 316 T150 316 T200 316 V330 H0 Z" class="r3-mar"/>
             </svg>
-            <p class="r3-faro-rotulo">Canal ${CANAL}<br>${FRECUENCIA} MHz</p>
+            <p class="r3-faro-rotulo">${RANGO[0]}–${RANGO[1]} MHz<br>NFM</p>
           </aside>
 
           <main class="r3-mesa" id="r3-mesa">
@@ -181,7 +188,7 @@
                 <p class="r3-mensaje" id="r3-mensaje" role="status"></p>
                 <p class="r3-intentos" id="r3-intentos"></p>
                 <div class="r3-pistas">
-                  <h3 class="r3-rotulo">Pistas <span id="r3-coste"></span></h3>
+                  <h3 class="r3-rotulo">Pistas <span class="r3-coste"></span></h3>
                   <div id="r3-pistas"></div>
                 </div>
               </div>
@@ -248,7 +255,9 @@
     if (faseVista === 0) texto = ahoraAprender();
     else if (faseVista === 1) {
       const i = [0, 1, 2, 3, 4].find((k) => !e.sintonia.includes(k));
-      texto = i == null ? sinEtiquetas(SINTONIA[5]) : `paso ${i + 1}. ${sinEtiquetas(SINTONIA[i])} Después, marcad la casilla.`;
+      const t = tramoPendiente();
+      if (i === 2 && t != null) texto = `paso 3. Poned ${t} MHz en SDR#, mirad la cascada unos segundos y pulsad «${t}» en la regla. Si veis una línea fija, pasad al paso 4.`;
+      else texto = i == null ? sinEtiquetas(SINTONIA[5]) : `paso ${i + 1}. ${sinEtiquetas(SINTONIA[i])} Después, marcad la casilla.`;
     } else if (faseVista === 2) texto = ahoraEscuchar();
     else if (e.completado) texto = "Reproducid la transmisión por el cable virtual y guardad la imagen del fragmento LYRA para el montaje del mapa.";
     else texto = $("#r3-palabra") && $("#r3-palabra").value.trim() ? "Pulsad «Comprobar»." : "Escribid la palabra de la baliza y pulsad «Comprobar».";
@@ -449,22 +458,35 @@
       <div class="r3-sintonia">
         <div class="r3-sintonia-placa">
           <div class="r3-placa">
-            <p class="r3-placa-rotulo">Frecuencia de la baliza</p>
-            <p class="r3-frecuencia">${FRECUENCIA} <small>MHz</small></p>
-            <p class="r3-placa-rotulo">Modo NFM · canal ${CANAL} de PMR446</p>
+            <p class="r3-placa-rotulo">La baliza emite entre</p>
+            <p class="r3-frecuencia">${RANGO[0]} y ${RANGO[1]} <small>MHz</small></p>
+            <p class="r3-placa-rotulo">Modo NFM · la frecuencia exacta, buscadla</p>
           </div>
-          <div class="r3-copiar"><button class="r3-boton r3-boton-sec" type="button" id="r3-copiar">Copiar</button>
-            <span id="r3-copiado">Copia ${FRECUENCIA_HZ} (la misma frecuencia en hercios), como la pide SDR#.</span></div>
-          <p class="r3-aclaracion">Frecuencia: el «canal» exacto en el que emite el walkie, en megahercios (MHz).</p>
+          <p class="r3-aclaracion">MHz (megahercios): la unidad de la frecuencia, el «canal» de radio en el que emite el walkie.</p>
           <p class="r3-aclaracion">NFM: «FM estrecha», la forma en que emiten los walkies.</p>
+          <p class="r3-aclaracion">Cascada: el dibujo que baja por la pantalla de SDR#. Cada emisora es una línea vertical.</p>
+          <div class="r3-pistas r3-pistas-radio">
+            <h3 class="r3-rotulo">Pistas de radio <span class="r3-coste"></span></h3>
+            <div id="r3-pistas-radio"></div>
+          </div>
         </div>
         <div>
           <ol class="r3-lista" id="r3-lista">${SINTONIA.map((t, i) => `
             <li><label class="r3-lista-paso"><input type="checkbox" data-paso="${i}" ${i === 5 ? "hidden" : ""}>
               <span class="r3-lista-num">${i + 1}</span><span>${t}</span></label></li>`).join("")}</ol>
+          <div class="r3-regla" role="group" aria-labelledby="r3-regla-rotulo">
+            <p class="r3-regla-rotulo" id="r3-regla-rotulo">Regla de ${RANGO[0]} a ${RANGO[1]} MHz: pulsad cada tramo cuando lo hayáis mirado</p>
+            <div class="r3-regla-tramos">${TRAMOS.map((c) => `
+              <button class="r3-tramo" type="button" data-tramo="${c}" aria-pressed="false"><b>${c}</b><span>${c - 1}–${c + 1}</span></button>`).join("")}</div>
+          </div>
+          <div class="r3-apuntada">
+            <label for="r3-frec">Frecuencia en la que la habéis encontrado</label>
+            <span><input class="r3-campo r3-campo-frec" id="r3-frec" inputmode="decimal" spellcheck="false" autocomplete="off"> MHz</span>
+            <small>Solo para vosotros: la web no la comprueba.</small>
+          </div>
           <div class="r3-acciones"><button class="r3-boton r3-boton-principal" id="r3-oida" type="button">Ya la oímos</button></div>
           <details class="r3-desplegable">
-            <summary>¿No oís nada?</summary>
+            <summary>¿No la encontráis?</summary>
             <ul>${NO_OIS.map((t) => `<li>${t}</li>`).join("")}</ul>
           </details>
         </div>
@@ -483,22 +505,26 @@
         pintarAhora();
       });
     });
-    $("#r3-oida").addEventListener("click", () => marcar("sintonizada"));
-    $("#r3-copiar").addEventListener("click", async () => {
-      const ok = await copiar(FRECUENCIA_HZ);
-      $("#r3-copiado").textContent = ok ? `Copiado: ${FRECUENCIA_HZ}. Pegadlo en la frecuencia de SDR# (Ctrl+V).` : `No se ha podido copiar: escribid ${FRECUENCIA_HZ} a mano.`;
+    const pintarTramos = () => $$(".r3-tramo").forEach((b) => {
+      const mirado = (estado().tramos || []).includes(Number(b.dataset.tramo));
+      b.classList.toggle("mirado", mirado);
+      b.setAttribute("aria-pressed", String(mirado));
     });
+    $$(".r3-tramo").forEach((b) => b.addEventListener("click", () => {
+      const c = Number(b.dataset.tramo);
+      guardar((r) => { const t = r.tramos || []; r.tramos = t.includes(c) ? t.filter((x) => x !== c) : t.concat(c); });
+      Sonido.tic();
+      pintarTramos();
+      pintarAhora();
+    }));
+    pintarTramos();
+    const frec = $("#r3-frec");
+    frec.value = estado().frecuenciaApuntada || "";
+    frec.addEventListener("input", () => guardar((r) => { r.frecuenciaApuntada = frec.value.slice(0, 12); }));
+    $("#r3-oida").addEventListener("click", () => marcar("sintonizada"));
   }
-  async function copiar(texto) {
-    try { await navigator.clipboard.writeText(texto); return true; } catch (e) { /* sin permiso: método antiguo */ }
-    const t = document.createElement("textarea");
-    t.value = texto; t.style.position = "fixed"; t.style.opacity = "0";
-    document.body.appendChild(t); t.select();
-    let ok = false;
-    try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
-    t.remove();
-    return ok;
-  }
+  /** Siguiente tramo de la regla sin mirar (o null si ya están todos). */
+  const tramoPendiente = () => TRAMOS.find((c) => !(estado().tramos || []).includes(c)) ?? null;
 
   // ===================================== Fase 3: escuchar =====================================
   function htmlEscuchar() {
@@ -528,8 +554,10 @@
         <div class="r3-senal">
           <h3 class="r3-rotulo">Cómo es la señal</h3>
           ${lineaDeTiempo()}
-          <p class="r3-senal-texto">Cada vuelta dura unos 19 s: <b>pitido muy largo</b> → <b>la palabra, letra a letra</b>
-            (más de un segundo de silencio entre letras) → <b>silencio</b> → vuelve a empezar.</p>
+          <p class="r3-senal-texto">Cada vuelta dura unos 17 s: <b>pitido muy largo</b> (marca el principio) → <b>la palabra,
+            letra a letra</b> (más de un segundo entre letras) → <b>otra vez el pitido largo</b>, y vuelta a empezar.</p>
+          <p class="r3-senal-texto">De fondo oiréis un <b>zumbido grave que no para nunca</b>: sirve para que el walkie no corte.
+            <b>No cuenta:</b> apuntad solo los pitidos agudos.</p>
         </div>
         <div>
           <h3 class="r3-rotulo">Cómo hacerlo</h3>
@@ -545,18 +573,24 @@
   /** Dibujo de una vuelta de la baliza, a escala (17 px por segundo). No dice nada de la palabra. */
   function lineaDeTiempo() {
     const grupo = (x) => `<rect x="${x}" y="26" width="7" height="10" rx="2"/><circle cx="${x + 11.5}" cy="31" r="2.5"/><rect x="${x + 16}" y="26" width="7" height="10" rx="2"/>`;
-    return `<svg class="r3-tiempo" viewBox="0 0 340 66" role="img" aria-label="Una vuelta: pitido largo, la palabra letra a letra, silencio y vuelta a empezar">
+    let zumbido = "M6 72";
+    for (let x = 6; x < 330; x += 6) zumbido += ` q1.5 -2.4 3 0 t3 0`;
+    return `<svg class="r3-tiempo" viewBox="0 0 340 92" role="img" aria-label="Una vuelta: pitido largo, la palabra letra a letra y otra vez el pitido largo; debajo, el zumbido de fondo">
       <defs><marker id="r3-flecha" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L8 4 L0 8 Z" class="r3-tiempo-punta"/></marker></defs>
-      <path class="r3-tiempo-vuelta" d="M330 31 V8 H23 V20" marker-end="url(#r3-flecha)"/>
-      <text x="176" y="6" text-anchor="middle" class="r3-tiempo-peque">vuelve a empezar</text>
+      <path class="r3-tiempo-vuelta" d="M309 20 V8 H23 V20" marker-end="url(#r3-flecha)"/>
+      <text x="166" y="6" text-anchor="middle" class="r3-tiempo-peque">es el mismo pitido: vuelta a empezar</text>
       <path class="r3-tiempo-eje" d="M6 31 H330"/>
       <rect class="r3-tiempo-largo" x="6" y="23" width="34" height="16" rx="2"/>
       <g class="r3-tiempo-letra">${grupo(68)}${grupo(116)}${grupo(164)}</g>
       <text class="r3-tiempo-puntos" x="206" y="36">· · ·</text>
       <path class="r3-tiempo-llave" d="M66 44 v5 H258 v-5"/>
-      <text x="23" y="60" text-anchor="middle">pitido largo</text>
+      <text x="4" y="60">pitido largo</text>
       <text x="162" y="62" text-anchor="middle">la palabra, letra a letra</text>
-      <text x="294" y="60" text-anchor="middle">silencio</text>
+      <rect class="r3-tiempo-largo" x="292" y="23" width="34" height="16" rx="2"/>
+      <text x="275" y="36" text-anchor="middle" class="r3-tiempo-peque">2 s</text>
+      <text x="336" y="60" text-anchor="end">pitido largo</text>
+      <path class="r3-tiempo-zumbido" d="${zumbido}"/>
+      <text x="168" y="88" text-anchor="middle" class="r3-tiempo-peque">zumbido grave de fondo, siempre: no cuenta</text>
     </svg>`;
   }
 
@@ -716,7 +750,7 @@
         analizador.getByteTimeDomainData(datos);
         let max = 0;
         for (const v of datos) max = Math.max(max, Math.abs(v - 128));
-        lampara(max > 20);
+        lampara(max > 55); // el zumbido de fondo llega a ~20: solo los pitidos encienden la lámpara
         requestAnimationFrame(mirar);
       };
       await audio.play();
@@ -729,22 +763,25 @@
   }
 
   // ===================================== Fase 4: responder =====================================
+  /** Dos listas de pistas con el mismo bloqueo creciente: las de radio (Sintonizar) y las de la palabra (Responder). */
   function pintarPistas() {
-    const e = estado(), caja = $("#r3-pistas");
-    if (!caja) return;
-    const coste = $("#r3-coste");
-    if (coste) coste.textContent = e.completado ? "" : `cada una bloquea el reto un rato: la próxima, ${App.proximoBloqueo(ID)} s`;
-    caja.innerHTML = PISTAS.map((p, i) => {
-      const abierta = e.pistas.some((x) => x.id === p.id);
-      const anterior = i === 0 || e.pistas.some((x) => x.id === PISTAS[i - 1].id);
-      return abierta
-        ? `<p class="r3-pista abierta"><b>${p.titulo}.</b> ${p.texto}</p>`
-        : `<p class="r3-pista"><button class="r3-boton r3-boton-sec" type="button" data-pista="${p.id}" ${anterior && !e.completado ? "" : "disabled"}>${p.titulo}</button></p>`;
-    }).join("");
-    $$("[data-pista]", caja).forEach((b) => b.addEventListener("click", () => {
-      const p = PISTAS.find((x) => x.id === b.dataset.pista);
-      if (App.usarPista(ID, p.id, `Vais a abrir «${p.titulo}».`, `<b>${p.titulo}:</b> ${p.texto}`)) pintarPistas();
-    }));
+    const e = estado();
+    const coste = e.completado ? "" : `cada una bloquea el reto un rato: la próxima, ${App.proximoBloqueo(ID)} s`;
+    $$(".r3-coste").forEach((c) => { c.textContent = coste; });
+    [[PISTAS, $("#r3-pistas")], [PISTAS_SINTONIA, $("#r3-pistas-radio")]].forEach(([lista, caja]) => {
+      if (!caja) return;
+      caja.innerHTML = lista.map((p, i) => {
+        const abierta = e.pistas.some((x) => x.id === p.id);
+        const anterior = i === 0 || e.pistas.some((x) => x.id === lista[i - 1].id);
+        return abierta
+          ? `<p class="r3-pista abierta"><b>${p.titulo}${/[?.]$/.test(p.titulo) ? "" : "."}</b> ${p.texto}</p>`
+          : `<p class="r3-pista"><button class="r3-boton r3-boton-sec" type="button" data-pista="${p.id}" ${anterior && !e.completado ? "" : "disabled"}>${p.titulo}</button></p>`;
+      }).join("");
+      $$("[data-pista]", caja).forEach((btn) => btn.addEventListener("click", () => {
+        const p = lista.find((x) => x.id === btn.dataset.pista);
+        if (App.usarPista(ID, p.id, `Vais a abrir «${p.titulo}».`, `<b>${p.titulo}:</b> ${p.texto}`)) pintarPistas();
+      }));
+    });
   }
 
   let ultimo = null;

@@ -54,7 +54,7 @@
       titulo: "La baliza",
       cuerpo: pasos([
         ["Aprended Morse", "con el traductor y la práctica: escribid palabras, escuchadlas y mirad sus puntos y rayas."],
-        ["Sintonizad la baliza", "con el SDR, el receptor de radio, siguiendo la lista paso a paso."],
+        ["Buscad la baliza", "con el SDR, el receptor de radio: emite en algún punto entre 140 y 155 MHz y la frecuencia exacta la descubrís vosotros."],
         ["Apuntad la palabra", "en la hoja de escucha, letra a letra, y escribidla para comprobarla."],
       ]) + final("LYRA"),
     }),

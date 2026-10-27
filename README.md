@@ -33,6 +33,8 @@ Web_Hackathon/
 │   ├── generar_camara_reto4.py     recorta la foto de la cámara del reto 4, crea su WAV PD120 y verifica la ida y vuelta
 │   ├── comprobar_caso_reto4.py     comprueba que el caso del reto 4 tiene una sola solución (solo Pablo encaja)
 │   ├── medir_fotos_puzle.py        mide la dificultad de las fotos del puzle del reto 1
+│   ├── generar_baliza_reto3.py     palabra y audio Morse original del reto 3 (la palabra solo está aquí)
+│   ├── generar_baliza_walkie.py    audio del walkie del reto 3: 2 vueltas con zumbido anti-VOX, en bucle
 │   └── construir_web.py            copia imágenes, prepara las pistas y cifra las recompensas (`construir_web.py reto4`: solo ese reto)
 ├── generado/
 │   ├── mapa/             ← salida de generar_fragmentos_mapa.py (no editar: se regenera)
@@ -165,7 +167,7 @@ Bienvenida general y desplegable «Cómo funciona» en cada reto: `especificacio
   abrir Black Cat SSTV con el cable virtual).
 - **Retos 1, 2 y 3 y montaje del mapa:** tres pasos numerados y qué se gana al final, con la estética de su escena
   (sala de control en el reto 1, Matrix en el reto 2, el faro en el reto 3, GranaSAT en el panel y el montaje). El del
-  reto 3: aprended Morse con el traductor y la práctica, sintonizad la baliza con el SDR y apuntad la palabra en la hoja
+  reto 3: aprended Morse con el traductor y la práctica, buscad la baliza con el SDR entre 140 y 155 MHz y apuntad la palabra en la hoja
   de escucha → LYRA.
 - **Reto 4:** su carta de instrucciones del caso hace de «Cómo funciona» (historia del expediente y los tres pasos);
   se abre con la solapa lateral o con la palabra «Cómo funciona» de la cabecera.
@@ -237,7 +239,7 @@ respuesta. Fuentes: Barlow Condensed, IBM Plex Sans e IBM Plex Mono (en `web/ass
   (`especificaciones/reto4_sabotaje.md`), un caso de detectives para resolver en equipo. En la v1
   (`descartadas/reto4_sabotaje_v1.md`) las pruebas se resolvían sin leer ni pensar. Sustituye a «Contacto con la ISS» (v1–v3) y a
   «SSTV a mano», que están en `especificaciones/descartadas/`; su código queda en el historial de git.
-  El reto 3 es «La baliza» (Morse por walkie PMR446 y SDR): ver su sección.
+  El reto 3 es «La baliza» (Morse por walkie entre 140 y 155 MHz y SDR): ver su sección.
 - **Jupyter:** solo para la clase guiada y para generar los WAV.
 - **Asignación de fragmentos:** Reto 1 → ORIÓN · Reto 2 → CYGNUS · Reto 3 → LYRA · Reto 4 → ANDRÓMEDA.
 - **Estilo:** el oscuro de "Explorador Enigma" (https://sstv.groundcontrol.granasat.space/retos): fondo espacial,
@@ -316,8 +318,9 @@ que incluye huellas SHA-256 de cada etapa para que las pistas sepan por dónde v
 ## Reto 3 · "La baliza" → LYRA (duración objetivo: ~15 min)
 
 Especificación: `especificaciones/reto3_baliza.md` (versión 2, «cristalina»; la v1 está en `especificaciones/descartadas/`).
-Un walkie PMR446 de la organización emite en bucle una palabra en Morse; los grupos la captan con el SDR (NFM, canal 1 =
-446,00625 MHz, constante `FRECUENCIA` en `web/js/reto3.js`), la descifran y la escriben en la web. Todos oyen la misma
+Un walkie de la organización emite en bucle una palabra en Morse en algún punto **entre 140 y 155 MHz**; los grupos
+**buscan la frecuencia** con el SDR (NFM), captan la señal, la descifran y la escriben en la web. La frecuencia exacta
+**no está en la web** (solo el rango, constante `RANGO` en `web/js/reto3.js`). Todos oyen la misma
 palabra (compiten entre ellos). Objetivo de la v2: que un grupo que no sabe nada de Morse ni de radio entienda qué hacer
 leyendo solo la pantalla.
 
@@ -331,37 +334,49 @@ leyendo solo la pantalla.
   suena, «Parar», interruptor Lento/Normal —lento = 1,5 s entre letras, como la baliza; entre palabras, 4 s en lento y 1,2 s en normal— y ejemplos SOS, LUNA y HOLA; no
   detecta la palabra de la baliza) · **Practicad** (dos letras al azar y dos palabras cortas al azar —SOL, MAR, LUZ, GATO…—, siempre con 1,5 s entre letras como la baliza; al fallar, «Casi…»; tras dos
   fallos aparece «Ver la solución», que la enseña y la hace sonar). «Ya sabemos Morse» salta el curso.
-- **Sintonizar:** placa con la frecuencia y botón «Copiar» (copia `446006250`, en hercios, como la pide SDR#), una línea
-  que explica SDR, frecuencia y NFM, lista de 6 pasos con casillas (se guardan en el progreso), «Ya la oímos» y el
-  desplegable «¿No oís nada?» con 5 consejos.
+- **Sintonizar (buscar la baliza):** placa con el rango «entre 140 y 155 MHz», líneas que explican SDR, MHz, NFM y
+  cascada, lista de 6 pasos con casillas (conectar, NFM y Play, barrer, cómo se ve, cómo se oye, apuntar), una **regla
+  de tramos** 141, 143… 155 MHz (de 2 en 2: el SDR ve unos 2 MHz de golpe) que se tachan al mirarlos, un campo para
+  apuntar la frecuencia encontrada (no se comprueba), «Ya la oímos» y el desplegable «¿No la encontráis?». Dos
+  **pistas de radio** con el mismo bloqueo creciente que las demás (`PISTAS_SINTONIA`: ajustadlas a vuestra frecuencia).
+  Todo se guarda en el progreso.
 - **Escuchar:** hoja de escucha arriba (botones PUNTO, RAYA y SIGUIENTE LETRA, Borrar y Empezar de nuevo; teclado `.`
   `-` espacio y retroceso; cada casilla dice su letra, o «?» si la combinación no existe, con un aviso), la palabra que se
   va formando con **«Usar esta palabra»** (la copia en Responder) y, debajo, «Cómo es la señal» (línea de tiempo de una
-  vuelta, sin pistas sobre la palabra) y «Cómo hacerlo» (tres pasos y el consejo de repartirse el trabajo). A 1366×768
+  vuelta: pitido largo → palabra → otra vez el pitido largo, con el zumbido de fondo que «no cuenta»; sin pistas sobre la palabra) y «Cómo hacerlo» (tres pasos y el consejo de repartirse el trabajo). A 1366×768
   con la barra del navegador no cabe todo: la hoja va primero para que los botones se vean sin desplazarse.
 - **Responder:** 5 intentos, 3 pistas con bloqueo; fallo: «No es la palabra. Revisad las letras con "?" o escuchad otra
   vuelta.» → audio de LYRA.
-- **Audio de la baliza:** `herramientas/generar_baliza_reto3.py` → `generado/reto3/baliza.wav` (para el walkie, 10
-  vueltas, ~3 min), `baliza_lenta.wav` (2,5 s entre letras) y `baliza_vuelta.wav` (una vuelta, para la web).
-  Letras a 12 palabras por minuto (punto de 0,1 s) con 1,5 s entre letras, tono de 700 Hz, pitido largo de inicio en
-  cada vuelta (~19 s por vuelta). El script decodifica su propio audio y comprueba la palabra. La palabra solo está en ese
-  script (y `construir_web.py` la importa): nunca en la web. El traductor usa la misma tabla y la misma unidad.
-- **Modo de reserva:** botón «Modo de reserva (organización)», con confirmación, que hace sonar la baliza en el propio
-  ordenador si falla el walkie o el SDR.
+- **Audio para el walkie (el que se usa):** `herramientas/generar_baliza_walkie.py` → `generado/reto3/walkie/`:
+  `baliza_walkie.wav` (34 s) y `baliza_walkie_lenta.wav` (2,5 s entre letras, 44 s). Cada archivo trae **dos vueltas**
+  y empalma en bucle sin hueco ni chasquido. Cada vuelta: pitido largo 2 s · 1,5 s · palabra · 2 s. Debajo de los
+  pitidos (700 Hz) suena un **zumbido continuo a 441 Hz** mucho más bajo: mantiene abierto el VOX del walkie y evita el
+  ruido de cola del receptor entre letras. El script decodifica cada vuelta escuchando solo los 700 Hz y comprueba el
+  empalme del bucle.
+- **Audio original:** `herramientas/generar_baliza_reto3.py` → `generado/reto3/baliza.wav`, `baliza_lenta.wav` y
+  `baliza_vuelta.wav` (sin zumbido). Define la palabra, el tono y la unidad (punto de 0,1 s, 12 palabras por minuto,
+  1,5 s entre letras). La palabra solo está en ese script (y `construir_web.py` la importa): nunca en la web.
+- **Modo de reserva:** botón «Modo de reserva (organización)», con confirmación, que hace sonar en bucle en el propio
+  ordenador **el mismo audio del walkie** (`baliza_walkie.wav` → `web/assets/data/reto3_baliza.js`) si falla el walkie o el SDR.
 - **Estética:** la sala de radio de un faro de noche (`web/css/reto3.css`): latón, baquelita y rótulos esmaltados; la
   lámpara del faro destella al ritmo del Morse (también en el modo de reserva, siguiendo el sonido). Reproductor con el
   tema `faro`. Fuentes: Cinzel, Source Sans 3 y Space Mono.
 
 ### Emitir la baliza con el walkie
 
-1. Copiad `generado/reto3/baliza.wav` al móvil (3 min en bucle). Si a los grupos les cuesta, usad `baliza_lenta.wav`.
-2. Walkie PMR446 en el **canal 1** (el de la constante `FRECUENCIA`), **con el código de privacidad (CTCSS/DCS) en 0**.
+1. Copiad `generado/reto3/walkie/baliza_walkie.wav` al móvil y reproducidlo **en bucle** (34 s, dos vueltas).
+   Si a los grupos les cuesta, usad `baliza_walkie_lenta.wav`.
+2. Walkie en la frecuencia elegida, **entre 140 y 155 MHz**, **con el código de privacidad (CTCSS/DCS) apagado** y la
+   potencia más baja que llegue a toda la sala. La frecuencia no se escribe en la web; **ajustad las pistas de radio**
+   (`PISTAS_SINTONIA` en `web/js/reto3.js`) para que acoten bien la vuestra.
 3. Conectad el móvil al walkie con un cable de manos libres compatible, o poned el altavoz del móvil pegado al micrófono.
-4. **Con VOX:** activadlo con sensibilidad media; el pitido largo del principio de cada vuelta lo despierta antes de la
-   palabra. **Sin VOX:** mantened pulsado el botón de hablar (se puede sujetar con una goma).
-5. Reproducid en bucle y probad desde el otro extremo del aula con un SDR: debe oírse claro. Si satura, alejad el walkie.
-6. Si el walkie se calienta, haced pausas: cada vuelta dura 19 s.
-7. Si hay interferencias, cambiad de canal y actualizad `FRECUENCIA` en `web/js/reto3.js`.
+4. **VOX:** el zumbido de fondo lo mantiene siempre abierto. Ajustad la sensibilidad para que se active con el zumbido:
+   el indicador de transmisión debe quedarse encendido todo el rato. Sin VOX, mantened pulsado el botón de hablar.
+5. Probad desde el otro extremo de la sala con un SDR: debe verse una línea continua en la cascada y oírse los pitidos
+   claros sobre el zumbido. Si satura, alejad el walkie o bajad la potencia.
+6. El walkie transmite sin parar: si se calienta, haced pausas de un minuto entre turnos.
+7. **Licencia:** entre 144 y 146 MHz es la banda de radioaficionados de 2 metros; emitir ahí requiere licencia (el
+   indicativo de GranaSAT). Fuera de esa banda, comprobad que la frecuencia está autorizada.
 
 ## Reto 4 · "¿Quién saboteó el GranaSAT-II?" (versión 2) → ANDRÓMEDA (duración objetivo: 15–18 min)
 
