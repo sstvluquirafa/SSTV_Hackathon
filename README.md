@@ -287,7 +287,9 @@ encadenables como una receta, con la salida en directo. No indica si cada paso e
 - Si una operación falla (por ejemplo, Base64 inválido), muestra un aviso amable en lugar de romperse.
 
 **Chuleta del Espía:** misma tabla que la de referencia (Base64, Hex, César, Binario, Espejo). La fila "Magic" se sustituye por pistas.
-En la web se llama «Identificación de formatos» y está en un cajón a la derecha (pestaña «Chuleta»).
+En la web se llama «Identificación de formatos» y está en un cajón a la derecha (pestaña «Chuleta», verde brillante;
+late cuando toca identificar el formato del último resultado). Cada formato lleva su nombre como etiqueta verde arriba.
+Pulsar **Enter** en la clave hace lo mismo que la tecla VIGENÈRE (solo si la receta está vacía).
 
 **Estética «Matrix»** (`especificaciones/reto2_estetica_matrix.md`, estilos en `web/css/reto2.css`): reproduce la
 maqueta aprobada `referencia/reto2_maqueta.html` (las propuestas anteriores están en `descartadas/`). **Lluvia** de

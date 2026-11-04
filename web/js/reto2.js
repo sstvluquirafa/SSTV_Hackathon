@@ -182,7 +182,7 @@
             <section class="r2-bloque" aria-labelledby="r2-t-clave">
               <h2 id="r2-t-clave">Clave de Vigenère</h2>
               <p class="r2-pregunta">${escapar(variante().pregunta)}</p>
-              <input class="r2-campo" id="r2-clave" placeholder="Una palabra" spellcheck="false" aria-label="Clave de Vigenère">
+              <input class="r2-campo" id="r2-clave" placeholder="Una palabra y pulsad Enter" spellcheck="false" aria-label="Clave de Vigenère">
             </section>
             <section class="r2-bloque" aria-labelledby="r2-t-pistas">
               <h2 id="r2-t-pistas">Pistas</h2>
@@ -202,6 +202,12 @@
 
     $("#r2-clave").value = estado().clave;
     $("#r2-clave").addEventListener("input", (ev) => { guardar((r) => { r.clave = ev.target.value; }); pintar(-1); });
+    // Enter en la clave hace lo mismo que pulsar VIGENÈRE (solo si aún no hay ningún paso: la clave ya se aplica sola)
+    $("#r2-clave").addEventListener("keydown", (ev) => {
+      if (ev.key !== "Enter") return;
+      ev.preventDefault();
+      if (!estado().receta.length && (estado().clave || "").trim()) anadir($(".r2-tecla[data-op='vigenere']"));
+    });
     $$(".r2-tecla").forEach((b) => b.addEventListener("click", () => anadir(b)));
     $("#r2-borrar").addEventListener("click", () => { if (estado().receta.length) { guardar((r) => { r.receta.pop(); }); Sonido.tic(); pintar(-1); } });
     $("#r2-vaciar").addEventListener("click", () => { if (estado().receta.length) { guardar((r) => { r.receta = []; }); Sonido.tic(); pintar(-1); } });
@@ -330,10 +336,13 @@
   let cajaAvisada = false;
   function guiar() {
     $$(".r2-toca").forEach((x) => x.classList.remove("r2-toca"));
-    if (estado().completado) return;
+    const asa = $("#r2-asa");
+    if (estado().completado) { asa.classList.remove("r2-llama"); return; }
     const lista = claveEnClaro();
     const objetivo = !(estado().clave || "").trim() ? $("#r2-clave") : lista ? $("#r2-caja") : $("#r2-teclas");
     objetivo.classList.add("r2-toca");
+    // La pestaña de la chuleta llama la atención cuando hay que identificar el formato del último resultado
+    asa.classList.toggle("r2-llama", !lista && estado().receta.length > 0);
     if (lista && !cajaAvisada) {
       cajaAvisada = true;
       setTimeout(() => { const c = $("#r2-caja"); if (c) c.scrollIntoView({ behavior: sinMovimiento() ? "auto" : "smooth", block: "center" }); }, 700);

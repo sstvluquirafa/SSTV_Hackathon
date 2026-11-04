@@ -98,12 +98,19 @@ body.r2-desbloqueo .r2-vineta { opacity: 0.35; transition: opacity 200ms; }
 /* ---------- Chuleta desplegable a la derecha ---------- */
 .r2-asa {
   position: fixed; z-index: 30; right: 0; top: 50%; transform: translateY(-50%); writing-mode: vertical-rl;
-  padding: 18px 10px; border: 1px solid var(--r2-line-2); border-right: 0; border-radius: 8px 0 0 8px;
-  background: var(--r2-panel); color: var(--r2-ink); font: 700 15px var(--r2-ui); letter-spacing: 0.06em; cursor: pointer;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
+  padding: 22px 12px; border: 2px solid var(--r2-scramble); border-right: 0; border-radius: 10px 0 0 10px;
+  background: #0b2416; color: var(--r2-code); font: 700 17px var(--r2-ui); letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
+  text-shadow: 0 0 10px var(--r2-code-glow); box-shadow: 0 0 18px rgba(61, 250, 122, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.4);
 }
-.r2-asa::after { content: ""; display: block; width: 6px; height: 6px; margin: 10px auto 0; border-radius: 50%; background: var(--r2-scramble); box-shadow: 0 0 8px var(--r2-scramble); }
-.r2-asa:hover { border-color: var(--r2-mute); }
+.r2-asa::after { content: ""; display: block; width: 8px; height: 8px; margin: 12px auto 0; border-radius: 50%; background: var(--r2-scramble); box-shadow: 0 0 10px var(--r2-scramble); }
+.r2-asa:hover { background: #10331f; box-shadow: 0 0 26px rgba(61, 250, 122, 0.55); }
+/* Cuando toca mirar la chuleta, la pestaña late */
+.r2-asa.r2-llama { animation: r2-llamar 1.6s ease-in-out infinite; }
+@keyframes r2-llamar {
+  0%, 100% { box-shadow: 0 0 18px rgba(61, 250, 122, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.4); }
+  50% { box-shadow: 0 0 34px rgba(61, 250, 122, 0.8), 0 0 0 4px rgba(61, 250, 122, 0.25); background: #12402a; }
+}
+@media (prefers-reduced-motion: reduce) { .r2-asa.r2-llama { animation: none; box-shadow: 0 0 30px rgba(61, 250, 122, 0.7); } }
 .r2-asa[hidden] { display: none; }
 .r2-chuleta {
   position: fixed; z-index: 60; top: 0; right: 0; bottom: 0; width: min(360px, 88vw); padding: 22px;
@@ -112,13 +119,12 @@ body.r2-desbloqueo .r2-vineta { opacity: 0.35; transition: opacity 200ms; }
 }
 .r2-chuleta.abierta { transform: translateX(0); }
 .r2-chuleta-cab { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 6px; }
-.r2-chuleta-cab h2 { margin: 0; font: 700 18px/1.3 var(--r2-ui); }
+.r2-chuleta-cab h2 { margin: 0; font: 700 19px/1.3 var(--r2-ui); color: var(--r2-code); text-shadow: 0 0 12px var(--r2-code-glow); }
 .r2-chuleta .r2-ayuda { margin-bottom: 18px; }
 .r2-formatos { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-.r2-formatos li { display: grid; gap: 2px; font-size: 15px; color: var(--r2-soft); border-bottom: 1px solid var(--r2-line); padding-bottom: 10px; }
-.r2-formatos li:last-child { border-bottom: 0; padding-bottom: 0; }
-.r2-formatos small { font: 400 14px var(--r2-mono); color: var(--r2-mute); }
-.r2-formatos code { font: 600 13px var(--r2-mono); color: var(--r2-ink); letter-spacing: 0.06em; justify-self: start; border: 1px solid var(--r2-line-2); border-radius: 4px; padding: 0 8px; margin-top: 4px; }
+.r2-formatos li { display: grid; gap: 4px; font-size: 15px; color: var(--r2-ink); border: 1px solid var(--r2-line-2); border-left: 3px solid var(--r2-scramble); border-radius: 6px; padding: 10px 12px; background: rgba(61, 250, 122, 0.04); }
+.r2-formatos small { font: 400 14px var(--r2-mono); color: var(--r2-cmd); }
+.r2-formatos code { order: -1; font: 700 14px var(--r2-mono); color: #04140a; background: var(--r2-scramble); letter-spacing: 0.08em; justify-self: start; border-radius: 4px; padding: 1px 10px; margin-bottom: 2px; box-shadow: 0 0 12px rgba(61, 250, 122, 0.35); }
 
 /* ---------- La receta como circuito ---------- */
 .r2-sesion { font: 400 15px/1.65 var(--r2-mono); min-height: 120px; display: grid; gap: 0; position: relative; }
