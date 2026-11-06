@@ -43,9 +43,18 @@
     reto2: () => ({
       etiqueta: "Cómo funciona",
       titulo: "Telemetría interceptada",
-      cuerpo: pasos([
-        ["Conseguid la clave.", "Responded a la pregunta de historia del espacio: vuestra respuesta es la clave del primer cifrado."],
-        ["Quitad las capas.", "El mensaje está cifrado varias veces. Aplicad operaciones una tras otra; la <b>chuleta</b> os ayuda a reconocer qué formato tiene cada resultado."],
+      // Las capas como una cebolla: sin decir qué método lleva cada capa interior (eso es el reto)
+      cuerpo: `<div class="tut-capas">
+        <p>El mensaje está cifrado en <b>capas, como una cebolla</b>. Cada capa usa <b>un solo método</b> de cifrado. Hay que
+          quitarlas <b>de una en una</b>, de fuera hacia dentro: al quitar una, aparece la siguiente.</p>
+        <div class="tut-cebolla" aria-hidden="true">
+          <div><span>Capa 1 · Vigenère</span>
+            <div><span>Capa 2 · ?</span>
+              <div><span>Capa 3 · ?</span>
+                <div class="tut-cebolla-centro">Contraseña</div></div></div></div>
+        </div></div>` + pasos([
+        ["Conseguid la clave.", "Vuestra respuesta a la pregunta de historia del espacio abre la primera capa (Vigenère)."],
+        ["Quitad las capas una a una.", "Cada operación quita una capa. Buscad la forma del resultado en la <b>chuleta</b>: os dice qué método aplicar después."],
         ["Abrid la caja fuerte.", "Cuando leáis la contraseña, escribidla en la caja. Tenéis 5 intentos."],
       ]) + final("CYGNUS"),
     }),

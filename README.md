@@ -168,7 +168,8 @@ Bienvenida general y desplegable «Cómo funciona» en cada reto: `especificacio
 - **Retos 1, 2 y 3 y montaje del mapa:** tres pasos numerados y qué se gana al final, con la estética de su escena
   (sala de control en el reto 1, Matrix en el reto 2, el faro en el reto 3, GranaSAT en el panel y el montaje). El del
   reto 3: aprended Morse con el traductor y la práctica, buscad la baliza con el SDR entre 140 y 155 MHz y apuntad la palabra en la hoja
-  de escucha → LYRA.
+  de escucha → LYRA. El del reto 2 explica que el mensaje está cifrado en **capas, como una cebolla** (un solo método
+  por capa, se quitan de una en una), con un dibujo de las capas: la primera es Vigenère y las demás quedan con «?».
 - **Reto 4:** su carta de instrucciones del caso hace de «Cómo funciona» (historia del expediente y los tres pasos);
   se abre con la solapa lateral o con la palabra «Cómo funciona» de la cabecera.
 - Se abren solos **la primera vez** (queda guardado en el progreso, en `tutoriales`) y después con el botón
