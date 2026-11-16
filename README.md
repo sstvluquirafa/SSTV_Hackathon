@@ -17,7 +17,8 @@ Web_Hackathon/
 ├── requirements.txt     ← dependencias de Python de herramientas/
 ├── recursos/            ← materiales originales (no editar a mano)
 │   ├── imagenes/
-│   │   ├── mapa.png                 mapa del recinto (3380×1248), pendiente de añadir estaciones
+│   │   ├── qr_gymkhana.png          el QR que lleva a la web de la tarde: se parte en las 4 piezas
+│   │   ├── mapa.png                 mapa del recinto (ya no se usa: ahora se entrega un QR)
 │   │   ├── logo.jpg                 logo GranaSAT
 │   │   ├── space_bg.jpg             fondo espacial antiguo (ya no se usa)
 │   │   ├── fondo_alma_eso_beletsky.jpg  fondo de la web: Vía Láctea sobre ALMA (ESO/Y. Beletsky, CC BY 4.0)
@@ -26,7 +27,8 @@ Web_Hackathon/
 │       └── pista_reto1_armstrong.wav   pista del reto 1 (SSTV PD120)
 ├── herramientas/         ← scripts de Python (se pueden volver a ejecutar)
 │   ├── sstv_pd120.py               codificador y decodificador SSTV PD120, comentado
-│   ├── generar_fragmentos_mapa.py  corta mapa.png en 4 fragmentos y crea sus WAV
+│   ├── generar_piezas_qr.py        parte el QR en 4 piezas, crea sus WAV y comprueba que el QR montado se lee
+│   ├── generar_fragmentos_mapa.py  (antiguo) corta mapa.png en 4 fragmentos y crea sus WAV
 │   ├── reto2_generador.py          genera y verifica las cadenas del reto 2 (--exportar: banco para la web)
 │   ├── probar_reto2_js.mjs         comprueba que web/js/operaciones.js da lo mismo que el script de Python
 │   ├── probar_reto4_sabotaje.mjs   pruebas del reto 4: solución, contador de datos acertados, preguntas y botón de resolver
@@ -37,7 +39,11 @@ Web_Hackathon/
 │   ├── generar_baliza_walkie.py    audio del walkie del reto 3: 2 vueltas con zumbido anti-VOX, en bucle
 │   └── construir_web.py            copia imágenes, prepara las pistas y cifra las recompensas (`construir_web.py reto4`: solo ese reto)
 ├── generado/
-│   ├── mapa/             ← salida de generar_fragmentos_mapa.py (no editar: se regenera)
+│   ├── qr/               ← salida de generar_piezas_qr.py (no editar: se regenera)
+│   │   ├── pieza_N.png / .wav              las 4 piezas del QR (PD120, 127 s), una por reto
+│   │   ├── qr.json                         geometría de las piezas y huellas del QR (para la web)
+│   │   └── comprobacion_qr_montado.png     QR montado a partir de los audios decodificados
+│   ├── mapa/             ← (antiguo) salida de generar_fragmentos_mapa.py
 │   │   ├── fragmento_N_nombre.png / .wav   los 4 fragmentos (PD120, 127 s, 2,8 MB)
 │   │   ├── comprobacion_mapa_decodificado.png  mapa reconstruido a partir de los audios
 │   │   └── solucion_organizadores.json     orden correcto de los fragmentos
@@ -54,7 +60,8 @@ Web_Hackathon/
     └── assets/           fuentes, imágenes y datos (.js con base64; las recompensas van cifradas)
 ```
 
-**Si cambias `mapa.png`** (por ejemplo, al añadir las estaciones), vuelve a ejecutar `python herramientas/generar_fragmentos_mapa.py`
+**Si cambia el QR** (otra dirección), sustituye `recursos/imagenes/qr_gymkhana.png` por el nuevo (una imagen limpia del
+QR, en blanco y negro), vuelve a ejecutar `python herramientas/generar_piezas_qr.py`
 y después `python herramientas/construir_web.py` para volver a cifrar las recompensas de la web.
 
 ## Cómo empezar a colaborar
@@ -142,10 +149,16 @@ git push                      # 5. subir
   sigue aunque se recargue la página; mientras, el grupo puede volver al panel y avanzar en otro reto.
 - **Intentos:** 5 fallos → bloqueo de 1 minuto (también si se recarga la página).
 - **Progreso** en `localStorage`. "Reiniciar progreso" (abajo a la derecha, discreto) lo borra todo tras dos confirmaciones.
-- **Montaje:** las imágenes subidas no salen del PC; se pueden ordenar, girar y descargar en PNG. La cabecera con el
-  nombre del fragmento se quita **siempre y sola**: se busca la línea naranja que la separa del mapa (si no aparece,
-  se recortan 63 de 496 px) y se quitan además 1 fila (en PD120 las filas comparten color de dos en dos y la primera
-  sale teñida de naranja) y 2 px de cada lado (puntitos del principio y final de cada línea SSTV).
+- **Montar el QR** (`js/montaje.js`): el grupo sube las 4 imágenes decodificadas (no salen del PC) y la web hace el
+  resto, sin botones de ordenar ni girar: recorta la zona de la pieza con la geometría de `assets/data/qr.js`, busca el
+  pequeño desplazamiento con el que se ve más nítida (por si el decodificador corre la imagen unos píxeles), lee el
+  centro de cada módulo (21×21) y la redibuja en blanco y negro puros. Compara la **huella SHA-256** de los módulos con
+  la de cada pieza correcta: así sabe qué pieza es (la coloca en su sitio aunque se suban en desorden) y si se ha leído
+  bien (si no, la marca en ámbar y pide volver a decodificarla). Con las 4 bien leídas, el QR queda listo con su margen
+  blanco, «Ver en grande» lo muestra a pantalla completa para escanearlo con el móvil y **se apunta la hora** en
+  grande (y en la bitácora): sirve para decidir el orden de los equipos. Las piezas leídas y la hora se guardan en el
+  progreso. La web no lleva el QR ni la dirección, solo las huellas. Probado con imágenes desplazadas, con mucho ruido,
+  en JPG y a mitad de tamaño: se leen sin fallos.
 - **Reproductor SSTV** propio (`js/reproductor.js`): cascada con el espectro en directo y marcas en 1200, 1500,
   1900 y 2300 Hz. El sonido sale por la salida predeterminada de Windows (CABLE Input en el aula). Una sola lógica
   con **temas** (`especificaciones/reproductor_temas.md`, estilos en `css/reproductor.css`): `control-mision` (reto 1,
@@ -154,7 +167,7 @@ git push                      # 5. subir
 - **Escenas de los retos:** al entrar en un reto, `app.js` marca la vista en `body[data-vista]` y la hoja del reto
   (`css/reto1.css`, `css/reto2.css`, `css/reto3.css`, `css/reto4.css`) cambia la escena entera; al salir se vuelve a la base GranaSAT.
 - **Efectos** (`js/efectos.js`): línea de tiempo de los pasos, expediente que se escribe como en un terminal,
-  estrellas que titilan y celebración al desbloquear un fragmento. Se desactivan si Windows pide reducir animaciones.
+  estrellas que titilan y celebración al desbloquear una pieza del QR. Se desactivan si Windows pide reducir animaciones.
 - Para regenerar los datos: `python herramientas/reto2_generador.py --exportar` y `python herramientas/construir_web.py`.
   Para probar el reto 2 en JS: `node herramientas/probar_reto2_js.mjs`.
 
@@ -163,12 +176,12 @@ git push                      # 5. subir
 Bienvenida general y desplegable «Cómo funciona» en cada reto: `especificaciones/tutoriales_retos.md`
 (código en `web/js/tutoriales.js`, estilos en `web/css/tutoriales.css`).
 
-- **Panel principal:** bienvenida «Desbloquead el mapa» (qué son los fragmentos, una línea por prueba y el aviso de
+- **Panel principal:** bienvenida «Desbloquead el QR» (las 4 piezas, que el primero en montarlo tiene el recorrido más corto, una línea por prueba y el aviso de
   abrir Black Cat SSTV con el cable virtual).
-- **Retos 1, 2 y 3 y montaje del mapa:** tres pasos numerados y qué se gana al final, con la estética de su escena
+- **Retos 1, 2 y 3 y montar el QR:** tres pasos numerados y qué se gana al final, con la estética de su escena
   (sala de control en el reto 1, Matrix en el reto 2, el faro en el reto 3, GranaSAT en el panel y el montaje). El del
   reto 3: aprended Morse con el traductor y la práctica, buscad la baliza con el SDR entre 140 y 155 MHz y apuntad la palabra en la hoja
-  de escucha → LYRA.
+  de escucha → pieza 3 del QR.
 - **Reto 4:** su carta de instrucciones del caso hace de «Cómo funciona» (historia del expediente y los tres pasos);
   se abre con la solapa lateral o con la palabra «Cómo funciona» de la cabecera.
 - Se abren solos **la primera vez** (queda guardado en el progreso, en `tutoriales`) y después con el botón
@@ -179,29 +192,30 @@ Bienvenida general y desplegable «Cómo funciona» en cada reto: `especificacio
 
 ## Cinemáticas de final de reto
 
-Al superar un reto se reproduce una escena corta (unos 8 s) con la estética de su escena, que termina dibujando en el
-cielo la constelación del fragmento conseguido (`web/js/cinematicas.js`, `web/css/cinematicas.css`):
+Al superar un reto se reproduce una escena corta (unos 8 s) con la estética de su escena, que termina dibujando **la
+pieza del QR conseguida**: un QR esquemático partido en 4 con la pieza ganada en su sitio (con su patrón de esquina hacia
+fuera; los demás módulos son inventados, **no es el QR real**) (`web/js/cinematicas.js`, `web/css/cinematicas.css`):
 
-- **Reto 1 · Despegue:** cuenta atrás en displays de segmentos, despega el cohete con temblor y humo, aparece **Orión**
-  y se encienden las cuatro luces de las fases.
-- **Reto 2 · Matrix:** la lluvia se desata a pantalla completa y de ella se descifra **CYGNUS**, con su constelación.
-- **Reto 3 · Faro:** el haz barre el cielo nocturno encendiendo las estrellas de **Lyra** mientras la lámpara transmite
-  «LYRA» en Morse (se oye).
+- **Reto 1 · Despegue:** cuenta atrás en displays de segmentos, despega el cohete con temblor y humo, aparece la
+  **pieza 1** en el cielo y se encienden las cuatro luces de las fases.
+- **Reto 2 · Matrix:** la lluvia se desata a pantalla completa y de ella se descifra «PIEZA 2», que se dibuja en verde.
+- **Reto 3 · Faro:** el haz barre el cielo nocturno y enciende la **pieza 3** mientras la lámpara transmite «QR» en Morse
+  (se oye).
 - **Reto 4 · Periódico:** el hilo rojo une las cuatro pruebas del tablón y llega girando la portada de «La Gaceta de la
-  Escuela» («Se resuelve el sabotaje del GranaSAT-II», con **Andrómeda**) y el sello «CASO CERRADO».
+  Escuela» («Se resuelve el sabotaje del GranaSAT-II», con la **pieza 4** en la foto) y el sello «CASO CERRADO».
 
 Se pueden saltar («Saltar», Escape, Enter o clic) y acaban en un título fijo con «Continuar»; después aparece la
 entrega del audio. Cada entrega tiene un botón para volver a verla. Con «reducir animaciones» se muestra el final
 directamente. Llevan sonido suave (Web Audio, sin archivos).
 
-## Reto 1 · "Mensaje desde 1969" → ORIÓN
+## Reto 1 · "Mensaje desde 1969" → pieza 1 del QR
 
 Estética «la sala de control de misión» (`especificaciones/reto1_estetica_control_mision.md`, estilos en
 `web/css/reto1.css`; la v1 «consola del Apolo» está en `descartadas/`). Sala en penumbra con una **línea de fases**
 (Recepción · Identificación · Reconstrucción · Entrega: verde = hecha y se puede reabrir, ámbar = la actual, apagada =
 las siguientes), una sola **orden** con lo que toca, la **pantalla mural** con la acción de la fase (analizador de señal,
 teletipo de respuestas, mesa de luz del puzle, entrega) y el **puesto del equipo** con solo los mandos de esa fase: la
-acción principal grande e iluminada en ámbar en el centro («RECIBIR TRANSMISIÓN», «COMPROBAR», «EMITIR FRAGMENTO») y las
+acción principal grande e iluminada en ámbar en el centro («RECIBIR TRANSMISIÓN», «COMPROBAR», «EMITIR PIEZA») y las
 pistas como pulsadores rojos con tapa. Reloj de misión y displays de 7 segmentos (SVG). Cabe sin scroll a 1366×768
 (también con la ventana del navegador). Ningún rótulo nombra la misión ni a su tripulación: no pueden insinuar la
 respuesta. Fuentes: Barlow Condensed, IBM Plex Sans e IBM Plex Mono (en `web/assets/fonts/`).
@@ -221,27 +235,33 @@ respuesta. Fuentes: Barlow Condensed, IBM Plex Sans e IBM Plex Mono (en `web/ass
    movimientos** de la solución. Las fotos van cifradas con la respuesta y se muestra su título y crédito.
    Las piezas no llevan número: **«Ver números» es una pista** y bloquea el reto como las demás (30 s, 60 s…
    según las pistas ya usadas). Una vez abierta, los números se pueden mostrar u ocultar libremente.
-4. Recompensa: audio del fragmento ORIÓN.
+4. Recompensa: audio de la pieza 1 del QR.
 
 ## Decisiones tomadas
 
 - **Plataforma:** web local (carpeta + `index.html` con doble clic). Sin servidor, sin Voilà, sin internet.
 - **Equipos:** un PC por grupo, con SDR y antena.
-- **Pantalla principal "Desbloquea el mapa":** 4 tarjetas de reto en orden libre.
-- **Recompensa de cada reto:** un audio SSTV (modo PD120, 640×496) con un trozo del mapa.
+- **Pantalla principal "Desbloquea el QR":** 4 tarjetas de reto en orden libre.
+- **Recompensa de cada reto:** un audio SSTV (modo PD120, 640×496) con una pieza de un código QR.
 - **Decodificación:** con software externo en directo (Black Cat SSTV, MMSSTV, RX-SSTV) mediante cable de audio virtual.
   Un decodificador propio en la web se deja para más adelante; si se hace, con el código visible (nada de caja negra).
-- **Montaje final:** zona en la web donde el grupo sube sus 4 imágenes decodificadas, las ordena hasta que el mapa cuadre y descarga el mapa unificado.
-- **Fragmentos del mapa:** 4 tiras verticales enviadas giradas 90° (el mapa es 2,7:1 y PD120 es casi cuadrado;
-  así se conserva un 35 % más de detalle). Cabecera con nombre de constelación (LYRA, ORIÓN, CYGNUS, ANDRÓMEDA)
-  que no revela el orden. Al montar el mapa hay que girar y ordenar las piezas.
+- **Del mapa al QR (noviembre de 2026):** cada reto ya no da un trozo del mapa del recinto, sino **una pieza de un QR**
+  que lleva a la web de la segunda parte de la sesión (por la tarde). **El primer equipo que monta el QR completo es el
+  equipo 1** y tiene el recorrido más corto, y así sucesivamente: la hora queda apuntada en «Montar el QR». Todos los
+  equipos reciben el mismo QR (`especificaciones/qr_gymkhana.md`).
+- **Piezas del QR:** el QR (41×41 módulos, versión 6) se completa a 42×42 y se parte en 2×2; cada pieza va en una
+  imagen PD120 con cabecera («PIEZA 1 DE 4 · ARRIBA A LA IZQUIERDA») y módulos de 20 px. Probado: el QR montado a partir
+  de los audios se escanea sin fallos, también con mucho ruido o con el reloj de la tarjeta de sonido desviado.
+- **Montaje final:** zona en la web donde el grupo sube sus 4 imágenes decodificadas; la web reconoce cada pieza, la
+  limpia, monta el QR para escanearlo con el móvil y apunta la hora.
 - **Retos:** los retos 1, 2 y 4 están en la web. El reto 4 es «¿Quién saboteó el GranaSAT-II?», versión 2
   (`especificaciones/reto4_sabotaje.md`), un caso de detectives para resolver en equipo. En la v1
   (`descartadas/reto4_sabotaje_v1.md`) las pruebas se resolvían sin leer ni pensar. Sustituye a «Contacto con la ISS» (v1–v3) y a
   «SSTV a mano», que están en `especificaciones/descartadas/`; su código queda en el historial de git.
   El reto 3 es «La baliza» (Morse por walkie entre 140 y 155 MHz y SDR): ver su sección.
 - **Jupyter:** solo para la clase guiada y para generar los WAV.
-- **Asignación de fragmentos:** Reto 1 → ORIÓN · Reto 2 → CYGNUS · Reto 3 → LYRA · Reto 4 → ANDRÓMEDA.
+- **Asignación de piezas:** Reto 1 → pieza 1 (arriba a la izquierda) · Reto 2 → pieza 2 (arriba a la derecha) ·
+  Reto 3 → pieza 3 (abajo a la izquierda) · Reto 4 → pieza 4 (abajo a la derecha). (Antes: ORIÓN, CYGNUS, LYRA y ANDRÓMEDA.)
 - **Estilo:** el oscuro de "Explorador Enigma" (https://sstv.groundcontrol.granasat.space/retos): fondo espacial,
   tarjetas oscuras con candado y "ENCRIPTADO", botones ámbar, expedientes con texto tipo terminal.
 - **Estética base:** como https://sstv.groundcontrol.granasat.space/academia
@@ -262,7 +282,7 @@ respuesta. Fuentes: Barlow Condensed, IBM Plex Sans e IBM Plex Mono (en `web/ass
 2. **Dos capas más**, en una combinación sorteada. Tras cada paso hay que volver a consultar la "Chuleta del Espía".
 3. El resultado es la frase `LA CLAVE ES <CONTRASEÑA>` (una frase legible, para saber cuándo se ha acertado con César).
    Su longitud nunca es múltiplo de 3, para que el Base64 lleve `=` y la combinación Espejo → Base64 conserve su pista.
-4. Introducen la contraseña en la caja fuerte de la web, que desbloquea el audio SSTV de su fragmento del mapa.
+4. Introducen la contraseña en la caja fuerte de la web, que desbloquea el audio SSTV de su pieza del QR.
 
 **Combinaciones sorteadas** (orden en que el alumno las quita tras Vigenère). Están verificadas en `herramientas/reto2_generador.py`:
 
@@ -315,7 +335,7 @@ cada uso bloquea el reto 30 s más que el anterior (ver «Web local»).
 La web no lleva la frase: elige una de las 760 cadenas posibles (10 variantes × 76) del banco que genera `reto2_generador.py --exportar`,
 que incluye huellas SHA-256 de cada etapa para que las pistas sepan por dónde va el grupo.
 
-## Reto 3 · "La baliza" → LYRA (duración objetivo: ~15 min)
+## Reto 3 · "La baliza" → pieza 3 del QR (duración objetivo: ~15 min)
 
 Especificación: `especificaciones/reto3_baliza.md` (versión 2, «cristalina»; la v1 está en `especificaciones/descartadas/`).
 Un walkie de la organización emite en bucle una palabra en Morse en algún punto **entre 140 y 155 MHz**; los grupos
@@ -345,7 +365,7 @@ leyendo solo la pantalla.
   teclado `.` `-` espacio y retroceso), la palabra que se forma con «Usar esta palabra» y, discreto, el enlace del
   modo de reserva.
 - **Responder:** 5 intentos, 3 pistas con bloqueo; fallo: «No es la palabra. Revisad las letras con "?" o escuchad otra
-  vuelta.» → audio de LYRA.
+  vuelta.» → audio de la pieza 3 del QR.
 - **Audio para el walkie (el que se usa):** `herramientas/generar_baliza_walkie.py` → `generado/reto3/walkie/`:
   `baliza_walkie.wav` (52 s) y `baliza_walkie_lenta.wav` (2,5 s entre letras, 62 s). Cada archivo trae **dos vueltas**
   y empalma en bucle. Cada vuelta: zumbido 0,5 s · pitido largo 2 s · 1,5 s · palabra · zumbido 0,6 s · **10 s de
@@ -378,7 +398,7 @@ leyendo solo la pantalla.
 7. **Licencia:** entre 144 y 146 MHz es la banda de radioaficionados de 2 metros; emitir ahí requiere licencia (el
    indicativo de GranaSAT). Fuera de esa banda, comprobad que la frecuencia está autorizada.
 
-## Reto 4 · "¿Quién saboteó el GranaSAT-II?" (versión 2) → ANDRÓMEDA (duración objetivo: 15–18 min)
+## Reto 4 · "¿Quién saboteó el GranaSAT-II?" (versión 2) → pieza 4 del QR (duración objetivo: 15–18 min)
 
 Especificación: `especificaciones/reto4_sabotaje.md` (la v1 está en `especificaciones/descartadas/`).
 Estética «el cuaderno del detective» (`especificaciones/reto4_estetica_cuaderno.md`, estilos en `web/css/reto4.css`): al

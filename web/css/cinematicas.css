@@ -20,7 +20,7 @@ html.cine-abierta { overflow: hidden; }
 .cine.p-titulo .cine-titulo, .cine.fin .cine-titulo { opacity: 1; transform: none; }
 .cine-titulo p { margin: 0; }
 
-/* Constelaciones: las líneas se trazan y las estrellas aparecen */
+/* Pieza del QR (antes, constelaciones): los marcos se trazan y los módulos aparecen uno tras otro */
 .cine-constelacion { width: 100%; height: 100%; overflow: visible; }
 .cine-linea { stroke-dasharray: 1; stroke-dashoffset: 1; stroke-width: 0.5; fill: none; animation: cine-trazo 0.6s ease forwards; animation-play-state: paused; }
 .cine-estrella { opacity: 0; transform-box: fill-box; transform-origin: center; animation: cine-estrella 0.5s ease forwards; animation-play-state: paused; }
@@ -29,6 +29,8 @@ html.cine-abierta { overflow: hidden; }
 .cine .cine-linea, .cine .cine-estrella { animation-play-state: running; }
 .cine.fin .cine-linea { animation: none; stroke-dashoffset: 0; }
 .cine.fin .cine-estrella { animation: none; opacity: 1; }
+.cine-qr-otra { opacity: 0.35; }
+.cine-qr .cine-estrella { animation-duration: 0.3s; }
 
 /* ========== Reto 1 · Despegue (sala de control) ========== */
 .cine-reto1 { background: #0b0d0e; color: #f1ead6; }
@@ -59,8 +61,8 @@ html.cine-abierta { overflow: hidden; }
 @keyframes cine-humo { 0% { opacity: 0.9; transform: translate(0, 0) scale(0.5); } 100% { opacity: 0; transform: translate(calc((var(--i) - 4) * 70px), -40px) scale(2.4); } }
 .cine-reto1.p-despegue .cine-escena { animation: cine-sacudida 0.09s linear 0s 30; }
 @keyframes cine-sacudida { 25% { transform: translate(2px, -1px); } 75% { transform: translate(-2px, 1px); } }
-.cine-orion { position: absolute; left: 50%; top: 10%; width: min(46vh, 420px); height: min(46vh, 420px); transform: translateX(-50%); opacity: 0; }
-.cine-reto1.p-espacio .cine-orion, .cine-reto1.fin .cine-orion { opacity: 1; }
+.cine-qr1 { position: absolute; left: 50%; top: 10%; width: min(46vh, 420px); height: min(46vh, 420px); transform: translateX(-50%); opacity: 0; }
+.cine-reto1.p-espacio .cine-qr1, .cine-reto1.fin .cine-qr1 { opacity: 1; }
 .cine-reto1 .cine-linea { stroke: #e3a21a; }
 .cine-reto1 .cine-estrella { fill: #f3ead2; }
 .cine-luces { position: absolute; left: 50%; bottom: 33%; transform: translateX(-50%); display: flex; gap: 22px; opacity: 0; transition: opacity 0.5s; }
@@ -81,8 +83,8 @@ html.cine-abierta { overflow: hidden; }
 .cine-reto2 { background: #040706; color: #e4fbee; }
 .cine-lluvia { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.85; transition: opacity 1.5s; }
 .cine-reto2.p-titulo .cine-lluvia, .cine-reto2.fin .cine-lluvia { opacity: 0.35; }
-.cine-cygnus { position: absolute; left: 50%; top: 44%; width: min(58vh, 560px); height: min(58vh, 560px); transform: translate(-50%, -50%); opacity: 0; }
-.cine-reto2.p-constelacion .cine-cygnus, .cine-reto2.fin .cine-cygnus { opacity: 1; }
+.cine-qr2 { position: absolute; left: 50%; top: 44%; width: min(58vh, 560px); height: min(58vh, 560px); transform: translate(-50%, -50%); opacity: 0; }
+.cine-reto2.p-constelacion .cine-qr2, .cine-reto2.fin .cine-qr2 { opacity: 1; }
 .cine-reto2 .cine-linea { stroke: #3dfa7a; stroke-width: 0.4; filter: drop-shadow(0 0 1.5px #3dfa7a); }
 .cine-reto2 .cine-estrella { fill: #e4fbee; filter: drop-shadow(0 0 2px #3dfa7a); }
 .cine-palabra {
@@ -103,10 +105,10 @@ html.cine-abierta { overflow: hidden; }
 /* ========== Reto 3 · Faro ========== */
 .cine-reto3 { background: #0a1420; color: #efe6d2; }
 .cine-reto3 .cine-cielo { position: absolute; inset: 0; width: 100%; height: 100%; fill: #efe6d2; opacity: 0.6; }
-.cine-lyra { position: absolute; right: 12%; top: 8%; width: min(52vh, 460px); height: min(52vh, 460px); }
+.cine-qr3 { position: absolute; right: 12%; top: 8%; width: min(52vh, 460px); height: min(52vh, 460px); }
 .cine-reto3 .cine-linea { stroke: #ffd27a; stroke-width: 0.45; }
 .cine-reto3 .cine-estrella { fill: #fff6dc; filter: drop-shadow(0 0 2px #ffd27a); }
-.cine-reto3:not(.p-constelacion):not(.fin) .cine-lyra { visibility: hidden; }
+.cine-reto3:not(.p-constelacion):not(.fin) .cine-qr3 { visibility: hidden; }
 .cine-faro { position: absolute; left: 0; bottom: 8%; height: 70%; width: auto; overflow: visible; }
 .cine-haz { fill: #ffd27a; opacity: 0; transform-origin: 110px 72px; transform: rotate(40deg); }
 .cine-reto3.p-haz .cine-haz { animation: cine-barrido 4.6s ease-in-out forwards; }

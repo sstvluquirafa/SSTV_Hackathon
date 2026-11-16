@@ -1,0 +1,21 @@
+{
+  "modulos": 21,
+  "qr": 41,
+  "x": 0.171875,
+  "y": 0.13911290322580644,
+  "ancho": 0.65625,
+  "alto": 0.8467741935483871,
+  "huella": "1933b623d1af655b8a1762ac5785d56ffb55249ee46da962808c91cf9eaf06c6",
+  "huellas": [
+    "aa5336fbd914bbcd034a0d428a3fcfe4c0b00c5ed8c4d09b9166448980e311c0",
+    "82a19f329ecf0c8c2cdaf5485b05036cfe04891dffbce0c5832a0bf6727cb214",
+    "a27b2eb79828d940a0090685821accb1661bd71a86e59888e35e02fe067451f5",
+    "d3e3e5d85b697c3badc6279465876b8221419559259bc5d5357dd742604e2b9e"
+  ],
+  "sitios": [
+    "ARRIBA A LA IZQUIERDA",
+    "ARRIBA A LA DERECHA",
+    "ABAJO A LA IZQUIERDA",
+    "ABAJO A LA DERECHA"
+  ]
+}

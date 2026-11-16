@@ -1,4 +1,5 @@
-// Panel principal "Desbloquea el Mapa", navegación por #hash y puntuación.
+// Panel principal "Desbloquea el QR", navegación por #hash y puntuación.
+// Cada reto entrega una pieza del QR que lleva a la web de la segunda parte (herramientas/generar_piezas_qr.py).
 (function () {
   "use strict";
   const { $, $$, escapar, Progreso, liberarUrls, pararTemporizadores } = App;
@@ -6,27 +7,29 @@
   // ---------- Retos (orden libre) ----------
   App.RETOS = [
     {
-      id: "reto1", num: 1, fragmento: "ORIÓN", base: 100, duracion: "~15 min",
+      id: "reto1", num: 1, fragmento: "PIEZA 1", base: 100, duracion: "~15 min",
       titulo: "Mensaje desde 1969",
       resumen: "Una transmisión SSTV trae una foto histórica y una pregunta. Descodifícala, responde y reconstruye la imagen.",
     },
     {
-      id: "reto2", num: 2, fragmento: "CYGNUS", base: 100, duracion: "~15 min",
+      id: "reto2", num: 2, fragmento: "PIEZA 2", base: 100, duracion: "~15 min",
       titulo: "Telemetría interceptada",
       resumen: "Un mensaje cifrado en varias capas. Pela la cebolla con el descodificador y abre la caja fuerte.",
     },
     {
-      id: "reto3", num: 3, fragmento: "LYRA", base: 100, duracion: "~15 min",
+      id: "reto3", num: 3, fragmento: "PIEZA 3", base: 100, duracion: "~15 min",
       titulo: "La baliza",
       resumen: "Captad una señal de radio con el SDR y descifrad el mensaje en Morse.",
     },
     {
-      id: "reto4", num: 4, fragmento: "ANDRÓMEDA", base: 100, duracion: "15–18 min",
+      id: "reto4", num: 4, fragmento: "PIEZA 4", base: 100, duracion: "15–18 min",
       titulo: "¿Quién saboteó el GranaSAT-II?",
       resumen: "Un caso para resolver en equipo.",
     },
   ];
-  App.FRAGMENTOS = ["ORIÓN", "CYGNUS", "LYRA", "ANDRÓMEDA"];
+  // «fragmento» de cada reto: la pieza del QR que entrega (1 arriba izquierda, 2 arriba derecha, 3 abajo izquierda, 4 abajo derecha)
+  App.FRAGMENTOS = ["PIEZA 1", "PIEZA 2", "PIEZA 3", "PIEZA 4"];
+  App.SITIOS_QR = ["arriba a la izquierda", "arriba a la derecha", "abajo a la izquierda", "abajo a la derecha"];
   App.PUNTOS_MINIMOS = 10;
   App.PENALIZACION_FALLO = 5;
 
@@ -60,7 +63,7 @@
     }
     puntosMostrados = total;
     const n = App.FRAGMENTOS.filter(App.fragmentoConseguido).length;
-    $("#chip-fragmentos").textContent = `${n}/4 FRAGMENTOS`;
+    $("#chip-fragmentos").textContent = `${n}/4 PIEZAS QR`;
     $("#chip-fragmentos").classList.toggle("chip-verde", n === 4);
   };
 
@@ -80,26 +83,27 @@
       <div class="portada">
         <div>
           <p class="etiqueta-seccion">Estación terrena GranaSAT · Hackathon SSTV</p>
-          <h1 class="titulo">Desbloquea el <em>Mapa</em></h1>
-          <p class="subtitulo">Cada reto superado libera una transmisión SSTV con un fragmento del mapa del recinto.
-            Recibid los cuatro, descodificadlos y montad el mapa para empezar la gymkhana. Podéis hacer los retos en el orden que queráis.</p>
+          <h1 class="titulo">Desbloquea el <em>QR</em></h1>
+          <p class="subtitulo">Cada reto superado libera una transmisión SSTV con una pieza de un código QR. Recibid las cuatro,
+            descodificadlas y montad el QR: os llevará a la segunda parte de la misión. <b>El primer equipo que lo monte tendrá el
+            recorrido más corto.</b> Podéis hacer los retos en el orden que queráis.</p>
           <div class="botonera" style="margin-top:18px">
             <a class="btn btn-ambar" href="#/${(App.RETOS.find((r) => !r.pronto && !Progreso.reto(r.id).completado) || { id: "montaje" }).id}">${ICONO.antena} ${n === 0 ? "Empezar la misión" : "Seguir la misión"}</a>
-            <a class="btn btn-borde" href="#/montaje">${ICONO.mapa} Montar el mapa</a>
+            <a class="btn btn-borde" href="#/montaje">${ICONO.qr} Montar el QR</a>
             <button class="btn btn-oscuro" id="p-como" type="button">Cómo funciona</button>
           </div>
         </div>
         <div class="portada-arte">${App.ANTENA}</div>
       </div>
 
-      <section class="panel progreso" aria-label="Fragmentos del mapa">
+      <section class="panel progreso" aria-label="Piezas del QR">
         <div class="progreso-cab">
-          <p class="etiqueta-seccion">Fragmentos del mapa recuperados</p>
+          <p class="etiqueta-seccion">Piezas del QR recuperadas</p>
           <span class="chip ${n === 4 ? "chip-verde" : "chip-ambar"}">${n} / 4</span>
         </div>
         <div class="barra"><div style="width:${n * 25}%"></div></div>
         <div class="fragmentos">
-          ${App.FRAGMENTOS.map((f) => {
+          ${App.FRAGMENTOS.map((f, i) => {
             const ok = App.fragmentoConseguido(f);
             // Recién conseguido: se ilumina una vez al volver al panel
             const reto = App.RETOS.find((r) => r.fragmento === f);
@@ -108,7 +112,7 @@
             return `<div class="fragmento ${ok ? "ok" : ""} ${recien ? "recien" : ""}">
               <div class="icono">${ok ? ICONO.check : ICONO.candado}</div>
               <div><div class="fragmento-nombre">${f}</div>
-              <div class="fragmento-estado">${ok ? "Transmisión desbloqueada" : "Sin recibir"}</div></div>
+              <div class="fragmento-estado">${ok ? `Recibida · va ${App.SITIOS_QR[i]}` : "Sin recibir"}</div></div>
             </div>`;
           }).join("")}
         </div>
@@ -122,7 +126,7 @@
             <div class="tarjeta-sello">${App.portadaReto(r.id)}${est.icono}<span class="glitch" data-texto="${est.texto}">${est.texto}</span></div>
             <div class="tarjeta-cuerpo">
               <div class="insignias">
-                <span class="insignia insignia-frag">${ICONO.mapa.replace("<svg", '<svg width="12" height="12"')} ${r.fragmento}</span>
+                <span class="insignia insignia-frag">${ICONO.qr.replace("<svg", '<svg width="12" height="12"')} ${r.fragmento}</span>
                 <span class="insignia insignia-pts">${ICONO.estrella.replace("<svg", '<svg width="12" height="12"')} ${est.clase === "hecho" ? "" : "+"}${pts} Pts</span>
               </div>
               <h3>Reto ${r.num} · ${escapar(r.titulo)}</h3>
@@ -141,12 +145,13 @@
 
       <div class="fila-inferior">
         <section class="panel panel-cuerpo cta-montaje">
-          <div class="mini-mapa">${App.FRAGMENTOS.map((f) => `<div class="${App.fragmentoConseguido(f) ? "ok" : ""}"></div>`).join("")}</div>
+          <div class="mini-mapa mini-qr">${App.FRAGMENTOS.map((f) => `<div class="${App.fragmentoConseguido(f) ? "ok" : ""}"></div>`).join("")}</div>
           <div style="flex:1">
             <p class="etiqueta-seccion">Fase final</p>
-            <h2 class="h-seccion">Montaje del mapa</h2>
-            <p class="texto-2 pequeno" style="margin:0 0 12px">Subid las 4 imágenes que hayáis descodificado, colocadlas y giradlas hasta que el mapa cuadre, y descargadlo.</p>
-            <a class="btn btn-ambar" href="#/montaje">${ICONO.puzle} Ir al montaje</a>
+            <h2 class="h-seccion">Montar el QR</h2>
+            <p class="texto-2 pequeno" style="margin:0 0 12px">Subid las 4 imágenes que hayáis descodificado y colocad cada pieza en su sitio.
+              Cuando esté completo, escaneadlo con el móvil y avisad a la organización.</p>
+            <a class="btn btn-ambar" href="#/montaje">${ICONO.qr} Ir al montaje</a>
           </div>
         </section>
         <section class="ventana" aria-label="Bitácora">
@@ -196,12 +201,12 @@
     $$(".nav a").forEach((a) => a.classList.toggle("activo", a.dataset.ruta === vista || (vista.startsWith("reto") && a.dataset.ruta === "panel")));
     App.actualizarCabecera();
     window.scrollTo(0, 0);
-    document.title = vista === "panel" ? "Desbloquea el Mapa · GranaSAT" : `${$("h1", el) ? $("h1", el).textContent : ""} · GranaSAT`;
+    document.title = vista === "panel" ? "Desbloquea el QR · GranaSAT" : `${$("h1", el) ? $("h1", el).textContent : ""} · GranaSAT`;
   }
 
   window.addEventListener("hashchange", navegar);
   window.addEventListener("DOMContentLoaded", () => {
-    const iconosMenu = { panel: ICONO.expediente, montaje: ICONO.mapa };
+    const iconosMenu = { panel: ICONO.expediente, montaje: ICONO.qr };
     $$(".nav a").forEach((a) => a.insertAdjacentHTML("afterbegin", iconosMenu[a.dataset.ruta] || ""));
     $("#reiniciar").addEventListener("click", () => {
       if (!confirm("¿Reiniciar todo el progreso de este equipo?\n\nSe borran los retos superados, los puntos y los audios desbloqueados.")) return;

@@ -1,4 +1,4 @@
-// Reto 1 · Mensaje desde 1969: pista SSTV → respuesta → puzle 3×3 → fragmento ORIÓN.
+// Reto 1 · Mensaje desde 1969: pista SSTV → respuesta → puzle 3×3 → pieza 1 del QR.
 // Basado en referencia/reto1_prototipo.html. La respuesta no está en el código: si es correcta,
 // abre la llave que descifra la foto del puzle y el audio de recompensa (ver base.js → Cripto).
 // Variantes (especificaciones/reto1_variantes.md): a cada grupo le toca al azar una de cinco fotos históricas, todas con
@@ -43,7 +43,7 @@
     { nombre: "Recepción", orden: "Pulsad <b>RECIBIR TRANSMISIÓN</b> y decodificad la imagen con Black Cat SSTV." },
     { nombre: "Identificación", orden: "Escribid quién responde a la pregunta de la imagen y pulsad <b>COMPROBAR</b>." },
     { nombre: "Reconstrucción", orden: "Reconstruid la fotografía: pulsad una pieza junto al hueco o usad las flechas del teclado." },
-    { nombre: "Entrega", orden: "Pulsad <b>EMITIR FRAGMENTO</b>, decodificadlo con Black Cat SSTV y guardad la imagen para el montaje del mapa." },
+    { nombre: "Entrega", orden: "Pulsad <b>EMITIR PIEZA</b>, decodificadla con Black Cat SSTV y guardad la imagen para montar el QR." },
   ];
 
   const estado = () => Progreso.reto(ID);
@@ -184,7 +184,7 @@
       $("#r1-volver-fase").addEventListener("click", () => mostrarFase(faseActual()));
     } else {
       orden.innerHTML = `<span class="r1-orden-rotulo">Orden</span><span>${hecho.every(Boolean)
-        ? "Fragmento ORIÓN recibido. Guardad la imagen: la necesitaréis en el montaje del mapa." : FASES[n].orden}</span>`;
+        ? "Pieza 1 del QR recibida. Guardad la imagen: la necesitaréis para montar el QR." : FASES[n].orden}</span>`;
     }
     $("#r1-fase-estado").textContent = hecho.every(Boolean) ? "Misión cumplida" : `Fase ${n + 1} de 4 · ${FASES[n].nombre}`;
   }
@@ -534,7 +534,7 @@
     const segundos = Math.floor((Date.now() - t0) / 1000);
     const puntos = App.puntosReto(ID);
     Progreso.cambiar(ID, (r) => { r.completado = true; r.puntos = puntos; r.movimientos = movimientos; r.tiempo = segundos; r.fin = Date.now(); });
-    Progreso.anotar(`Reto 1 superado: fragmento ORIÓN desbloqueado (+${puntos} pts)`, true);
+    Progreso.anotar(`Reto 1 superado: pieza 1 del QR desbloqueada (+${puntos} pts)`, true);
     pintarTablero();
     App.actualizarCabecera();
     Sonido.exito();
@@ -546,18 +546,18 @@
     setTimeout(() => { if ($("#r1-puzle")) App.cinematica(ID, () => { if ($("#r1-puzle")) mostrarFase(3); }); }, 1200);
   }
 
-  // ---------- Fase 4: entrega del fragmento ----------
+  // ---------- Fase 4: entrega de la pieza del QR ----------
   async function mostrarPremio() {
     const caja = $("#r1-premio"), texto = $("#r1-entrega-texto");
-    caja.innerHTML = `<p class="r1-cargando">Descifrando la transmisión del fragmento ORIÓN…</p>`;
+    caja.innerHTML = `<p class="r1-cargando">Descifrando la transmisión de la pieza 1 del QR…</p>`;
     try {
       const datos = await cargarDatos("reto1_audio");
       const url = urlDe(await Cripto.abrir(estado().llave, datos));
       if (!caja.isConnected) return;
       const e = estado();
       texto.innerHTML = `
-        <p class="r1-texto">Fotografía reconstruida. La transmisión del fragmento <b>ORIÓN</b> está liberada: emitidla por el cable
-          virtual, decodificadla y <b>guardad la imagen</b>. La necesitaréis en el montaje del mapa.</p>
+        <p class="r1-texto">Fotografía reconstruida. La transmisión de la <b>pieza 1 del QR</b> está liberada: emitidla por el cable
+          virtual, decodificadla y <b>guardad la imagen</b>. La necesitaréis para montar el QR.</p>
         <div class="r1-indicadores">
           ${htmlDisplay("r1-fin-puntos", "Puntos", e.puntos)}
           ${htmlDisplay("r1-fin-pistas", "Pistas", e.pistas.length)}
@@ -565,8 +565,8 @@
         </div>
         <div class="r1-letrero ${e.fragmentoRecibido ? "encendido" : ""}" id="r1-letrero">Transmisión completa</div>
         <button class="r1-boton r1-boton-sec r1-boton-mini" type="button" data-cine="reto1">Volver a ver el despegue</button>`;
-      const audio = App.reproductor(caja, url, "fragmento_orion.wav", "fragmento_orion.wav", {
-        tema: "control-mision", mandos: $("#r1-mandos-premio"), textos: { reproducir: "Emitir fragmento", detener: "Detener" },
+      const audio = App.reproductor(caja, url, "pieza_1_qr.wav", "pieza_1_qr.wav", {
+        tema: "control-mision", mandos: $("#r1-mandos-premio"), textos: { reproducir: "Emitir pieza", detener: "Detener" },
       });
       const recibido = () => { marcar("fragmentoRecibido"); const l = $("#r1-letrero"); if (l) l.classList.add("encendido"); };
       audio.addEventListener("ended", recibido);

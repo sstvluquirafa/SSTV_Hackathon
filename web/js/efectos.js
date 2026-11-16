@@ -1,4 +1,4 @@
-// Penalización de las pistas (bloqueo del reto), celebración al desbloquear un fragmento,
+// Penalización de las pistas (bloqueo del reto), celebración al desbloquear una pieza del QR,
 // texto "máquina de escribir", estrellas que titilan y línea de tiempo de los pasos.
 (function () {
   "use strict";
@@ -71,20 +71,20 @@
     return true;
   };
 
-  // ---------- Celebración al desbloquear un fragmento ----------
+  // ---------- Celebración al desbloquear una pieza del QR ----------
   App.celebrar = function (fragmento, puntos, alCerrar) {
     const capa = document.createElement("div");
     capa.className = "celebracion";
     capa.setAttribute("role", "dialog");
     capa.setAttribute("aria-modal", "true");
-    capa.setAttribute("aria-label", `Fragmento ${fragmento} desbloqueado`);
+    capa.setAttribute("aria-label", `${fragmento} del QR desbloqueada`);
     capa.innerHTML = `
       <div class="celebracion-ondas" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="celebracion-caja">
         <div class="celebracion-etq mono">&gt; TRANSMISIÓN DESCIFRADA</div>
         <div class="celebracion-nombre mono" aria-hidden="true"></div>
         <div class="celebracion-segmentos">${App.FRAGMENTOS.map((f) => `<span class="${f === fragmento ? "nuevo" : App.fragmentoConseguido(f) ? "ok" : ""}" title="${f}"></span>`).join("")}</div>
-        <p>Fragmento <b>${escapar(fragmento)}</b> del mapa desbloqueado · <b class="ambar">+${puntos} PTS</b></p>
+        <p><b>${escapar(fragmento.charAt(0) + fragmento.slice(1).toLowerCase())}</b> del QR desbloqueada · <b class="ambar">+${puntos} PTS</b></p>
         <button class="btn btn-ambar">${ICONO.antena} Recibir la transmisión</button>
       </div>`;
     document.body.appendChild(capa);

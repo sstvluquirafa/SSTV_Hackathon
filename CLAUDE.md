@@ -5,8 +5,9 @@ Lee también `README.md`: contiene todas las decisiones del proyecto y la especi
 ## Qué es
 Actividad docente de GranaSAT (Universidad de Granada) para alumnado de ~14 años, organizada por
 Lucas González García y Rafael Carrillo Rondón. Cada grupo supera retos en una **web local**; cada reto
-desbloquea un audio SSTV (PD120) con un fragmento del mapa del recinto. Con los 4 fragmentos montan el mapa
-y hacen una gymkhana física. Un PC por grupo (Windows), con SDR, antena y decodificador SSTV
+desbloquea un audio SSTV (PD120) con una pieza de un código QR. Con las 4 piezas montan el QR en la web, que lleva
+a la web de la segunda parte de la sesión (la gymkhana de la tarde): el primer equipo en montarlo es el equipo 1 y
+tiene el recorrido más corto. Antes cada reto daba un trozo del mapa del recinto (ver `especificaciones/qr_gymkhana.md`). Un PC por grupo (Windows), con SDR, antena y decodificador SSTV
 (Black Cat SSTV o YONIQ) que recibe el audio por cable virtual (VB-Cable).
 
 ## Reglas del proyecto
@@ -47,5 +48,7 @@ Referencia: https://sstv.groundcontrol.granasat.space/retos (oscuro) y /academia
 
 ## Herramientas disponibles
 - `herramientas/sstv_pd120.py`: codificador y decodificador PD120 (solo numpy y Pillow).
-- `herramientas/generar_fragmentos_mapa.py`: corta el mapa y genera los 4 WAV en `generado/mapa/`.
+- `herramientas/generar_piezas_qr.py`: parte el QR (`recursos/imagenes/qr_gymkhana.png`) en 4 piezas, genera sus WAV
+  en `generado/qr/` y comprueba que el QR montado a partir de los audios se lee.
+- `herramientas/generar_fragmentos_mapa.py`: (antiguo) corta el mapa y genera los 4 WAV en `generado/mapa/`.
 - `herramientas/reto2_generador.py`: referencia y pruebas del reto 2. La versión JS debe dar los mismos resultados.

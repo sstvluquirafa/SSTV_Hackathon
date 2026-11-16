@@ -96,8 +96,8 @@ const esperado = (e) => ["quien", "como", "cuando"].filter((c) => e[c] === SOLUC
   const r = await Caso.comprobar(llaves, SOLUCION, Cripto);
   for (const f of ["reto4_audio", "reto4_resumen"]) vm.runInContext(readFileSync(join(web, "assets/data", f + ".js"), "utf8"), ctx);
   const audio = new Uint8Array(await (await Cripto.abrir(r.llave, ctx.DATOS.reto4_audio)).arrayBuffer());
-  const original = readFileSync(join(raiz, "generado/mapa/fragmento_4_andromeda.wav"));
-  comprobar(audio.length === original.length && audio.every((b, i) => b === original[i]), "la llave de la solución descifra el audio de ANDRÓMEDA, idéntico al original");
+  const original = readFileSync(join(raiz, "generado/qr/pieza_4.wav"));
+  comprobar(audio.length === original.length && audio.every((b, i) => b === original[i]), "la llave de la solución descifra el audio de la pieza 4 del QR, idéntico al original");
   const resumen = await (await Cripto.abrir(r.llave, ctx.DATOS.reto4_resumen)).text();
   comprobar(resumen.includes("14:32 en España") && resumen.includes("Fue Pablo"), "y el resumen del caso");
   comprobar(!!(await Cripto.probar(llaves, "  PABLO · Paneles · 14:30 ")), "la comparación ignora mayúsculas, espacios y signos");

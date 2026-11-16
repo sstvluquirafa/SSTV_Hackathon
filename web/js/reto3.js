@@ -1,7 +1,7 @@
 // Reto 3 · La baliza: un walkie emite una palabra en Morse; los grupos la captan con el SDR, la descifran y la escriben.
 // Especificación: especificaciones/reto3_baliza.md (versión 2, «cristalina»; la v1 está en descartadas/).
 // Cuatro fases (Aprender · Sintonizar · Escuchar · Responder): la escuela de Morse (cómo funciona, traductor y práctica),
-// la lista de sintonía del SDR, la hoja de escucha y la respuesta → fragmento LYRA. Cada fase abre con su objetivo y el
+// la lista de sintonía del SDR, la hoja de escucha y la respuesta → pieza 3 del QR. Cada fase abre con su objetivo y el
 // pie «Ahora:» dice siempre la siguiente acción. La chuleta queda a la vista, a la derecha, en Aprender y Escuchar.
 // La web NO dice la frecuencia: solo el rango (140–155 MHz); los grupos la buscan barriendo con el SDR.
 // La palabra no está en la web: la respuesta abre, cifrada, el audio de recompensa (base.js → Cripto). La baliza de
@@ -37,7 +37,7 @@
     { nombre: "Aprender", objetivo: "Aprended cómo suena el Morse antes de escuchar la baliza." },
     { nombre: "Sintonizar", objetivo: "La baliza emite en algún punto entre 140 y 155 MHz. Encontradla con el receptor de radio." },
     { nombre: "Escuchar", objetivo: "Escuchad la baliza y apuntad la palabra letra a letra." },
-    { nombre: "Responder", objetivo: "Escribid la palabra de la baliza para recibir el fragmento LYRA." },
+    { nombre: "Responder", objetivo: "Escribid la palabra de la baliza para recibir la pieza 3 del QR." },
   ];
   const PISTAS = [
     { id: "p1", titulo: "Pista 1 · ¿Cuántas letras?", texto: "La palabra tiene 6 letras y está relacionada con el espacio." },
@@ -248,7 +248,7 @@
         : t != null ? `poned ${t} MHz en SDR# y mirad la cascada 30 s. ¿Una línea con zumbido y pitidos? Pulsad «Ya la oímos». Si no, tachad ${t}.`
         : "si la habéis oído, pulsad «Ya la oímos». Si no, volved a recorrer la regla más despacio o abrid una pista de radio.";
     } else if (faseVista === 2) texto = ahoraEscuchar();
-    else if (e.completado) texto = "Reproducid la transmisión por el cable virtual y guardad la imagen del fragmento LYRA para el montaje del mapa.";
+    else if (e.completado) texto = "Reproducid la transmisión por el cable virtual y guardad la imagen de la pieza 3 para montar el QR.";
     else texto = $("#r3-palabra") && $("#r3-palabra").value.trim() ? "Pulsad «Comprobar»." : "Escribid la palabra de la baliza y pulsad «Comprobar».";
     const repaso = faseVista !== actual && !e.completado
       ? ` <button class="r3-palabra-boton" type="button" id="r3-volver-fase">Volver a la fase actual (${FASES[actual].nombre})</button>` : "";
@@ -693,7 +693,7 @@
       Sonido.exito();
       const puntos = App.puntosReto(ID);
       guardar((r) => { r.llave = llave; r.completado = true; r.puntos = puntos; });
-      Progreso.anotar(`Reto 3 superado: fragmento LYRA desbloqueado (+${puntos} pts)`, true);
+      Progreso.anotar(`Reto 3 superado: pieza 3 del QR desbloqueada (+${puntos} pts)`, true);
       ultimo = null;
       App.actualizarCabecera();
       pintarRespuesta();
@@ -715,19 +715,19 @@
     const caja = $("#r3-entrega");
     $("#r3-responder").hidden = true;
     caja.hidden = false;
-    caja.innerHTML = `<p class="r3-texto">Descifrando la transmisión del fragmento LYRA…</p>`;
+    caja.innerHTML = `<p class="r3-texto">Descifrando la transmisión de la pieza 3 del QR…</p>`;
     try {
       const url = urlDe(await Cripto.abrir(estado().llave, await cargarDatos("reto3_audio")));
       if (!caja.isConnected) return;
       const e = estado();
       caja.innerHTML = `
         <h3 class="r3-recibida">Señal recibida</h3>
-        <p class="r3-texto">La baliza os ha dado la transmisión del fragmento <b>LYRA</b>. Reproducidla por el cable virtual, decodificadla con
-          Black Cat SSTV y <b>guardad la imagen</b>: la necesitaréis en el montaje del mapa.</p>
+        <p class="r3-texto">La baliza os ha dado la transmisión de la <b>pieza 3 del QR</b>. Reproducidla por el cable virtual, decodificadla con
+          Black Cat SSTV y <b>guardad la imagen</b>: la necesitaréis para montar el QR.</p>
         <div id="r3-reproductor"></div>
         <div class="r3-acciones"><button class="r3-boton r3-boton-sec" type="button" data-cine="reto3">Volver a ver la escena final</button></div>
         <p class="r3-nota">${e.puntos} puntos · ${e.pistas.length} ${e.pistas.length === 1 ? "pista" : "pistas"} · ${e.fallos} ${e.fallos === 1 ? "fallo" : "fallos"}</p>`;
-      App.reproductor($("#r3-reproductor"), url, "fragmento_lyra.wav", "fragmento_lyra.wav", { tema: "faro" });
+      App.reproductor($("#r3-reproductor"), url, "pieza_3_qr.wav", "pieza_3_qr.wav", { tema: "faro" });
     } catch (err) {
       caja.innerHTML = `<p class="r3-mensaje error">No se ha podido descifrar el audio. Avisad a la organización.</p>`;
     }

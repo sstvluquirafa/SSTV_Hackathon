@@ -269,7 +269,7 @@
           <li><b>Resolved el caso.</b> Con las cuatro pruebas, decid quién fue, cómo lo hizo y a qué hora. Si falláis, os diremos
             cuántos datos habéis acertado.</li>
         </ol>
-        <p>Al final: la transmisión del fragmento <b>ANDRÓMEDA</b>.</p>
+        <p>Al final: la transmisión de la <b>pieza 4 del QR</b>.</p>
         <p class="r4-carta-desp">Atentamente,</p>
         <div class="r4-carta-firma">${firma(5)}<span>Dirección de GranaSAT</span></div>
         <div class="r4-carta-botones">
@@ -539,9 +539,9 @@
             <p class="r4-ultima-pie">Puntuación del equipo: ${e.puntos} puntos. Errores durante la investigación: ${e.fallos}.
               <button class="r4-palabra" type="button" data-cine="reto4">Volver a ver la portada del periódico</button></p>
           </article>
-          <aside class="r4-sobre" aria-label="Fragmento ANDRÓMEDA">
-            <p class="r4-sobre-rotulo">Fragmento ANDRÓMEDA</p>
-            <p>Dentro del sobre, el registro de la transmisión. Decodificad el audio con Black Cat SSTV y guardad la imagen para el montaje del mapa.</p>
+          <aside class="r4-sobre" aria-label="Pieza 4 del QR">
+            <p class="r4-sobre-rotulo">Pieza 4 del QR</p>
+            <p>Dentro del sobre, el registro de la transmisión. Decodificad el audio con Black Cat SSTV y guardad la imagen para montar el QR.</p>
             <div id="r4-audio">${cargando("Descifrando la transmisión…")}</div>
           </aside>
         </div>
@@ -552,7 +552,7 @@
       const resumen = await (await Cripto.abrir(e.llave, await cargarDatos(ll.resumen))).text();
       if ($("#r4-resumen")) $("#r4-resumen").innerHTML = resumen;
       const url = urlDe(await Cripto.abrir(e.llave, await cargarDatos(ll.audio)));
-      if ($("#r4-audio")) reproductorCuaderno($("#r4-audio"), url, "fragmento_andromeda.wav", "Fragmento ANDRÓMEDA");
+      if ($("#r4-audio")) reproductorCuaderno($("#r4-audio"), url, "pieza_4_qr.wav", "Pieza 4 del QR");
     } catch (err) {
       if ($("#r4-audio")) $("#r4-audio").innerHTML = `<p class="r4-margen-rojo">No se ha podido descifrar el audio. Avisad a la organización.</p>`;
     }
