@@ -1,4 +1,4 @@
-// Reto 2 · Telemetría interceptada: Vigenère (clave de la pregunta) + 2 capas sorteadas → caja fuerte → fragmento CYGNUS.
+// Reto 2 · Telemetría interceptada: Vigenère (clave de la pregunta) + 2 capas sorteadas → caja fuerte → pieza 2 del QR.
 // La cadena sale de un banco generado por herramientas/reto2_generador.py: la frase no está en la web.
 // Las pistas comparan huellas SHA-256 de la salida con las de cada etapa (tampoco hay textos en claro).
 // Penalización de las pistas: bloquean la mesa 30 s, 60 s, 90 s… (efectos.js → App.usarPista); aquí sin capa encima.
@@ -133,7 +133,7 @@
           <a class="r2-volver" href="#/panel">Volver a los retos</a>
           <div class="r2-titulo">
             <h1>Telemetría interceptada</h1>
-            <span class="r2-sub">Reto ${def.num} · fragmento ${def.fragmento}</span>
+            <span class="r2-sub">Reto ${def.num} · ${def.fragmento.toLowerCase()} del QR</span>
           </div>
           <button class="r2-boton r2-como" id="r2-como" type="button">Cómo funciona</button>
         </header>
@@ -173,7 +173,7 @@
 
             <section class="r2-entrega" id="r2-entrega" hidden aria-live="polite">
               <p class="r2-grande" id="r2-entrega-txt">ARCHIVO DESCIFRADO</p>
-              <p>La caja contiene la transmisión del fragmento ${def.fragmento}. Ponedla a sonar y decodificadla con Black Cat SSTV.</p>
+              <p>La caja contiene la transmisión de la ${def.fragmento.toLowerCase()} del QR. Ponedla a sonar y decodificadla con Black Cat SSTV.</p>
               <div id="r2-premio"></div>
             </section>
           </div>
@@ -455,7 +455,7 @@
       Sonido.exito();
       const puntos = App.puntosReto(ID);
       guardar((r) => { r.llave = llave; r.completado = true; r.puntos = puntos; });
-      Progreso.anotar(`Reto 2 superado: fragmento CYGNUS desbloqueado (+${puntos} pts)`, true);
+      Progreso.anotar(`Reto 2 superado: pieza 2 del QR desbloqueada (+${puntos} pts)`, true);
       avisoCaja = null;
       App.actualizarCabecera();
       pintarCaja();
@@ -489,7 +489,7 @@
     const panel = $("#r2-entrega"), caja = $("#r2-premio");
     if (!panel) return;
     panel.hidden = false;
-    caja.innerHTML = `<p class="r2-ayuda">Descifrando la transmisión del fragmento CYGNUS…</p>`;
+    caja.innerHTML = `<p class="r2-ayuda">Descifrando la transmisión de la pieza 2 del QR…</p>`;
     if (desplazar) panel.scrollIntoView({ behavior: sinMovimiento() ? "auto" : "smooth", block: "center" });
     try {
       const datos = await cargarDatos("reto2_audio");
@@ -499,7 +499,7 @@
       caja.innerHTML = `<div id="r2-reproductor"></div>
         <button class="r2-boton" type="button" data-cine="reto2">Volver a ver la escena final</button>
         <p class="r2-resumen">${e.puntos} puntos · ${e.pistas.length} ${e.pistas.length === 1 ? "pista" : "pistas"} · ${e.fallos} ${e.fallos === 1 ? "fallo" : "fallos"}</p>`;
-      App.reproductor($("#r2-reproductor"), url, "fragmento_cygnus.wav", "fragmento_cygnus.wav", { tema: "matrix" });
+      App.reproductor($("#r2-reproductor"), url, "pieza_2_qr.wav", "pieza_2_qr.wav", { tema: "matrix" });
     } catch (err) {
       caja.innerHTML = `<p class="r2-mensaje aviso">No se ha podido descifrar el audio. Avisad a la organización.</p>`;
     }

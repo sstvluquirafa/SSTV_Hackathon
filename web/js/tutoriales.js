@@ -9,7 +9,7 @@
   const { $, escapar, Progreso } = App;
 
   const pasos = (lista) => `<ol class="tut-pasos">${lista.map(([t, d]) => `<li><b>${t}</b> ${d}</li>`).join("")}</ol>`;
-  const final = (fragmento) => `<p class="tut-final">Al final: la transmisión del fragmento <b>${fragmento}</b>.</p>`;
+  const final = (n) => `<p class="tut-final">Al final: la transmisión de la <b>pieza ${n} del QR</b>.</p>`;
 
   // Una línea por prueba, con el nombre de su tarjeta en el panel
   const RESUMEN_RETO = {
@@ -22,12 +22,13 @@
   const TUTORIALES = {
     panel: () => ({
       etiqueta: "Bienvenida",
-      titulo: "Desbloquead el mapa",
+      titulo: "Desbloquead el QR",
       cuerpo: `
-        <p>El mapa de la gymkhana está dividido en <b>cuatro fragmentos</b>. Cada fragmento está escondido en una prueba.
-          Al superar una prueba recibiréis una <b>transmisión SSTV</b>: un sonido que, decodificado con Black Cat SSTV, se
-          convierte en vuestro trozo de mapa. Podéis hacer las pruebas <b>en el orden que queráis</b>.</p>
-        <p>Cuando tengáis los cuatro, id a <b>Montar el mapa</b>, colocad las piezas y salid a buscar las estaciones.</p>
+        <p>Hay un <b>código QR</b> partido en <b>cuatro piezas</b>, y cada pieza está escondida en una prueba. Al superar
+          una prueba recibiréis una <b>transmisión SSTV</b>: un sonido que, decodificado con Black Cat SSTV, se convierte
+          en vuestra pieza del QR. Podéis hacer las pruebas <b>en el orden que queráis</b>.</p>
+        <p>Cuando tengáis las cuatro, id a <b>Montar el QR</b>, colocad cada pieza en su sitio y escanead el QR con el
+          móvil: os lleva a la segunda parte de la misión. <b>El primer equipo que lo consiga tendrá el recorrido más corto.</b></p>
         <ul class="tut-pruebas">${App.RETOS.map((r) => `<li><b>${escapar(r.titulo)}:</b> ${RESUMEN_RETO[r.id]}</li>`).join("")}</ul>
         <p class="tut-pie">Antes de empezar: abrid Black Cat SSTV y comprobad que escucha del cable de audio virtual.</p>`,
     }),
@@ -38,7 +39,7 @@
         ["Recibid la transmisión.", "Pulsad para emitirla y decodificadla con Black Cat SSTV: aparecerá una fotografía histórica."],
         ["Identificad la foto.", "Responded a la pregunta que acompaña a la imagen. Fijaos bien en los detalles."],
         ["Reconstruid la imagen.", "Se abrirá un puzle de piezas deslizantes: ordenadlo moviendo las piezas hacia el hueco."],
-      ]) + final("ORIÓN"),
+      ]) + final(1),
     }),
     reto2: () => ({
       etiqueta: "Cómo funciona",
@@ -56,7 +57,7 @@
         ["Conseguid la clave.", "Vuestra respuesta a la pregunta de historia del espacio abre la primera capa (Vigenère)."],
         ["Quitad las capas una a una.", "Cada operación quita una capa. Buscad la forma del resultado en la <b>chuleta</b>: os dice qué método aplicar después."],
         ["Abrid la caja fuerte.", "Cuando leáis la contraseña, escribidla en la caja. Tenéis 5 intentos."],
-      ]) + final("CYGNUS"),
+      ]) + final(2),
     }),
     reto3: () => ({
       etiqueta: "Cómo funciona",
@@ -65,15 +66,15 @@
         ["Aprended Morse", "con el traductor y la práctica: escribid palabras, escuchadlas y mirad sus puntos y rayas."],
         ["Buscad la baliza", "con el SDR, el receptor de radio: emite en algún punto entre 140 y 155 MHz y la frecuencia exacta la descubrís vosotros."],
         ["Apuntad la palabra", "en la hoja de escucha, letra a letra, y escribidla para comprobarla."],
-      ]) + final("LYRA"),
+      ]) + final(3),
     }),
     montaje: () => ({
       etiqueta: "Cómo funciona",
-      titulo: "Montar el mapa",
+      titulo: "Montar el QR",
       cuerpo: pasos([
-        ["Subid vuestras cuatro imágenes", "decodificadas (capturas o archivos guardados desde Black Cat SSTV)."],
-        ["Ordenadlas y giradlas", "hasta que el mapa encaje."],
-        ["Descargad el mapa", "completo para la gymkhana."],
+        ["Subid vuestras cuatro imágenes", "decodificadas (las que habéis guardado desde Black Cat SSTV)."],
+        ["Colocad cada pieza en su sitio.", "Lo dice su cabecera: «arriba a la izquierda», «abajo a la derecha»… La web limpia cada pieza y avisa cuando el QR está completo y bien montado."],
+        ["Escanead el QR con el móvil", "y avisad a la organización: queda apuntada la hora a la que lo habéis completado."],
       ]),
     }),
   };

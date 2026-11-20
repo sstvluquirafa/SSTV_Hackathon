@@ -1,9 +1,10 @@
 // Cinemáticas de final de reto: al superar un reto, una escena corta (unos 8 s) con la estética de su escena que
-// termina dibujando en el cielo la constelación del fragmento conseguido.
-//   Reto 1 · Despegue (sala de control): cuenta atrás en segmentos, despega el cohete y aparece Orión.
-//   Reto 2 · Matrix: la lluvia se desata y de ella se descifra CYGNUS, con su constelación.
-//   Reto 3 · Faro: el haz barre el cielo encendiendo las estrellas de Lyra; la lámpara transmite LYRA en Morse.
-//   Reto 4 · Periódico: el hilo rojo une las pruebas y llega girando la portada del periódico, con Andrómeda.
+// termina dibujando la pieza del QR conseguida: un QR esquemático (NO es el QR real, para no regalarlo) partido en 4,
+// con la pieza ganada iluminada en su sitio.
+//   Reto 1 · Despegue (sala de control): cuenta atrás en segmentos, despega el cohete y aparece la pieza 1 en el cielo.
+//   Reto 2 · Matrix: la lluvia se desata y de ella se descifra «PIEZA 2», que se dibuja en verde.
+//   Reto 3 · Faro: el haz barre el cielo y enciende la pieza 3; la lámpara transmite «QR» en Morse.
+//   Reto 4 · Periódico: el hilo rojo une las pruebas y llega girando la portada del periódico, con la pieza 4.
 // Se pueden saltar (botón, Escape o clic), acaban en un título fijo con «Continuar» y, con «reducir animaciones», se
 // muestra directamente el final. Estilos en css/cinematicas.css. Uso: App.cinematica("reto1", alTerminar).
 (function () {
@@ -11,39 +12,32 @@
   const { $ } = App;
   const sinMovimiento = () => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // ---------- Constelaciones (coordenadas en una caja de 100×100) ----------
-  const CONSTELACIONES = {
-    ORIÓN: {
-      estrellas: [[48, 8], [30, 20], [66, 24], [42, 52], [50, 50], [58, 48], [36, 86], [70, 82]],
-      lineas: [[0, 1], [0, 2], [1, 3], [2, 5], [3, 4], [4, 5], [3, 6], [5, 7]],
-      grandes: [1, 7],
-    },
-    CYGNUS: {
-      estrellas: [[50, 8], [50, 40], [50, 92], [18, 46], [82, 30]],
-      lineas: [[0, 1], [1, 2], [3, 1], [1, 4]],
-      grandes: [0, 2],
-    },
-    LYRA: {
-      estrellas: [[38, 10], [58, 12], [50, 32], [64, 50], [42, 74], [28, 54]],
-      lineas: [[0, 1], [0, 2], [2, 3], [3, 4], [4, 5], [5, 2]],
-      grandes: [0],
-    },
-    ANDRÓMEDA: {
-      estrellas: [[8, 62], [30, 54], [52, 44], [88, 30], [56, 24], [60, 8]],
-      lineas: [[0, 1], [1, 2], [2, 3], [2, 4], [4, 5]],
-      grandes: [0, 2, 3],
-    },
-  };
-  /** SVG de una constelación: las líneas se trazan una tras otra y las estrellas aparecen en su sitio. */
-  function constelacion(nombre, inicio = 0) {
-    const c = CONSTELACIONES[nombre];
-    const lineas = c.lineas.map(([a, b], i) => {
-      const [x1, y1] = c.estrellas[a], [x2, y2] = c.estrellas[b];
-      return `<line class="cine-linea" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" pathLength="1" style="animation-delay:${(inicio + 0.25 * i).toFixed(2)}s"/>`;
-    }).join("");
-    const estrellas = c.estrellas.map(([x, y], i) => `<circle class="cine-estrella" cx="${x}" cy="${y}" r="${c.grandes.includes(i) ? 2.6 : 1.8}"
-      style="animation-delay:${(inicio + 0.12 * i).toFixed(2)}s"/>`).join("");
-    return `<svg class="cine-constelacion" viewBox="-5 -5 110 110" aria-hidden="true">${lineas}${estrellas}</svg>`;
+  // ---------- Pieza del QR (dibujo esquemático en una caja de 100×100: NO es el QR real) ----------
+  /** QR partido en 4: se trazan los cuatro marcos y la pieza `n` (1-4) se llena de módulos uno tras otro. Las piezas
+   *  1, 2 y 3 llevan su patrón de esquina hacia fuera, como en el QR de verdad; los demás módulos son inventados. */
+  function piezaQR(n, inicio = 0) {
+    const k = n - 1, C = 10, lado = 4.4;                            // 10×10 celdas de 4,4 por pieza
+    const marcos = [0, 1, 2, 3].map((i) => `<rect class="cine-linea ${i === k ? "" : "cine-qr-otra"}" x="${(i % 2) * 50 + 1}" y="${Math.floor(i / 2) * 50 + 1}"
+      width="48" height="48" pathLength="1" style="animation-delay:${(inicio + 0.18 * i).toFixed(2)}s"/>`).join("");
+    const x0 = (k % 2) * 50 + 3, y0 = Math.floor(k / 2) * 50 + 3;
+    const esquina = [[0, 0], [0, C - 3], [C - 3, 0], null][k];     // patrón de esquina hacia fuera del QR
+    const enOjo = (f, c) => esquina && f >= esquina[0] - 1 && f <= esquina[0] + 3 && c >= esquina[1] - 1 && c <= esquina[1] + 3;
+    let semilla = 11 + n * 7;
+    const azar = () => ((semilla = (semilla * 16807) % 2147483647) / 2147483647);
+    const celdas = [];
+    for (let f = 0; f < C; f++) for (let c = 0; c < C; c++) if (!enOjo(f, c) && azar() < 0.48) celdas.push([f, c]);
+    if (k === 3) celdas.push([6, 6]);
+    const t = (i) => (inicio + 0.8 + i * 0.018).toFixed(2);
+    const modulos = celdas.map(([f, c], i) => `<rect class="cine-estrella" x="${(x0 + c * lado).toFixed(1)}" y="${(y0 + f * lado).toFixed(1)}"
+      width="${lado - 0.4}" height="${lado - 0.4}" style="animation-delay:${t(i)}s"/>`).join("");
+    let ojo = "";
+    if (esquina) {
+      const ox = x0 + esquina[1] * lado, oy = y0 + esquina[0] * lado, L = 3 * lado - 0.4, g = 1.3;
+      ojo = [[0, 0, L, g], [0, L - g, L, g], [0, 0, g, L], [L - g, 0, g, L], [lado, lado, lado - 0.4, lado - 0.4]]
+        .map(([dx, dy, w, h]) => `<rect class="cine-estrella" x="${(ox + dx).toFixed(1)}" y="${(oy + dy).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}"
+          style="animation-delay:${(inicio + 0.6).toFixed(2)}s"/>`).join("");
+    }
+    return `<svg class="cine-constelacion cine-qr" viewBox="-5 -5 110 110" aria-hidden="true">${marcos}${ojo}${modulos}</svg>`;
   }
   const cielo = (n, semilla = 7) => {
     let s = semilla;
@@ -70,12 +64,12 @@
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.6); g.gain.setValueAtTime(vol, t + dur - 1.2); g.gain.linearRampToValueAtTime(0, t + dur);
     f.connect(filtro); filtro.connect(g); g.connect(a.destination); f.start(t); f.stop(t + dur);
   }
-  const MORSE = { L: ".-..", Y: "-.--", R: ".-.", A: ".-" };
-  /** Programa «LYRA» en Morse: devuelve los destellos [inicio, duración] (en s, desde `inicio`). */
-  function morseLyra(inicio) {
+  const MORSE = { Q: "--.-", R: ".-." };
+  /** Programa «QR» en Morse: devuelve los destellos [inicio, duración] (en s, desde `inicio`). */
+  function morseQR(inicio) {
     const u = 0.09, destellos = [];
     let t = inicio;
-    for (const l of "LYRA") {
+    for (const l of "QR") {
       for (const s of MORSE[l]) { const d = s === "." ? u : 3 * u; destellos.push([t, d]); t += d + u; }
       t += 2 * u;
     }
@@ -101,9 +95,9 @@
           <path d="M18 140 L8 168 L18 166 Z M42 140 L52 168 L42 166 Z" class="cine-cohete-negro"/>
         </svg>
         <div class="cine-humo" aria-hidden="true">${Array.from({ length: 9 }, (_, i) => `<i style="--i:${i}"></i>`).join("")}</div>
-        <div class="cine-orion">${constelacion("ORIÓN", 6.2)}</div>
+        <div class="cine-qr1">${piezaQR(1, 6.2)}</div>
         <div class="cine-luces" aria-hidden="true">${["Recepción", "Identificación", "Reconstrucción", "Entrega"].map((f, i) => `<span style="transition-delay:${(0.3 + i * 0.3).toFixed(2)}s"><i></i>${f}</span>`).join("")}</div>`,
-      titulo: `<p class="cine-titulo-sup">Transmisión completa</p><p class="cine-titulo-gran">Fragmento ORIÓN</p>`,
+      titulo: `<p class="cine-titulo-sup">Transmisión completa</p><p class="cine-titulo-gran">Pieza 1 del QR</p>`,
       pasos: [[0, "p-cuenta"], [3, "p-despegue"], [6, "p-espacio"], [7.2, "p-titulo"]],
       fin: 8.6,
       extra(capa) {
@@ -120,9 +114,9 @@
       clase: "cine-reto2",
       html: `
         <canvas class="cine-lluvia" aria-hidden="true"></canvas>
-        <div class="cine-cygnus">${constelacion("CYGNUS", 3.4)}</div>
+        <div class="cine-qr2">${piezaQR(2, 3.4)}</div>
         <p class="cine-palabra" id="cine-palabra" aria-hidden="true"></p>`,
-      titulo: `<p class="cine-titulo-sup">Archivo descifrado</p><p class="cine-titulo-gran">Fragmento CYGNUS</p>`,
+      titulo: `<p class="cine-titulo-sup">Archivo descifrado</p><p class="cine-titulo-gran">Pieza 2 del QR</p>`,
       pasos: [[0, "p-lluvia"], [2.2, "p-palabra"], [3.4, "p-constelacion"], [6.4, "p-titulo"]],
       fin: 7.6,
       extra(capa) {
@@ -142,7 +136,7 @@
           });
         }, 45);
         // La palabra se descifra: lo que no ha encajado se agita en verde
-        const caja = $("#cine-palabra", capa), palabra = "CYGNUS";
+        const caja = $("#cine-palabra", capa), palabra = "PIEZA 2";
         let fijas = 0;
         const t2 = setTimeout(() => {
           const t3 = setInterval(() => {
@@ -158,12 +152,12 @@
       sonido() { for (let i = 0; i < 12; i++) tono(300 + i * 70, i * 0.16, 0.12, 0.025, "triangle"); tono(880, 3.3, 0.5, 0.05); tono(1320, 3.5, 0.7, 0.04); },
     }),
     reto3: () => {
-      const destellos = morseLyra(5.0);
+      const destellos = morseQR(5.0);
       return {
         clase: "cine-reto3",
         html: `
           <svg class="cine-cielo" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${cielo(110, 3)}</svg>
-          <div class="cine-lyra">${constelacion("LYRA", 2.6)}</div>
+          <div class="cine-qr3">${piezaQR(3, 2.6)}</div>
           <svg class="cine-faro" viewBox="0 0 400 300" preserveAspectRatio="xMinYMax meet" aria-hidden="true">
             <polygon class="cine-haz" points="110,72 1400,-200 1400,260"/>
             <path d="M88 52 L110 32 L132 52 Z" fill="#c0392b"/>
@@ -175,7 +169,7 @@
             <rect x="60" y="270" width="100" height="16" fill="#2b3445"/>
           </svg>
           <div class="cine-mar" aria-hidden="true"><i></i><i></i><i></i></div>`,
-        titulo: `<p class="cine-titulo-sup">Señal recibida</p><p class="cine-titulo-gran">Fragmento LYRA</p>`,
+        titulo: `<p class="cine-titulo-sup">Señal recibida</p><p class="cine-titulo-gran">Pieza 3 del QR</p>`,
         pasos: [[0, "p-noche"], [0.8, "p-haz"], [2.6, "p-constelacion"], [5, "p-morse"], [7.4, "p-titulo"]],
         fin: 8.6,
         extra(capa) {
@@ -198,8 +192,8 @@
         <article class="cine-periodico">
           <p class="cine-cabecera-periodico"><span>Edición especial</span><b>La Gaceta de la Escuela</b><span>16 de julio</span></p>
           <h2>Se resuelve el sabotaje del GranaSAT-II</h2>
-          <p class="cine-entradilla">El equipo de investigación descubre al culpable y recupera el fragmento ANDRÓMEDA del mapa.</p>
-          <div class="cine-columnas"><div class="cine-foto">${constelacion("ANDRÓMEDA", 4.6)}<span>Andrómeda, el fragmento recuperado</span></div>
+          <p class="cine-entradilla">El equipo de investigación descubre al culpable y recupera la última pieza del QR.</p>
+          <div class="cine-columnas"><div class="cine-foto">${piezaQR(4, 4.6)}<span>La pieza 4 del QR, recuperada</span></div>
             <p>El pequeño satélite de la escuela, que dejó de responder el 15 de julio, vuelve a emitir. Tras estudiar la cámara de la
               azotea, la telemetría, el registro de radio y los accesos, el equipo de investigación ha cerrado el caso.</p></div>
           <span class="cine-sello">Caso cerrado</span>

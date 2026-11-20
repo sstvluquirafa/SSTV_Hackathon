@@ -3,7 +3,7 @@ Prepara los datos de la web local (web/assets/): imágenes, pista del reto 1 y r
 
 Uso:   python construir_web.py            (todo)
        python construir_web.py reto4      (solo las recompensas de ese reto: no cambia los datos de los demás)
-Vuelve a ejecutarlo si cambias un audio, una respuesta o mapa.png (después de generar_fragmentos_mapa.py).
+Vuelve a ejecutarlo si cambias un audio, una respuesta o el QR (después de generar_piezas_qr.py).
 
 Por qué los datos van como .js
 ------------------------------
@@ -61,21 +61,21 @@ RETOS = {
             ["harrison schmitt", "jack schmitt", "schmitt", "harrison smith", "harrison schmit", "schmit"],        # e · Cernan
         ],
         "archivos": {
-            "audio": (RAIZ / "generado" / "mapa" / "fragmento_2_orion.wav", "audio/wav"),
+            "audio": (RAIZ / "generado" / "qr" / "pieza_1.wav", "audio/wav"),
         },
         "fotos_puzle": RAIZ / "recursos" / "imagenes" / "puzle" / "fotos.json",
     },
     "reto2": {
         "grupos": [[contrasena, frase(contrasena)] for _, _, contrasena in VARIANTES],
         "archivos": {
-            "audio": (RAIZ / "generado" / "mapa" / "fragmento_3_cygnus.wav", "audio/wav"),
+            "audio": (RAIZ / "generado" / "qr" / "pieza_2.wav", "audio/wav"),
         },
     },
     # Reto 3 (La baliza): la palabra que emite el walkie en Morse (herramientas/generar_baliza_reto3.py).
     "reto3": {
         "grupos": [[PALABRA_BALIZA.lower()]],
         "archivos": {
-            "audio": (RAIZ / "generado" / "mapa" / "fragmento_1_lyra.wav", "audio/wav"),
+            "audio": (RAIZ / "generado" / "qr" / "pieza_3.wav", "audio/wav"),
         },
     },
     # Reto 4 (¿Quién saboteó el GranaSAT-II?): la respuesta es la acusación "quién cómo cuándo" con los
@@ -98,7 +98,7 @@ RETOS = {
             "accesos": ("b", [4], "A las <b>14:25 (hora de España)</b> abrió la azotea la tarjeta <b>0957, la de Javier</b> (operador de radio)."),
         },
         "archivos": {
-            "audio": (RAIZ / "generado" / "mapa" / "fragmento_4_andromeda.wav", "audio/wav"),
+            "audio": (RAIZ / "generado" / "qr" / "pieza_4.wav", "audio/wav"),
             "resumen": (RAIZ / "generado" / "reto4" / "resumen_caso.html", "text/html"),
         },
     },
@@ -196,6 +196,14 @@ def datos_comunes():
     fondo = Image.open(RAIZ / "recursos" / "imagenes" / "fondo_alma_eso_beletsky.jpg").convert("RGB")
     fondo = fondo.resize((2560, round(2560 * fondo.height / fondo.width)), Image.LANCZOS)
     fondo.save(IMG / "fondo.jpg", quality=80, optimize=True, progressive=True)
+
+    # 2) Geometría de las piezas del QR y huella del QR correcto, para «Montar el QR» (herramientas/generar_piezas_qr.py).
+    #    No lleva el QR ni la dirección: solo la huella SHA-256 de sus módulos, para saber si está bien montado.
+    qr = RAIZ / "generado" / "qr" / "qr.json"
+    if not qr.exists():
+        sys.exit("Falta generado/qr/qr.json: ejecuta herramientas/generar_piezas_qr.py.")
+    datos_qr = json.loads(qr.read_text(encoding="utf-8"))
+    escribir_js("qr", "qr", {k: datos_qr[k] for k in ("modulos", "qr", "x", "y", "ancho", "alto", "huella", "huellas", "sitios")})
 
 
 
