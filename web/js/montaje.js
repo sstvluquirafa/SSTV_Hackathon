@@ -5,7 +5,8 @@
 // 1. Se recorta la zona de la pieza en la imagen SSTV (fracciones fijas del ancho y el alto: sirve a cualquier tamaño).
 // 2. Se busca el pequeño desplazamiento (menos de medio módulo) con el que el centro de cada módulo sale más nítido:
 //    así da igual que el decodificador corra la imagen unos píxeles.
-// 3. Se lee el centro de cada módulo (21×21) y se decide negro o blanco con el umbral entre los oscuros y los claros.
+// 3. Se lee la zona central de cada módulo (21×21; la media de un cuadrado de la mitad del módulo, para que el ruido
+//    apenas afecte) y se decide negro o blanco con el umbral entre los oscuros y los claros.
 // 4. Se compara su huella SHA-256 con la de cada una de las 4 piezas buenas: así se sabe qué pieza es y si se ha leído bien. Si no
 //    coincide con ninguna, se coloca por sus patrones de esquina y se avisa de que hay cuadraditos mal leídos.
 // La web no lleva el QR ni la dirección: solo las huellas. Las piezas leídas se guardan en el progreso.
@@ -97,16 +98,17 @@
     const g = c.getContext("2d", { willReadFrequently: true });
     g.drawImage(img, 0, 0);
     const px = g.getImageData(0, 0, w, h).data;
-    const luz = (x, y) => {                                   // media de 3×3 píxeles alrededor del punto
+    const x0 = q.x * w, y0 = q.y * h, mx = (q.ancho * w) / n, my = (q.alto * h) / n;
+    const rx = Math.max(1, Math.floor(mx * 0.25)), ry = Math.max(1, Math.floor(my * 0.25));
+    const luz = (x, y) => {                                   // media de la zona central del módulo (la mitad de su lado)
       let s = 0, k = 0;
-      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -ry; dy <= ry; dy++) for (let dx = -rx; dx <= rx; dx++) {
         const xx = Math.min(w - 1, Math.max(0, Math.round(x) + dx)), yy = Math.min(h - 1, Math.max(0, Math.round(y) + dy));
         const i = (yy * w + xx) * 4;
         s += 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2]; k++;
       }
       return s / k;
     };
-    const x0 = q.x * w, y0 = q.y * h, mx = (q.ancho * w) / n, my = (q.alto * h) / n;
     const muestras = (dx, dy) => {
       const v = new Float32Array(n * n);
       for (let f = 0; f < n; f++) for (let col = 0; col < n; col++) v[f * n + col] = luz(x0 + (col + 0.5) * mx + dx, y0 + (f + 0.5) * my + dy);

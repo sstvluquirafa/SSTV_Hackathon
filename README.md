@@ -26,13 +26,14 @@ Web_Hackathon/
 │   └── audios/
 │       └── pista_reto1_armstrong.wav   pista del reto 1 (SSTV PD120)
 ├── herramientas/         ← scripts de Python (se pueden volver a ejecutar)
-│   ├── sstv_pd120.py               codificador y decodificador SSTV PD120, comentado
+│   ├── sstv_robot36.py             codificador y decodificador SSTV Robot 36 (el que se usa: 320×240, ~36 s), comentado
+│   ├── sstv_pd120.py               codificador y decodificador SSTV PD120 (640×496, ~127 s; el de la ISS, para la clase)
 │   ├── generar_piezas_qr.py        parte el QR en 4 piezas, crea sus WAV y comprueba que el QR montado se lee
 │   ├── generar_fragmentos_mapa.py  (antiguo) corta mapa.png en 4 fragmentos y crea sus WAV
 │   ├── reto2_generador.py          genera y verifica las cadenas del reto 2 (--exportar: banco para la web)
 │   ├── probar_reto2_js.mjs         comprueba que web/js/operaciones.js da lo mismo que el script de Python
 │   ├── probar_reto4_sabotaje.mjs   pruebas del reto 4: solución, contador de datos acertados, preguntas y botón de resolver
-│   ├── generar_camara_reto4.py     recorta la foto de la cámara del reto 4, crea su WAV PD120 y verifica la ida y vuelta
+│   ├── generar_camara_reto4.py     recorta la foto de la cámara del reto 4, crea su WAV Robot 36 y verifica la ida y vuelta
 │   ├── comprobar_caso_reto4.py     comprueba que el caso del reto 4 tiene una sola solución (solo Pablo encaja)
 │   ├── medir_fotos_puzle.py        mide la dificultad de las fotos del puzle del reto 1
 │   ├── generar_baliza_reto3.py     palabra y audio Morse original del reto 3 (la palabra solo está aquí)
@@ -40,7 +41,7 @@ Web_Hackathon/
 │   └── construir_web.py            copia imágenes, prepara las pistas y cifra las recompensas (`construir_web.py reto4`: solo ese reto)
 ├── generado/
 │   ├── qr/               ← salida de generar_piezas_qr.py (no editar: se regenera)
-│   │   ├── pieza_N.png / .wav              las 4 piezas del QR (PD120, 127 s), una por reto
+│   │   ├── pieza_N.png / .wav              las 4 piezas del QR (Robot 36, 37 s), una por reto
 │   │   ├── qr.json                         geometría de las piezas y huellas del QR (para la web)
 │   │   └── comprobacion_qr_montado.png     QR montado a partir de los audios decodificados
 │   ├── mapa/             ← (antiguo) salida de generar_fragmentos_mapa.py
@@ -48,7 +49,7 @@ Web_Hackathon/
 │   │   ├── comprobacion_mapa_decodificado.png  mapa reconstruido a partir de los audios
 │   │   └── solucion_organizadores.json     orden correcto de los fragmentos
 │   ├── reto1/            ← pista del reto 1 a 11 025 Hz (y su imagen descodificada)
-│   ├── reto4/            ← cámara de la azotea del reto 4 (WAV PD120, su imagen y la comprobación) y resumen del caso
+│   ├── reto4/            ← cámara de la azotea del reto 4 (WAV Robot 36, su imagen y la comprobación) y resumen del caso
 │   └── reto2/            ← vectores de prueba para probar_reto2_js.mjs
 ├── especificaciones/     ← especificación del reto 4 (y las versiones descartadas en descartadas/)
 ├── referencia/
@@ -151,8 +152,8 @@ git push                      # 5. subir
 - **Progreso** en `localStorage`. "Reiniciar progreso" (abajo a la derecha, discreto) lo borra todo tras dos confirmaciones.
 - **Montar el QR** (`js/montaje.js`): el grupo sube las 4 imágenes decodificadas (no salen del PC) y la web hace el
   resto, sin botones de ordenar ni girar: recorta la zona de la pieza con la geometría de `assets/data/qr.js`, busca el
-  pequeño desplazamiento con el que se ve más nítida (por si el decodificador corre la imagen unos píxeles), lee el
-  centro de cada módulo (21×21) y la redibuja en blanco y negro puros. Compara la **huella SHA-256** de los módulos con
+  pequeño desplazamiento con el que se ve más nítida (por si el decodificador corre la imagen unos píxeles), lee la
+  zona central de cada módulo (21×21) y la redibuja en blanco y negro puros. Compara la **huella SHA-256** de los módulos con
   la de cada pieza correcta: así sabe qué pieza es (la coloca en su sitio aunque se suban en desorden) y si se ha leído
   bien (si no, la marca en ámbar y pide volver a decodificarla). Con las 4 bien leídas, el QR queda listo con su margen
   blanco, «Ver en grande» lo muestra a pantalla completa para escanearlo con el móvil y **se apunta la hora** en
@@ -223,7 +224,7 @@ respuesta. Fuentes: Barlow Condensed, IBM Plex Sans e IBM Plex Mono (en `web/ass
 1. **Pista SSTV con variantes** (`especificaciones/reto1_variantes.md`): a cada grupo le toca al azar una de cinco
    fotos históricas de la NASA (dominio público, en `recursos/imagenes/reto1_fotos/`), todas con «¿Quién hizo esta
    fotografía?» en una franja oscura. En todas, el fotógrafo no sale en la foto y hay que razonar quién sostenía la
-   cámara. Las genera `herramientas/generar_pistas_reto1.py` (recorte a 640×496, franja con la pregunta, PD120 a
+   cámara. Las genera `herramientas/generar_pistas_reto1.py` (recorte a 320×240, franja con la pregunta, Robot 36 a
    11 025 Hz y comprobación de ida y vuelta). La web solo carga la pista de su grupo (`reto1_pista_<letra>.js`).
    Los grupos que ya jugaban con la foto única conservan la de Aldrin (variante a).
 2. Respuesta: quien hizo la foto (en `construir_web.py`, un grupo de respuestas por foto, como las variantes del
@@ -242,7 +243,12 @@ respuesta. Fuentes: Barlow Condensed, IBM Plex Sans e IBM Plex Mono (en `web/ass
 - **Plataforma:** web local (carpeta + `index.html` con doble clic). Sin servidor, sin Voilà, sin internet.
 - **Equipos:** un PC por grupo, con SDR y antena.
 - **Pantalla principal "Desbloquea el QR":** 4 tarjetas de reto en orden libre.
-- **Recompensa de cada reto:** un audio SSTV (modo PD120, 640×496) con una pieza de un código QR.
+- **Recompensa de cada reto:** un audio SSTV (modo Robot 36, 320×240, unos 37 s) con una pieza de un código QR.
+- **Robot 36 en lugar de PD120 (noviembre de 2026):** PD120 tardaba unos 127 s por imagen y en el aula se hacía
+  eterno. Todos los audios SSTV (piezas del QR, pistas del reto 1 y cámara del reto 4) van ahora en **Robot 36**: unos
+  37 s por imagen de 320×240 y WAV de 0,8 MB en vez de 2,8 MB. Black Cat SSTV y YONIQ lo detectan solos por la cabecera
+  VIS. Probado: las pistas y la cámara se ven bien, y el QR montado se lee sin fallos incluso con mucho ruido (6 dB).
+  `sstv_pd120.py` se queda para la clase (es el modo de la ISS).
 - **Decodificación:** con software externo en directo (Black Cat SSTV, MMSSTV, RX-SSTV) mediante cable de audio virtual.
   Un decodificador propio en la web se deja para más adelante; si se hace, con el código visible (nada de caja negra).
 - **Del mapa al QR (noviembre de 2026):** cada reto ya no da un trozo del mapa del recinto, sino **una pieza de un QR**
@@ -250,7 +256,7 @@ respuesta. Fuentes: Barlow Condensed, IBM Plex Sans e IBM Plex Mono (en `web/ass
   equipo 1** y tiene el recorrido más corto, y así sucesivamente: la hora queda apuntada en «Montar el QR». Todos los
   equipos reciben el mismo QR (`especificaciones/qr_gymkhana.md`).
 - **Piezas del QR:** el QR (41×41 módulos, versión 6) se completa a 42×42 y se parte en 2×2; cada pieza va en una
-  imagen PD120 con cabecera («PIEZA 1 DE 4 · ARRIBA A LA IZQUIERDA») y módulos de 20 px. Probado: el QR montado a partir
+  imagen Robot 36 (320×240) con cabecera («PIEZA 1 DE 4 · ARRIBA A LA IZQUIERDA») y módulos de 9 px. Probado: el QR montado a partir
   de los audios se escanea sin fallos, también con mucho ruido o con el reloj de la tarjeta de sonido desviado.
 - **Montaje final:** zona en la web donde el grupo sube sus 4 imágenes decodificadas; la web reconoce cada pieza, la
   limpia, monta el QR para escanearlo con el móvil y apunta la hora.
@@ -436,7 +442,7 @@ fuentes** y los rasgos de los sospechosos solo están **dentro de un texto** que
 - **Resolver el caso:** quién · cómo · cuándo (6 franjas en hora de España); «Habéis acertado N de los 3 datos» y
   bloqueos de 1, 3 y 5 min. **Puntos:** 100 − 5 por pregunta o acusación fallada; las pistas penalizan con tiempo.
 - **La foto de la cámara:** `python herramientas/generar_camara_reto4.py` (recorte con la gorra y los auriculares, WAV
-  PD120 a 11 025 Hz y verificación) y después `python herramientas/construir_web.py reto4`. Solo el WAV va a la web.
+  Robot 36 a 11 025 Hz y verificación) y después `python herramientas/construir_web.py reto4`. Solo el WAV va a la web.
 - **Sin respuestas en el código:** la acusación, las preguntas (una llave por carpeta; la telemetría exige las dos
   respuestas) y las tarjetas y el resumen van cifrados (`construir_web.py`). Lógica de la web: `web/js/caso_sabotaje.js`.
 - **Recargar:** se conservan la libreta, las carpetas abiertas, las pruebas, las acusaciones y los bloqueos.

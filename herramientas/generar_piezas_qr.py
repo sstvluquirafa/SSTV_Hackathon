@@ -1,19 +1,19 @@
 """
-Parte el QR de la gymkhana en 4 piezas y genera un audio SSTV (PD120) para cada una.
+Parte el QR de la gymkhana en 4 piezas y genera un audio SSTV (Robot 36, unos 36 s) para cada una.
 
 Uso:     python generar_piezas_qr.py
 Entrada: ../recursos/imagenes/qr_gymkhana.png   (el QR que lleva a la web de la tarde; cualquier PNG de un QR)
 Salida:  ../generado/qr/
-         pieza_N.png / pieza_N.wav       las 4 piezas (PD120, 127 s), una por reto
+         pieza_N.png / pieza_N.wav       las 4 piezas (Robot 36, 37 s), una por reto
          qr.json                          datos para la web: geometría de las piezas y huella del QR correcto
          comprobacion_qr_montado.png      el QR montado a partir de los audios decodificados
 
 Cómo es cada pieza
 ------------------
 El QR (41×41 módulos en el de la gymkhana) se completa con una fila y una columna blancas hasta tener lado par y se
-parte en 2×2: cada pieza tiene 21×21 módulos. En la imagen SSTV (640×496) va arriba una cabecera azul con el número de
-la pieza y su sitio en el QR, una línea naranja debajo (la misma que usaban los fragmentos del mapa) y, centrada en la
-zona blanca, la pieza con módulos de 20 píxeles: el SSTV la transmite con muchísimo margen (ver la prueba del final).
+parte en 2×2: cada pieza tiene 21×21 módulos. En la imagen SSTV (Robot 36, 320×240) va arriba una cabecera azul con el
+número de la pieza y su sitio en el QR, una línea naranja debajo y, centrada en la zona blanca, la pieza con módulos de
+9 píxeles: el SSTV la transmite con mucho margen (ver la prueba del final). Antes se usaba PD120 (640×496, 127 s).
 
 La web («Montar el QR», js/montaje.js) recorta cada imagen decodificada con esta misma geometría, lee el color del
 centro de cada módulo y redibuja el QR limpio, en blanco y negro, para escanearlo con el móvil. Para saber si está
@@ -30,16 +30,16 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-import sstv_pd120 as sstv
+import sstv_robot36 as sstv
 
 RAIZ = Path(__file__).resolve().parent.parent
 QR = RAIZ / "recursos" / "imagenes" / "qr_gymkhana.png"
 SALIDA = RAIZ / "generado" / "qr"
 
-CABECERA = 63            # alto de la cabecera, con la línea naranja en sus 3 últimas filas
-MODULO = 20              # píxeles por módulo en la imagen SSTV
+CABECERA = 28            # alto de la cabecera, con la línea naranja en sus 2 últimas filas
+MODULO = 9               # píxeles por módulo en la imagen SSTV (deja margen blanco alrededor)
 SITIOS = ["ARRIBA A LA IZQUIERDA", "ARRIBA A LA DERECHA", "ABAJO A LA IZQUIERDA", "ABAJO A LA DERECHA"]
-NAVY, NARANJA, BLANCO, GRIS = (15, 23, 42), (217, 119, 6), (248, 250, 252), (148, 163, 184)
+NAVY, NARANJA, BLANCO = (15, 23, 42), (217, 119, 6), (248, 250, 252)
 
 
 def fuente(tamano, negrita=True):
@@ -80,23 +80,28 @@ def crear_fotograma(pieza, numero):
     img = Image.new("RGB", (sstv.ANCHO, sstv.ALTO), (255, 255, 255))
     d = ImageDraw.Draw(img)
     d.rectangle([0, 0, sstv.ANCHO, CABECERA - 1], fill=NAVY)
-    d.rectangle([0, CABECERA - 3, sstv.ANCHO, CABECERA - 1], fill=NARANJA)
-    d.text((16, 20), f"PIEZA {numero} DE 4", font=fuente(24), fill=BLANCO, anchor="lm")
-    d.text((16, 45), "GRANASAT · HACKATHON SSTV", font=fuente(13, False), fill=GRIS, anchor="lm")
-    d.text((sstv.ANCHO - 16, 30), SITIOS[numero - 1], font=fuente(20), fill=(251, 191, 36), anchor="rm")
+    d.rectangle([0, CABECERA - 2, sstv.ANCHO, CABECERA - 1], fill=NARANJA)
+    d.text((8, 13), f"PIEZA {numero} DE 4", font=fuente(14), fill=BLANCO, anchor="lm")
+    d.text((sstv.ANCHO - 8, 13), SITIOS[numero - 1], font=fuente(11), fill=(251, 191, 36), anchor="rm")
     for f, c in zip(*np.nonzero(pieza)):
         d.rectangle([x0 + c * MODULO, y0 + f * MODULO, x0 + (c + 1) * MODULO - 1, y0 + (f + 1) * MODULO - 1], fill=(0, 0, 0))
     return img, (x0, y0, lado)
 
 
 def leer_pieza(img, geo, n):
-    """Lo que hace la web: centro de cada módulo de la pieza (recorte con la geometría fija) → True si es oscuro."""
+    """Lo que hace la web: media de la zona central de cada módulo (recorte con la geometría fija) → True si es oscuro.
+    Se usa la media de un cuadrado de la mitad del módulo, no un solo píxel: así el ruido de la señal apenas afecta."""
     g = np.array(img.convert("L"), dtype=float)
     sx, sy = img.width / sstv.ANCHO, img.height / sstv.ALTO
     x0, y0, lado = geo
     m = lado / n
-    return np.array([[g[int((y0 + (f + 0.5) * m) * sy), int((x0 + (c + 0.5) * m) * sx)] < 128 for c in range(n)]
-                     for f in range(n)])
+    r = max(1, int(m * 0.25))
+    medias = np.array([[g[int((y0 + (f + 0.5) * m) * sy) - r:int((y0 + (f + 0.5) * m) * sy) + r + 1,
+                          int((x0 + (c + 0.5) * m) * sx) - r:int((x0 + (c + 0.5) * m) * sx) + r + 1].mean()
+                        for c in range(n)] for f in range(n)])
+    o = np.sort(medias.ravel())
+    umbral = (o[int(len(o) * 0.15)] + o[int(len(o) * 0.85)]) / 2      # entre los oscuros y los claros
+    return medias < umbral
 
 
 def main():

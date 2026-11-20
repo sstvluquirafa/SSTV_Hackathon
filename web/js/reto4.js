@@ -263,7 +263,7 @@
         <p>Sois el equipo de investigación. Tenéis que descubrir <b>quién</b> saboteó el satélite, <b>cómo</b> lo hizo y <b>a qué hora</b>.</p>
         <p class="r4-carta-como">Cómo funciona:</p>
         <ol class="r4-carta-pasos">
-          <li><b>Poned a recibir la foto de la cámara.</b> Tarda unos 2 minutos: hacedlo lo primero.</li>
+          <li><b>Poned a recibir la foto de la cámara.</b> Tarda unos 40 segundos: hacedlo lo primero.</li>
           <li><b>Investigad.</b> Leed la historia del equipo (tomad apuntes en la libreta), abrid las cuatro carpetas y extraed una
             prueba de cada una. Las pruebas se clavan en el tablón.</li>
           <li><b>Resolved el caso.</b> Con las cuatro pruebas, decid quién fue, cómo lo hizo y a qué hora. Si falláis, os diremos
@@ -665,7 +665,7 @@
         <button class="r4-boton-sello r4-recibir" id="r4-recibir">Recibir la foto de la cámara</button>
       </div>
       <div id="r4-camara"></div>
-      <p class="r4-mientras oculto" id="r4-mientras">La foto tarda unos 2 minutos. Mientras, leed
+      <p class="r4-mientras oculto" id="r4-mientras">La foto tarda unos 40 segundos. Mientras, leed
         <button class="r4-palabra" data-capa="r4-doc-equipo">«El equipo de GranaSAT»</button>.</p>`,
     telemetria: () => `${HORA_UNIVERSAL}
       <p class="r4-texto">Datos que envió el satélite el 15 de julio. <span class="r4-lapiz">(Pasad el ratón por una gráfica para leer la hora exacta.)</span></p>

@@ -5,11 +5,11 @@ Genera las pistas SSTV del reto 1 («Mensaje desde 1969»): cinco fotos históri
 Uso:   python generar_pistas_reto1.py
 Después: python construir_web.py reto1
 
-1. Recorta cada foto de recursos/imagenes/reto1_fotos/ a la proporción de PD120 (640×496) sin deformarla. El
+1. Recorta cada foto de recursos/imagenes/reto1_fotos/ a la proporción de Robot 36 (320×240) sin deformarla. El
    recorte vertical (ARRIBA, fracción de lo que sobra que se quita por arriba) está elegido a mano para que lo
    importante quede por encima de la franja de la pregunta: compruébalo en generado/reto1/pista_<letra>_imagen.png.
 2. Pone la pregunta en una franja oscura abajo, en letra grande y blanca (se lee bien tras decodificarla).
-3. Codifica el audio PD120 a 11 025 Hz en generado/reto1/pista_<letra>_11k.wav.
+3. Codifica el audio SSTV Robot 36 (unos 36 s) a 11 025 Hz en generado/reto1/pista_<letra>_11k.wav.
 4. Lo decodifica y compara con la imagen (error medio por canal < 5/255). Guarda la decodificada en
    generado/reto1/comprobacion_pista_<letra>.png.
 """
@@ -20,7 +20,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import sstv_pd120  # noqa: E402
+import sstv_robot36 as sstv  # noqa: E402
 
 RAIZ = Path(__file__).resolve().parent.parent
 FOTOS = RAIZ / "recursos" / "imagenes" / "reto1_fotos"
@@ -36,7 +36,7 @@ VARIANTES = {
     "d": ("d_tierra_sobre_luna.jpg", 1.0),   # la Tierra asomando sobre la Luna (con el horizonte lunar a la vista)
     "e": ("e_cernan_bandera.jpg", 0.2),      # Cernan junto a la bandera
 }
-ALTO_FRANJA = 92
+ALTO_FRANJA = 50
 
 
 def fuente(tam):
@@ -49,9 +49,10 @@ def fuente(tam):
 
 
 def preparar(archivo, arriba):
-    """Recorte a 640×496 y franja con la pregunta."""
+    """Recorte a 320×240 (Robot 36) y franja con la pregunta."""
     foto = Image.open(FOTOS / archivo).convert("RGB")
-    proporcion = 640 / 496
+    W, H = sstv.ANCHO, sstv.ALTO
+    proporcion = W / H
     if foto.width / foto.height < proporcion:          # sobra alto: se quita arriba y abajo
         alto = round(foto.width / proporcion)
         y0 = round((foto.height - alto) * arriba)
@@ -60,14 +61,19 @@ def preparar(archivo, arriba):
         ancho = round(foto.height * proporcion)
         x0 = (foto.width - ancho) // 2
         foto = foto.crop((x0, 0, x0 + ancho, foto.height))
-    img = foto.resize((640, 496), Image.LANCZOS)
+    img = foto.resize((W, H), Image.LANCZOS)
     capa = Image.new("RGBA", img.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(capa)
-    d.rectangle((0, 496 - ALTO_FRANJA, 640, 496), fill=(6, 9, 16, 215))
-    letra = fuente(38)
-    caja = d.textbbox((0, 0), PREGUNTA, font=letra)
-    x = (640 - (caja[2] - caja[0])) / 2 - caja[0]
-    y = 496 - ALTO_FRANJA + (ALTO_FRANJA - (caja[3] - caja[1])) / 2 - caja[1]
+    d.rectangle((0, H - ALTO_FRANJA, W, H), fill=(6, 9, 16, 215))
+    tam = 24                                            # la letra más grande que quepa con 10 px de margen
+    while True:
+        letra = fuente(tam)
+        caja = d.textbbox((0, 0), PREGUNTA, font=letra)
+        if caja[2] - caja[0] <= W - 20 or tam <= 12:
+            break
+        tam -= 1
+    x = (W - (caja[2] - caja[0])) / 2 - caja[0]
+    y = H - ALTO_FRANJA + (ALTO_FRANJA - (caja[3] - caja[1])) / 2 - caja[1]
     d.text((x, y), PREGUNTA, font=letra, fill=(250, 250, 250, 255))
     return Image.alpha_composite(img.convert("RGBA"), capa).convert("RGB")
 
@@ -78,8 +84,8 @@ def main():
         img = preparar(archivo, arriba)
         img.save(SALIDA / f"pista_{clave}_imagen.png")
         wav = SALIDA / f"pista_{clave}_11k.wav"
-        sstv_pd120.codificar(img, str(wav))
-        decodificada = sstv_pd120.decodificar(str(wav))
+        sstv.codificar(img, str(wav))
+        decodificada = sstv.decodificar(str(wav))
         if not isinstance(decodificada, Image.Image):
             decodificada = Image.fromarray(np.asarray(decodificada).astype("uint8"))
         decodificada = decodificada.convert("RGB")
