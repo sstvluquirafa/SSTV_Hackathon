@@ -58,7 +58,7 @@ Al final: la transmisión del fragmento **CYGNUS**.
 Mientras siga como «próximamente», no lleva tutorial.
 
 ### Reto 4 · ¿Quién saboteó el GranaSAT-II?
-1. **Poned a recibir la foto de la cámara.** Tarda unos 2 minutos: hacedlo lo primero.
+1. **Poned a recibir la foto de la cámara.** Tarda unos 40 segundos: hacedlo lo primero.
 2. **Investigad.** Leed la historia del equipo (tomad apuntes en la libreta), abrid las cuatro carpetas y extraed una
    prueba de cada una. Las pruebas se clavan en el tablón.
 3. **Resolved el caso.** Con las cuatro pruebas, decid quién fue, cómo lo hizo y a qué hora. Si falláis, os diremos

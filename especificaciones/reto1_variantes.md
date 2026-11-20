@@ -81,7 +81,7 @@ casi resuelve, como la «Mirad el reflejo» actual.
 
 ## 4. Cómo se ve la pregunta en la foto
 
-- La imagen se adapta a 640×496 (PD120) sin deformarla.
+- La imagen se adapta a 320×240 (Robot 36; antes 640×496, PD120) sin deformarla.
 - La pregunta va en una **franja oscura en la parte de abajo**, en letra grande y blanca, en una o dos líneas:
   «¿Quién hizo esta fotografía?». La foto actual la lleva en letra pequeña y oscura sobre el suelo, y tras decodificarla
   se lee regular: la A también se rehace con la franja para que todas sean iguales.

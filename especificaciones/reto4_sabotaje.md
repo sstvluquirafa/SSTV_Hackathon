@@ -35,7 +35,7 @@ Duración objetivo: **15–18 minutos**. Dificultad: **media**.
 > Sois el equipo de investigación. Tenéis que descubrir **quién** saboteó el satélite, **cómo** lo hizo y **a qué hora**.
 >
 > **Cómo empezar:**
-> **1. Abrid la carpeta I, «Cámara de la azotea» y poned a recibir la foto.** Tarda unos 2 minutos en llegar,
+> **1. Abrid la carpeta I, «Cámara de la azotea» y poned a recibir la foto.** Tarda unos 40 segundos en llegar,
 > así que hacedlo lo primero.
 > **2. Mientras llega, leed «El equipo de GranaSAT»** y apuntad en la libreta todo lo que os parezca importante de
 > cada persona: **los sospechosos están entre ellos.**
@@ -106,11 +106,11 @@ Notas para la implementación:
 - Recuadro corto de la hora universal (el mismo texto que en la sección 4.2, resumido).
 - Botón **«Recibir la foto de la cámara»** (audio por el cable virtual, reproductor común) y descarga del audio.
   Recordatorio: «Abrid Black Cat SSTV escuchando del cable antes de pulsar.» Mientras suena: «La foto tarda unos
-  2 minutos. Mientras, leed "El equipo de GranaSAT".» con enlace.
+  40 segundos. Mientras, leed "El equipo de GranaSAT".» con enlace.
 - **La imagen no aparece en la web.** Foto: `recursos/imagenes/camara_azotea.jpg` (versión sin reloj: persona de
   espaldas con gorra roja manejando la radio y auriculares verdes sobre la mesa). Si el audio no está generado a partir
-  de la foto actual, regénéralo con la skill `audio-sstv` (recorte 640×496 conservando la gorra y los auriculares,
-  PD120 a 11 025 Hz, verificación de ida y vuelta) y copia solo el WAV a `web/assets/`.
+  de la foto actual, regénéralo con la skill `audio-sstv` (recorte 320×240 conservando la gorra y los auriculares,
+  Robot 36 a 11 025 Hz, verificación de ida y vuelta) y copia solo el WAV a `web/assets/`.
 
 **Extraer prueba:** «Según lo que sabéis del equipo, **¿quién puede ser la persona de la foto?**»
 - Solo Pablo · Solo Lucía · **Pablo o Lucía** · Javier · Marta

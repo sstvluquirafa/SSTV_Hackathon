@@ -19,13 +19,13 @@ piezas y monta el QR es el equipo 1**, que tendrá el recorrido más corto; el s
 ## ¿Se lee un QR después de pasar por SSTV?
 
 Sí, con mucho margen. El QR es de 41×41 módulos (versión 6, con corrección de errores alta). Se completa a 42×42 con
-una fila y una columna blancas y se parte en 2×2: cada pieza tiene 21×21 módulos, que en la imagen PD120 (640×496)
-ocupan 20 píxeles cada uno, debajo de una cabecera con «PIEZA N DE 4» y su sitio. Pruebas hechas:
+una fila y una columna blancas y se parte en 2×2: cada pieza tiene 21×21 módulos, que en la imagen Robot 36 (320×240; antes PD120, 640×496)
+ocupan 9 píxeles cada uno, debajo de una cabecera con «PIEZA N DE 4» y su sitio. Pruebas hechas:
 
-- `generar_piezas_qr.py` codifica las 4 piezas, las decodifica con `sstv_pd120.py`, monta el QR y lo escanea: 0 módulos mal.
-- Con un decodificador que se sincroniza línea a línea (como Black Cat o YONIQ), ruido de 10 dB y el reloj de la
-  tarjeta de sonido desviado un 0,2 %: el QR montado se escanea tal cual. Con 6 dB de ruido, se escanea después de
-  limpiarlo (lo que hace la web).
+- `generar_piezas_qr.py` codifica las 4 piezas, las decodifica con `sstv_robot36.py`, monta el QR y lo escanea: 0 módulos mal.
+- En Robot 36, con un decodificador que se sincroniza línea a línea (como Black Cat o YONIQ), ruido de 6 dB y el reloj
+  de la tarjeta de sonido desviado un 0,2 %: 0 módulos mal leyendo, como la web, la media de la zona central de cada
+  módulo. Con 3 dB de ruido y sin desvío del reloj, también se lee.
 - La web lee bien piezas desplazadas unos píxeles, con mucho ruido, en JPG y a mitad de tamaño.
 
 En el aula el audio va por el cable virtual, sin ruido: es el caso más fácil.

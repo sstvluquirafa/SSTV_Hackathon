@@ -106,7 +106,7 @@
               <ol>
                 <li>Abrid Black Cat SSTV (o YONIQ) con la entrada de audio <b>CABLE Output</b>.</li>
                 <li>Comprobad que el sonido del PC sale por <b>CABLE Input (VB-Audio)</b>.</li>
-                <li>Pulsad <b>RECIBIR TRANSMISIÓN</b> y esperad unos 2 minutos sin tocar nada: la imagen aparece línea a línea.</li>
+                <li>Pulsad <b>RECIBIR TRANSMISIÓN</b> y esperad unos 40 segundos sin tocar nada: la imagen aparece línea a línea.</li>
                 <li>Leed con atención la pregunta que viene en la imagen.</li>
               </ol>
             </div>

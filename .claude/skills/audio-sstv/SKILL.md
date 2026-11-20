@@ -1,20 +1,20 @@
 ---
 name: audio-sstv
-description: Generar, convertir o comprobar audios SSTV (PD120) del hackathon, por ejemplo al cambiar mapa.png, crear la recompensa de un reto o reducir el tamaño de un WAV.
+description: Generar, convertir o comprobar audios SSTV (Robot 36) del hackathon, por ejemplo al cambiar mapa.png, crear la recompensa de un reto o reducir el tamaño de un WAV.
 ---
 
 # Audios SSTV del hackathon
 
-Todo se hace con `herramientas/sstv_pd120.py` (numpy + Pillow, sin internet). No instales librerías SSTV externas.
+Todo se hace con `herramientas/sstv_robot36.py` (numpy + Pillow, sin internet; `sstv_pd120.py` tiene la misma forma de uso). No instales librerías SSTV externas.
 
 ## Reglas
-- Modo **PD120** siempre (640×496, ~127 s). Es el de la ISS y el que se explica en la clase.
+- Modo **Robot 36** siempre (320×240, ~37 s): PD120 (640×496, ~127 s, el de la ISS) se hacía demasiado largo en el aula.
 - WAV mono de 16 bits a **11 025 Hz** (~2,8 MB). Nunca a 48 kHz: pesan 12 MB y no aportan nada.
-- Cualquier imagen se adapta a 640×496 **sin deformarla** (encaja y rellena con el azul `#0f172a`).
+- Cualquier imagen se adapta a 320×240 **sin deformarla** (encaja y rellena con el azul `#0f172a`).
 
 ## Pasos
-1. Prepara la imagen de 640×496 y genera el audio: `sstv_pd120.codificar(imagen, ruta_wav)`.
-2. **Verifica siempre** la ida y vuelta: `sstv_pd120.decodificar(ruta_wav)` y compara con la original.
+1. Prepara la imagen de 320×240 y genera el audio: `sstv_robot36.codificar(imagen, ruta_wav)`.
+2. **Verifica siempre** la ida y vuelta: `sstv_robot36.decodificar(ruta_wav)` y compara con la original.
    El error medio por canal debe ser menor que 5 sobre 255. Si no lo es, no des el audio por bueno.
 3. Si cambió `recursos/imagenes/mapa.png`, ejecuta `python herramientas/generar_fragmentos_mapa.py`
    y revisa `generado/mapa/comprobacion_mapa_decodificado.png`.
