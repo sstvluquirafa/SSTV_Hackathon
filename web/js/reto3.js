@@ -785,7 +785,7 @@
       caja.innerHTML = `
         <h3 class="r3-recibida">Señal recibida</h3>
         <p class="r3-texto">La baliza os ha dado la transmisión de la <b>pieza 3 del QR</b>. Reproducidla por el cable virtual, decodificadla con
-          Black Cat SSTV y <b>guardad la imagen</b>: la necesitaréis para montar el QR.</p>
+          GranaSAT SSTV y <b>guardad la imagen</b>: la necesitaréis para montar el QR.</p>
         <div id="r3-reproductor"></div>
         <div class="r3-acciones"><button class="r3-boton r3-boton-sec" type="button" data-cine="reto3">Volver a ver la escena final</button></div>
         <p class="r3-nota">${e.puntos} puntos · ${e.pistas.length} ${e.pistas.length === 1 ? "pista" : "pistas"} · ${e.fallos} ${e.fallos === 1 ? "fallo" : "fallos"}</p>`;

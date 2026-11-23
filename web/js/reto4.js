@@ -541,7 +541,7 @@
           </article>
           <aside class="r4-sobre" aria-label="Pieza 4 del QR">
             <p class="r4-sobre-rotulo">Pieza 4 del QR</p>
-            <p>Dentro del sobre, el registro de la transmisión. Decodificad el audio con Black Cat SSTV y guardad la imagen para montar el QR.</p>
+            <p>Dentro del sobre, el registro de la transmisión. Decodificad el audio con GranaSAT SSTV y guardad la imagen para montar el QR.</p>
             <div id="r4-audio">${cargando("Descifrando la transmisión…")}</div>
           </aside>
         </div>
@@ -658,10 +658,10 @@
     camara: () => `
       <p class="r4-texto">La estación de radio de la azotea tiene una cámara de seguridad que transmite sus fotos por radio, en SSTV.
         Su última foto se envió el 15 de julio a las <b>12:31, hora del satélite</b> (la cámara usa el reloj de la estación de
-        radio, que funciona con la hora universal: ver el recuadro). La foto llega como sonido: decodificadla con Black Cat SSTV.</p>
+        radio, que funciona con la hora universal: ver el recuadro). La foto llega como sonido: decodificadla con GranaSAT SSTV.</p>
       ${HORA_UNIVERSAL_CORTA}
       <div class="r4-camara-mesa">
-        <p class="r4-nota-margen r4-nota-recordatorio">Abrid Black Cat SSTV escuchando del cable antes de pulsar.</p>
+        <p class="r4-nota-margen r4-nota-recordatorio">Abrid GranaSAT SSTV escuchando del cable antes de pulsar.</p>
         <button class="r4-boton-sello r4-recibir" id="r4-recibir">Recibir la foto de la cámara</button>
       </div>
       <div id="r4-camara"></div>

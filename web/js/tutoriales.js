@@ -25,18 +25,18 @@
       titulo: "Desbloquead el QR",
       cuerpo: `
         <p>Hay un <b>código QR</b> partido en <b>cuatro piezas</b>, y cada pieza está escondida en una prueba. Al superar
-          una prueba recibiréis una <b>transmisión SSTV</b>: un sonido que, decodificado con Black Cat SSTV, se convierte
+          una prueba recibiréis una <b>transmisión SSTV</b>: un sonido que, decodificado con GranaSAT SSTV, se convierte
           en vuestra pieza del QR. Podéis hacer las pruebas <b>en el orden que queráis</b>.</p>
         <p>Cuando tengáis las cuatro, id a <b>Montar el QR</b>, colocad cada pieza en su sitio y escanead el QR con el
           móvil: os lleva a la segunda parte de la misión. <b>El primer equipo que lo consiga tendrá el recorrido más corto.</b></p>
         <ul class="tut-pruebas">${App.RETOS.map((r) => `<li><b>${escapar(r.titulo)}:</b> ${RESUMEN_RETO[r.id]}</li>`).join("")}</ul>
-        <p class="tut-pie">Antes de empezar: abrid Black Cat SSTV y comprobad que escucha del cable de audio virtual.</p>`,
+        <p class="tut-pie">Antes de empezar: abrid GranaSAT SSTV y comprobad que escucha del cable de audio virtual.</p>`,
     }),
     reto1: () => ({
       etiqueta: "Cómo funciona",
       titulo: "Mensaje desde 1969",
       cuerpo: pasos([
-        ["Recibid la transmisión.", "Pulsad para emitirla y decodificadla con Black Cat SSTV: aparecerá una fotografía histórica."],
+        ["Recibid la transmisión.", "Pulsad para emitirla y decodificadla con GranaSAT SSTV: aparecerá una fotografía histórica."],
         ["Identificad la foto.", "Responded a la pregunta que acompaña a la imagen. Fijaos bien en los detalles."],
         ["Reconstruid la imagen.", "Se abrirá un puzle de piezas deslizantes: ordenadlo moviendo las piezas hacia el hueco."],
       ]) + final(1),
@@ -72,7 +72,7 @@
       etiqueta: "Cómo funciona",
       titulo: "Montar el QR",
       cuerpo: pasos([
-        ["Subid vuestras cuatro imágenes", "decodificadas (las que habéis guardado desde Black Cat SSTV)."],
+        ["Subid vuestras cuatro imágenes", "decodificadas (las que habéis guardado desde GranaSAT SSTV)."],
         ["Colocad cada pieza en su sitio.", "Lo dice su cabecera: «arriba a la izquierda», «abajo a la derecha»… La web limpia cada pieza y avisa cuando el QR está completo y bien montado."],
         ["Escanead el QR con el móvil", "y avisad a la organización: queda apuntada la hora a la que lo habéis completado."],
       ]),

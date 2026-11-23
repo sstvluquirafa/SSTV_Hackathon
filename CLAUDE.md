@@ -8,7 +8,7 @@ Lucas González García y Rafael Carrillo Rondón. Cada grupo supera retos en un
 desbloquea un audio SSTV (Robot 36, unos 37 s) con una pieza de un código QR. Con las 4 piezas montan el QR en la web, que lleva
 a la web de la segunda parte de la sesión (la gymkhana de la tarde): el primer equipo en montarlo es el equipo 1 y
 tiene el recorrido más corto. Antes cada reto daba un trozo del mapa del recinto (ver `especificaciones/qr_gymkhana.md`). Un PC por grupo (Windows), con SDR, antena y decodificador SSTV
-(Black Cat SSTV o YONIQ) que recibe el audio por cable virtual (VB-Cable).
+(GranaSAT SSTV, el nuestro; Black Cat SSTV o YONIQ de reserva) que recibe el audio por cable virtual (VB-Cable).
 
 ## Reglas del proyecto
 - **Idioma:** todo en español (interfaz, comentarios, mensajes de commit).

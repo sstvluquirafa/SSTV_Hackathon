@@ -40,10 +40,10 @@
   const variante = () => VARIANTES[estado().variante] || VARIANTES[0];
   // Las fases del plan de vuelo, con la orden que se da en cada una
   const FASES = [
-    { nombre: "Recepción", orden: "Pulsad <b>RECIBIR TRANSMISIÓN</b> y decodificad la imagen con Black Cat SSTV." },
+    { nombre: "Recepción", orden: "Pulsad <b>RECIBIR TRANSMISIÓN</b> y decodificad la imagen con GranaSAT SSTV." },
     { nombre: "Identificación", orden: "Escribid quién responde a la pregunta de la imagen y pulsad <b>COMPROBAR</b>." },
     { nombre: "Reconstrucción", orden: "Reconstruid la fotografía: pulsad una pieza junto al hueco o usad las flechas del teclado." },
-    { nombre: "Entrega", orden: "Pulsad <b>EMITIR PIEZA</b>, decodificadla con Black Cat SSTV y guardad la imagen para montar el QR." },
+    { nombre: "Entrega", orden: "Pulsad <b>EMITIR PIEZA</b>, decodificadla con GranaSAT SSTV y guardad la imagen para montar el QR." },
   ];
 
   const estado = () => Progreso.reto(ID);
@@ -104,7 +104,7 @@
             <div class="r1-lista">
               <p class="r1-lista-tit">Antes de recibir</p>
               <ol>
-                <li>Abrid Black Cat SSTV (o YONIQ) con la entrada de audio <b>CABLE Output</b>.</li>
+                <li>Abrid GranaSAT SSTV con la entrada de audio <b>CABLE Output</b>.</li>
                 <li>Comprobad que el sonido del PC sale por <b>CABLE Input (VB-Audio)</b>.</li>
                 <li>Pulsad <b>RECIBIR TRANSMISIÓN</b> y esperad unos 40 segundos sin tocar nada: la imagen aparece línea a línea.</li>
                 <li>Leed con atención la pregunta que viene en la imagen.</li>

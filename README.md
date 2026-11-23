@@ -178,7 +178,7 @@ Bienvenida general y desplegable «Cómo funciona» en cada reto: `especificacio
 (código en `web/js/tutoriales.js`, estilos en `web/css/tutoriales.css`).
 
 - **Panel principal:** bienvenida «Desbloquead el QR» (las 4 piezas, que el primero en montarlo tiene el recorrido más corto, una línea por prueba y el aviso de
-  abrir Black Cat SSTV con el cable virtual).
+  abrir GranaSAT SSTV con el cable virtual).
 - **Retos 1, 2 y 3 y montar el QR:** tres pasos numerados y qué se gana al final, con la estética de su escena
   (sala de control en el reto 1, Matrix en el reto 2, el faro en el reto 3, GranaSAT en el panel y el montaje). El del
   reto 3: aprended Morse con el traductor y la práctica, buscad la baliza con el SDR entre 140 y 155 MHz y apuntad la palabra en la hoja
@@ -250,7 +250,7 @@ respuesta. Fuentes: Barlow Condensed, IBM Plex Sans e IBM Plex Mono (en `web/ass
   37 s por imagen de 320×240 y WAV de 0,8 MB en vez de 2,8 MB. Black Cat SSTV y YONIQ lo detectan solos por la cabecera
   VIS. Probado: las pistas y la cámara se ven bien, y el QR montado se lee sin fallos incluso con mucho ruido (6 dB).
   `sstv_pd120.py` se queda para la clase (es el modo de la ISS).
-- **Decodificación:** con software externo en directo (Black Cat SSTV, MMSSTV, RX-SSTV) mediante cable de audio virtual.
+- **Decodificación:** en directo con **GranaSAT SSTV** (nuestro decodificador, `../Decodificador_SSTV`) mediante cable de audio virtual. Black Cat SSTV, YONIQ o MMSSTV sirven de reserva.
   Un decodificador propio en la web se deja para más adelante; si se hace, con el código visible (nada de caja negra).
 - **Del mapa al QR (noviembre de 2026):** cada reto ya no da un trozo del mapa del recinto, sino **una pieza de un QR**
   que lleva a la web de la segunda parte de la sesión (por la tarde). **El primer equipo que monta el QR completo es el

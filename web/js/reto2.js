@@ -173,7 +173,7 @@
 
             <section class="r2-entrega" id="r2-entrega" hidden aria-live="polite">
               <p class="r2-grande" id="r2-entrega-txt">ARCHIVO DESCIFRADO</p>
-              <p>La caja contiene la transmisión de la ${def.fragmento.toLowerCase()} del QR. Ponedla a sonar y decodificadla con Black Cat SSTV.</p>
+              <p>La caja contiene la transmisión de la ${def.fragmento.toLowerCase()} del QR. Ponedla a sonar y decodificadla con GranaSAT SSTV.</p>
               <div id="r2-premio"></div>
             </section>
           </div>
@@ -323,7 +323,7 @@
     if (!caja || bloqueadaMesa()) return;
     const e = estado();
     let t;
-    if (e.completado) t = "Caja abierta. Reproducid la transmisión y decodificadla con Black Cat SSTV.";
+    if (e.completado) t = "Caja abierta. Reproducid la transmisión y decodificadla con GranaSAT SSTV.";
     else if (App.segundosBloqueo(e) > 0) t = `La caja está bloqueada. Volved a intentarlo en ${mmss(App.segundosBloqueo(e))}.`;
     else if (!e.receta.length) t = (e.clave || "").trim() ? "Pulsad VIGENÈRE para quitar la primera capa." : "Responded la pregunta de la clave y pulsad VIGENÈRE.";
     else if (ultimo.error) t = "Ese paso no encaja. Borradlo y probad otra operación según la chuleta.";
