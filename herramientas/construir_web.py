@@ -44,6 +44,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 WEB = RAIZ / "web"
 DATOS = WEB / "assets" / "data"
 IMG = WEB / "assets" / "img"
+CONTRASENA_RESERVA = "Granasat6022"   # abre el audio de reserva del reto 3 (solo la organización la sabe)
 ITERACIONES = 150_000          # PBKDF2: lento para probar respuestas a lo bruto, rápido para una sola
 
 # Respuestas aceptadas de cada reto (este archivo NO se copia a la web), por GRUPOS:
@@ -167,13 +168,16 @@ def main(solo=None):
         datos_comunes()
     if not solo or "reto1" in solo:
         pistas_reto1()
-    if not solo or "reto3" in solo:
-        # Modo de reserva: el mismo audio que emite el walkie (dos vueltas con zumbido, en bucle en la web).
-        # Sin cifrar: descifrarlo de oído ES el reto.
+    if not solo or "reto3" in solo or "baliza" in solo:
+        # Audio de reserva: el mismo audio que emite el walkie (en bucle en la web), por si falla el transmisor.
+        # Va cifrado con CONTRASENA_RESERVA: así solo lo pone la organización (la ventana de la web pide la contraseña).
         vuelta = RAIZ / "generado" / "reto3" / "walkie" / "baliza_walkie.wav"
         if not vuelta.exists():
             sys.exit("Falta generado/reto3/walkie/baliza_walkie.wav: ejecuta herramientas/generar_baliza_walkie.py.")
-        tam = escribir_js("reto3_baliza", "reto3_baliza", b64(vuelta.read_bytes()))
+        sal = os.urandom(16)
+        reserva = {"sal": b64(sal), "iteraciones": ITERACIONES, "tipo": "audio/wav",
+                   **cifrar(derivar(CONTRASENA_RESERVA, sal), vuelta.read_bytes())}
+        tam = escribir_js("reto3_baliza", "reto3_baliza", reserva)
         print(f"reto3_baliza.js           {tam / 1e6:5.2f} MB")
     if not solo or "reto4" in solo:
         # Cámara de la azotea del reto 4 (sin cifrar: decodificarla es parte del reto). No se copia ningún PNG.

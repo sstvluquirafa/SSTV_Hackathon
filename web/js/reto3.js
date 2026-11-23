@@ -5,11 +5,13 @@
 // pie «Ahora:» dice siempre la siguiente acción. La chuleta queda a la vista, a la derecha, en Aprender y Escuchar.
 // La web NO dice la frecuencia: solo el rango (140–155 MHz); los grupos la buscan barriendo con el SDR.
 // La palabra no está en la web: la respuesta abre, cifrada, el audio de recompensa (base.js → Cripto). La baliza de
-// reserva (reto3_baliza.js = generado/reto3/walkie/baliza_walkie.wav, en bucle) es audio: descifrarla de oído es justo el reto.
+// reserva (reto3_baliza.js = generado/reto3/walkie/baliza_walkie.wav, en bucle) va cifrada con la contraseña de la
+// organización (herramientas/construir_web.py → CONTRASENA_RESERVA): se abre desde «Audio de reserva» si falla el transmisor.
 // Estética: la sala de radio de un faro de noche (css/reto3.css). La lámpara destella al ritmo del Morse.
 (function () {
   "use strict";
   const { $, $$, escapar, Progreso, Cripto, cargarDatos, blobDesdeB64, urlDe, Sonido } = App;
+  const CANDADO = `<svg class="r3-candado" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`;
   const ID = "reto3";
   // La frecuencia exacta no está en la web: descubrirla es parte del reto. Solo se muestra el rango.
   const RANGO = [140, 155]; // MHz
@@ -479,7 +481,10 @@
         <span class="r3-formada-rotulo">Palabra:</span>
         <span class="r3-formada-palabra" id="r3-formada"></span>
         <button class="r3-boton r3-boton-principal" id="r3-usar" type="button">Usar esta palabra</button>
-        <button class="r3-reserva" id="r3-reserva" type="button">Modo de reserva (organización)</button>
+      </div>
+      <div class="r3-reserva-caja">
+        <p class="r3-reserva-texto"><b>¿No llega la baliza?</b> Si falla el transmisor, la organización puede poner aquí el mismo audio.</p>
+        <button class="r3-boton r3-boton-sec r3-reserva" id="r3-reserva" type="button">${CANDADO} Audio de reserva</button>
       </div>`;
   }
   /** Dibujo de una vuelta de la baliza, a escala aproximada. No dice nada de la palabra. */
@@ -606,18 +611,75 @@
     $("#r3-chuleta").addEventListener("keydown", (ev) => { if (ev.key === "Escape" && $("#r3-chuleta").classList.contains("abierta")) abrir(false); });
   }
 
-  // ---------- Modo de reserva: la baliza suena en la web (solo para la organización) ----------
+  // ---------- Audio de reserva: la baliza suena en la web (solo con la contraseña de la organización) ----------
   let reservaAudio = null;
+  let reservaUrl = null;            // una vez abierta con la contraseña, no se vuelve a pedir hasta recargar
+  const TEXTO_RESERVA = `${CANDADO} Audio de reserva`;
+
   async function reserva() {
     const boton = $("#r3-reserva");
-    if (reservaAudio) { reservaAudio.pause(); reservaAudio = null; boton.textContent = "Modo de reserva (organización)"; lampara(false); return; }
-    if (!confirm("Modo de reserva: la baliza sonará en este ordenador.\n\nÚsalo solo si el walkie o el SDR no funcionan. ¿Seguimos?")) return;
+    if (reservaAudio) { reservaAudio.pause(); reservaAudio = null; boton.innerHTML = TEXTO_RESERVA; lampara(false); return; }
+    if (!reservaUrl) reservaUrl = await pedirContrasena();
+    if (reservaUrl) sonarReserva(reservaUrl);
+  }
+
+  /** Ventana que pide la contraseña. Devuelve la URL del audio descifrado, o null si se cierra. */
+  function pedirContrasena() {
+    return new Promise((acabar) => {
+      const capa = document.createElement("div");
+      capa.className = "modal r3-modal";
+      capa.setAttribute("role", "dialog");
+      capa.setAttribute("aria-modal", "true");
+      capa.setAttribute("aria-labelledby", "r3-modal-titulo");
+      capa.innerHTML = `<form class="r3-modal-caja" novalidate>
+          <p class="r3-modal-icono">${CANDADO}</p>
+          <h3 id="r3-modal-titulo">Audio de reserva</h3>
+          <p class="r3-modal-texto">Solo para la organización. Si el transmisor falla, aquí suena el mismo audio de la baliza
+            en este ordenador, en bucle.</p>
+          <label for="r3-contrasena">Contraseña</label>
+          <input id="r3-contrasena" type="password" autocomplete="off" spellcheck="false">
+          <p class="r3-modal-error" id="r3-modal-error" role="alert" hidden></p>
+          <div class="r3-modal-botones">
+            <button class="r3-boton r3-boton-sec" type="button" data-a="cancelar">Cancelar</button>
+            <button class="r3-boton r3-boton-principal" type="submit">Poner el audio</button>
+          </div>
+        </form>`;
+      const entrada = $("#r3-contrasena", capa), error = $("#r3-modal-error", capa), enviar = $("button[type=submit]", capa);
+      const cerrar = (url) => { document.removeEventListener("keydown", tecla); capa.remove(); $("#r3-reserva") && $("#r3-reserva").focus(); acabar(url); };
+      const tecla = (ev) => { if (ev.key === "Escape") cerrar(null); };
+      const fallo = (texto) => { error.textContent = texto; error.hidden = false; entrada.select(); entrada.focus(); };
+      capa.addEventListener("click", (ev) => {
+        if (ev.target === capa || (ev.target.closest("button") && ev.target.closest("button").dataset.a === "cancelar")) cerrar(null);
+      });
+      $("form", capa).addEventListener("submit", async (ev) => {
+        ev.preventDefault();
+        if (!entrada.value.trim()) return fallo("Escribid la contraseña.");
+        enviar.disabled = true;
+        enviar.textContent = "Comprobando…";
+        try {
+          const blob = await Cripto.abrirConContrasena(await cargarDatos("reto3_baliza"), entrada.value);
+          if (blob) return cerrar(urlDe(blob));
+          fallo("Esa no es la contraseña.");
+        } catch (e) {
+          fallo("No se ha podido abrir el audio en este navegador.");
+        }
+        enviar.disabled = false;
+        enviar.textContent = "Poner el audio";
+      });
+      document.addEventListener("keydown", tecla);
+      document.body.appendChild(capa);
+      entrada.focus();
+    });
+  }
+
+  async function sonarReserva(url) {
+    const boton = $("#r3-reserva");
+    if (!boton) return;
     try {
-      const url = urlDe(blobDesdeB64(await cargarDatos("reto3_baliza"), "audio/wav"));
       const audio = new Audio(url);
       audio.loop = true;
       reservaAudio = audio;
-      boton.textContent = "Parar la baliza";
+      boton.textContent = "Parar el audio de reserva";
       // La lámpara sigue al sonido: se enciende cuando hay tono (así no hace falta saber la palabra)
       ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
       if (ctx.state === "suspended") ctx.resume();
@@ -637,8 +699,8 @@
       requestAnimationFrame(mirar);
     } catch (e) {
       reservaAudio = null;
-      boton.textContent = "Modo de reserva (organización)";
-      alert("No se ha podido reproducir la baliza en este ordenador.");
+      boton.innerHTML = TEXTO_RESERVA;
+      alert("No se ha podido reproducir el audio de reserva en este ordenador.");
     }
   }
 

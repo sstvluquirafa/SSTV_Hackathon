@@ -87,6 +87,21 @@
       return new Blob([datos], { type: archivo.tipo });
     },
 
+    /** Descifra un archivo cifrado directamente con una contraseña ({sal, iteraciones, iv, ct, tipo}).
+     *  Devuelve un Blob, o null si la contraseña no es la buena. */
+    async abrirConContrasena(archivo, contrasena) {
+      const norm = this.normalizar(contrasena);
+      if (!norm) return null;
+      const material = await crypto.subtle.importKey("raw", new TextEncoder().encode(norm), "PBKDF2", false, ["deriveKey"]);
+      const k = await crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt: deB64(archivo.sal), iterations: archivo.iteraciones, hash: "SHA-256" },
+        material, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+      try {
+        const datos = await crypto.subtle.decrypt({ name: "AES-GCM", iv: deB64(archivo.iv) }, k, deB64(archivo.ct));
+        return new Blob([datos], { type: archivo.tipo });
+      } catch (e) { return null; }
+    },
+
     async huella(texto) {
       const h = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(texto));
       return Array.from(new Uint8Array(h)).map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
