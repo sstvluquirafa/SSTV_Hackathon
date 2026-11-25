@@ -229,8 +229,12 @@ respuesta. Fuentes: Barlow Condensed, IBM Plex Sans e IBM Plex Mono (en `web/ass
    11 025 Hz y comprobación de ida y vuelta). La web solo carga la pista de su grupo (`reto1_pista_<letra>.js`).
    Los grupos que ya jugaban con la foto única conservan la de Aldrin (variante a).
 2. Respuesta: quien hizo la foto (en `construir_web.py`, un grupo de respuestas por foto, como las variantes del
-   reto 2): solo la de su foto abre el reto. Dos pistas por foto (bloquean 30 s y 60 s), en `web/js/reto1.js`;
-   ninguna dice el nombre buscado ni el nombre de las misiones a la Luna (es la respuesta de una pregunta del reto 2).
+   reto 2): solo la de su foto abre el reto. En la fase de identificación se ven siempre los **datos de la foto**
+   (dónde, cuándo y cuántos astronautas iban), para que puedan razonarlo o investigarlo en internet. Dos pistas por
+   foto (bloquean 30 s y 60 s), en `web/js/reto1.js`: la primera ayuda a razonar quién falta en la foto y la segunda da
+   el **código de la foto en el archivo de la NASA** (por ejemplo `AS11-40-5903`) para buscarlo en internet, cuya ficha
+   dice quién la hizo. Ninguna dice el nombre buscado ni el nombre de las misiones a la Luna (es la respuesta de una
+   pregunta del reto 2).
 3. Puzle 3×3 con una foto al azar de 8 del espacio (NASA/ESA, en `recursos/imagenes/puzle/` con `fotos.json`).
    Se eligieron con `herramientas/medir_fotos_puzle.py` para que tengan una dificultad parecida (índice 8,9–13,2:
    ninguna pieza lisa y ningún par de piezas casi iguales), y el desorden está siempre a **exactamente 20

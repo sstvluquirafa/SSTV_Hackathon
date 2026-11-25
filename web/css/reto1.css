@@ -74,6 +74,8 @@ body[data-vista="reto1"] .chip-verde { color: #8fd18a; }
   color: #e8e4d6; background: #161b1e; border-radius: 2px;
 }
 .r1-texto { margin: 0 0 10px; font-size: 19px; line-height: 1.5; max-width: 62ch; }
+.r1-datos { margin: 0 0 12px; font-size: 16px; line-height: 1.45; max-width: 66ch; color: var(--r1-claro); }
+.r1-datos b { color: var(--r1-ambar-claro); }
 .r1-cargando { margin: 0; padding: 12px; font: 16px var(--r1-mono); color: #b9c4bf; }
 
 /* Línea de fases (el plan de vuelo) */
