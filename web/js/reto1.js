@@ -23,19 +23,19 @@
   // investigarlo. Pista 1: el razonamiento (quién falta en la foto). Pista 2: qué buscar en internet (el identificador
   // de la foto en el archivo de la NASA, cuya ficha dice quién la hizo).
   const VARIANTES = [
-    { letra: "a", datos: "Superficie de la Luna, 20 de julio de 1969. En esa misión, solo dos astronautas pisaron la Luna.", pistas: pista(
+    { letra: "a", datos: "Superficie de la Luna, 20 de julio de 1969.", tripulacion: [["Neil Armstrong", "comandante, bajó a la Luna"], ["Buzz Aldrin", "bajó a la Luna con él"], ["Michael Collins", "se quedó en órbita, pilotando la nave principal"]], pistas: pista(
       "Mirad el reflejo", "El astronauta de la foto es Buzz Aldrin. En el visor de su casco se refleja quien sostiene la cámara: su comandante, el primer ser humano que pisó la Luna.",
       "Buscadla en internet", "Esta foto está en el archivo de la NASA con el código <b>AS11-40-5903</b>. Buscad ese código en internet (por ejemplo, en images.nasa.gov) y mirad quién la hizo.") },
-    { letra: "b", datos: "Órbita de la Luna, 21 de julio de 1969, en la primera misión que llegó a la Luna. Iban tres astronautas.", pistas: pista(
+    { letra: "b", datos: "Órbita de la Luna, 21 de julio de 1969, poco después de despegar de la Luna.", tripulacion: [["Neil Armstrong", "comandante, había bajado a la Luna"], ["Buzz Aldrin", "había bajado a la Luna con él"], ["Michael Collins", "se quedó en órbita, pilotando la nave principal"]], pistas: pista(
       "¿Quién falta?", "Dentro del módulo lunar van los dos astronautas que acaban de pisar la Luna, y detrás está la Tierra con el resto de la humanidad. El único que no sale es el tercer tripulante, que se quedó en órbita pilotando la nave principal.",
       "Buscadla en internet", "Esta foto está en el archivo de la NASA con el código <b>AS11-44-6642</b>. Buscad ese código en internet (por ejemplo, en images.nasa.gov) y mirad quién la hizo.") },
-    { letra: "c", datos: "Órbita de la Tierra, 3 de junio de 1965: el primer paseo espacial de Estados Unidos. En la nave solo cabían dos astronautas.", pistas: pista(
+    { letra: "c", datos: "Órbita de la Tierra, 3 de junio de 1965: el primer paseo espacial de Estados Unidos.", tripulacion: [["James McDivitt", "comandante, se quedó dentro de la nave"], ["Ed White", "salió de la nave a dar el paseo espacial"]], pistas: pista(
       "¿Quién falta?", "El que flota fuera es Ed White, el primer estadounidense que salió al espacio. La foto la hizo su compañero, que se quedó dentro de la nave: era el comandante de la misión.",
       "Buscadla en internet", "Esta foto está en el archivo de la NASA con el código <b>S65-30433</b>. Buscad ese código en internet (por ejemplo, en images.nasa.gov) y mirad quién la hizo.") },
-    { letra: "d", datos: "Órbita de la Luna, 24 de diciembre de 1968, desde la primera nave tripulada que dio vueltas a la Luna (sin bajar). Iban tres astronautas.", pistas: pista(
+    { letra: "d", datos: "Órbita de la Luna, 24 de diciembre de 1968, desde la primera nave tripulada que dio vueltas a la Luna (sin bajar).", tripulacion: [["Frank Borman", "comandante, pilotaba la nave"], ["Jim Lovell", "navegante, llevaba el rumbo"], ["William Anders", "encargado de las cámaras y las fotos"]], pistas: pista(
       "¿Quién la hizo?", "Los tres eran Frank Borman, Jim Lovell y un novato que se llamaba William. Borman y Lovell iban pilotando la nave; el que llevaba la cámara junto a la ventanilla era el novato.",
       "Buscadla en internet", "Esta foto está en el archivo de la NASA con el código <b>AS08-14-2383</b>. Buscad ese código en internet (por ejemplo, en images.nasa.gov) y mirad quién la hizo.") },
-    { letra: "e", datos: "Superficie de la Luna, diciembre de 1972, en la última misión que ha pisado la Luna. Bajaron dos astronautas.", pistas: pista(
+    { letra: "e", datos: "Superficie de la Luna, diciembre de 1972, en la última misión que ha pisado la Luna.", tripulacion: [["Eugene Cernan", "comandante, bajó a la Luna"], ["Harrison Schmitt", "geólogo, bajó a la Luna con él"], ["Ronald Evans", "se quedó en órbita, pilotando la nave principal"]], pistas: pista(
       "¿Quién falta?", "El astronauta de la foto es el comandante, Eugene Cernan. La foto la hizo el otro astronauta que bajó con él: el único científico (era geólogo) que ha pisado la Luna.",
       "Buscadla en internet", "Esta foto está en el archivo de la NASA con el código <b>AS17-134-20386</b>. Buscad ese código en internet (por ejemplo, en images.nasa.gov) y mirad quién la hizo.") },
   ];
@@ -118,8 +118,9 @@
             <div class="r1-teletipo">
               <p class="r1-texto">Escribid el <b>nombre y apellido</b> de la persona que responde a la pregunta de la imagen.
                 No importan las tildes ni las mayúsculas.</p>
-              <p class="r1-datos"><b>Datos de la foto:</b> <span id="r1-datos"></span> Pensad quién sostenía la cámara o
-                investigadlo en internet.</p>
+              <div class="r1-datos"><p><b>Dónde y cuándo:</b> <span id="r1-datos"></span></p>
+                <p><b>Los astronautas de la misión:</b></p><ul id="r1-tripulacion"></ul>
+                <p class="r1-datos-pregunta">El que hizo la foto <b>no sale en ella</b>: ¿quién sostenía la cámara?</p></div>
               <div class="r1-resultado">
                 <i class="r1-luz r1-luz-verde" id="r1-luz-ok" aria-hidden="true"></i>
                 <i class="r1-luz r1-luz-roja" id="r1-luz-error" aria-hidden="true"></i>
@@ -255,7 +256,10 @@
     const e = estado(), caja = $("#r1-pistas"), recibidas = $("#r1-pistas-recibidas");
     if (!caja) return;
     const PISTAS = variante().pistas;
-    if ($("#r1-datos")) $("#r1-datos").textContent = variante().datos;
+    if ($("#r1-datos")) {
+      $("#r1-datos").textContent = variante().datos;
+      $("#r1-tripulacion").innerHTML = variante().tripulacion.map(([n, papel]) => `<li><b>${n}</b> — ${papel}</li>`).join("");
+    }
     const abiertas = PISTAS.filter((p) => e.pistas.some((x) => x.id === p.id));
     recibidas.innerHTML = `<p class="r1-lista-tit">Pistas recibidas</p>${abiertas.length
       ? abiertas.map((p) => `<p class="r1-pista-texto"><b>${p.titulo}${/[?!]$/.test(p.titulo) ? "" : "."}</b> ${p.texto}</p>`).join("")

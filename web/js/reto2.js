@@ -285,9 +285,15 @@
     }
     const ps = paquetes(), e = estado();
     caja.innerHTML = `
-      <p class="r2-intro">Hemos captado la transmisión del GranaSAT-II, pero ha llegado <b>partida en 4 paquetes y desordenada</b>.
-        La <b>cabecera</b> de cada paquete dice qué número de paquete es, escrita en uno de los formatos de la chuleta.
-        Leed cada cabecera, poned cada paquete en su puesto y unidlos.</p>
+      <p class="r2-intro">La transmisión del GranaSAT-II ha llegado <b>partida en 4 paquetes y desordenada</b>. Hay que
+        ponerla en orden antes de descifrarla.</p>
+      <ol class="r2-guia">
+        <li><span>1</span><div>Cada paquete tiene una <b>cabecera</b> (en verde): es su número (UNO, DOS, TRES o CUATRO), pero escrito en clave.</div></li>
+        <li><span>2</span><div>Mirad su forma en la <b>chuleta</b> y pulsad ese formato debajo de la cabecera hasta que se lea el número.</div></li>
+        <li><span>3</span><div>Pulsad ese número en <b>«va en el puesto»</b>: el UNO en el 1, el DOS en el 2…</div></li>
+        <li><span>4</span><div>Cuando los cuatro tengan puesto, pulsad <b>«Unir los paquetes»</b>.</div></li>
+      </ol>
+      <p class="r2-ejemplo">Ejemplo: la cabecera <code>ONU</code> está al revés. Con <b>ESPEJO</b> se lee <b>UNO</b>, así que ese paquete va en el puesto 1.</p>
       <div class="r2-paquetes" id="r2-paquetes">${ps.map((p, i) => {
         const l = e.lecturas[i], leida = lecturaCabecera(p.cabecera, l);
         return `
@@ -302,7 +308,10 @@
             <button type="button" class="r2-rueda-btn r2-paq-rueda" data-i="${i}" data-d="-1" aria-label="Desplazar una letra menos">&#9664;</button>
             <output class="r2-rueda-num">${l.n}</output>
             <button type="button" class="r2-rueda-btn r2-paq-rueda" data-i="${i}" data-d="1" aria-label="Desplazar una letra más">&#9654;</button></span>` : ""}
-          <p class="r2-paquete-lectura${leida.error ? " aviso" : ""}">${l.op ? escapar(leida.error || leida.texto) : "Elegid un formato para leer la cabecera."}</p>
+          <p class="r2-paquete-lectura${leida.error ? " aviso" : ""}${Op.NUMEROS.includes(leida.texto) ? " leida" : ""}">${!l.op ? "Elegid un formato para leer la cabecera."
+            : leida.error ? escapar(leida.error)
+            : Op.NUMEROS.includes(leida.texto) ? `✔ Dice <b>${leida.texto}</b>: va en el puesto ${Op.NUMEROS.indexOf(leida.texto) + 1}.`
+            : `${escapar(leida.texto)} <small>(no se lee un número: probad otro formato${l.op === "cesar" ? " o girad la rueda" : ""})</small>`}</p>
           <p class="r2-paquete-rotulo">contenido del paquete</p>
           <p class="r2-paquete-carga">${escapar(p.carga)}</p>
           <p class="r2-paquete-rotulo">va en el puesto</p>

@@ -230,7 +230,8 @@ respuesta. Fuentes: Barlow Condensed, IBM Plex Sans e IBM Plex Mono (en `web/ass
    Los grupos que ya jugaban con la foto única conservan la de Aldrin (variante a).
 2. Respuesta: quien hizo la foto (en `construir_web.py`, un grupo de respuestas por foto, como las variantes del
    reto 2): solo la de su foto abre el reto. En la fase de identificación se ven siempre los **datos de la foto**
-   (dónde, cuándo y cuántos astronautas iban), para que puedan razonarlo o investigarlo en internet. Dos pistas por
+   (dónde y cuándo) y la **lista de astronautas de la misión con su papel**, junto a la idea clave «el que hizo la
+   foto no sale en ella», para que puedan razonarlo por descarte o investigarlo en internet. Dos pistas por
    foto (bloquean 30 s y 60 s), en `web/js/reto1.js`: la primera ayuda a razonar quién falta en la foto y la segunda da
    el **código de la foto en el archivo de la NASA** (por ejemplo `AS11-40-5903`) para buscarlo en internet, cuya ficha
    dice quién la hizo. Ninguna dice el nombre buscado ni el nombre de las misiones a la Luna (es la respuesta de una
@@ -292,6 +293,9 @@ mini-CyberChef integrado en la web y resuelve la instrucción final con una tabl
    (César con su rueda) y botones de puesto (1–4). «Unir los paquetes» comprueba el orden: si es bueno, la receta
    empieza con la transmisión completa; si no, un aviso amable (sin penalización). El sorteo de los paquetes se hace en
    la web (`partir`, `cabecera`, `sortearPaquetes` en `web/js/operaciones.js`).
+   Encima de los paquetes hay una guía de 4 pasos numerados y un ejemplo («la cabecera `ONU` está al revés: con
+   ESPEJO se lee UNO, va en el puesto 1»). Cuando una lectura da un número, el paquete lo confirma con un ✔ y dice
+   en qué puesto va; si no, sugiere probar otro formato.
 2. **Vigenère** con una clave que obtienen respondiendo a una pregunta de historia del espacio (una sola palabra).
    Hay **10 variantes** (en `reto2_generador.py`): cada grupo recibe al azar una pregunta y su propia instrucción final,
    así que la contraseña de un grupo no sirve a otro. La clave ignora tildes, números y espacios (`Júpiter`, `Apolo 11` valen).
