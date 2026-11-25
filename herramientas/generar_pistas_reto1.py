@@ -8,7 +8,10 @@ Después: python construir_web.py reto1
 1. Recorta cada foto de recursos/imagenes/reto1_fotos/ a la proporción de Robot 36 (320×240) sin deformarla. El
    recorte vertical (ARRIBA, fracción de lo que sobra que se quita por arriba) está elegido a mano para que lo
    importante quede por encima de la franja de la pregunta: compruébalo en generado/reto1/pista_<letra>_imagen.png.
-2. Pone la pregunta en una franja oscura abajo, en letra grande y blanca (se lee bien tras decodificarla).
+2. Pone la pregunta en una franja oscura abajo, en letra grande y blanca (se lee bien tras decodificarla), y el
+   **código de recepción** de la foto en una placa arriba a la derecha. La web lo pide para pasar de la fase de
+   recepción y lo junta con el nombre para abrir la recompensa: sin decodificar la imagen no se puede acertar
+   probando nombres. Los códigos están en CODIGOS (construir_web.py los importa; no van en claro a la web).
 3. Codifica el audio SSTV Robot 36 (unos 36 s) a 11 025 Hz en generado/reto1/pista_<letra>_11k.wav.
 4. Lo decodifica y compara con la imagen (error medio por canal < 5/255). Guarda la decodificada en
    generado/reto1/comprobacion_pista_<letra>.png.
@@ -26,7 +29,10 @@ RAIZ = Path(__file__).resolve().parent.parent
 FOTOS = RAIZ / "recursos" / "imagenes" / "reto1_fotos"
 SALIDA = RAIZ / "generado" / "reto1"
 PREGUNTA = "¿Quién hizo esta fotografía?"
-FUENTES = ["C:/Windows/Fonts/segoeuib.ttf", "C:/Windows/Fonts/arialbd.ttf", "DejaVuSans-Bold.ttf"]
+# Fuentes de la propia web (iguales en cualquier PC): Inter para la pregunta y JetBrains Mono para el código
+FUENTES_WEB = RAIZ / "web" / "assets" / "fonts"
+FUENTE_TEXTO = FUENTES_WEB / "inter-latin.woff2"
+FUENTE_CODIGO = FUENTES_WEB / "jetbrains-mono-latin.woff2"
 
 # letra: (archivo, ARRIBA). Fotos de la NASA, dominio público (ver recursos/imagenes/reto1_fotos/CREDITOS.txt)
 VARIANTES = {
@@ -38,18 +44,36 @@ VARIANTES = {
 }
 ALTO_FRANJA = 50
 
-
-def fuente(tam):
-    for f in FUENTES:
-        try:
-            return ImageFont.truetype(f, tam)
-        except OSError:
-            continue
-    return ImageFont.load_default()
+# Código de recepción de cada foto: palabra + dos cifras, sin 0/O ni 1/I para que no se confundan al leerlo.
+# El guion es opcional al escribirlo (la respuesta se normaliza a letras y números).
+CODIGOS = {"a": "LYRA-38", "b": "VEGA-52", "c": "ORION-67", "d": "DRACO-74", "e": "ATLAS-29"}
 
 
-def preparar(archivo, arriba):
-    """Recorte a 320×240 (Robot 36) y franja con la pregunta."""
+def fuente(tam, archivo=FUENTE_TEXTO):
+    """La fuente en negrita (las de la web son variables: se elige el estilo Bold)."""
+    letra = ImageFont.truetype(str(archivo), tam)
+    try:
+        letra.set_variation_by_name("Bold")
+    except (OSError, ValueError):
+        pass
+    return letra
+
+
+def placa_codigo(d, codigo, W):
+    """Placa oscura arriba a la derecha con el código de recepción, en letra grande para que se lea con ruido."""
+    rotulo, letra = fuente(11), fuente(22, FUENTE_CODIGO)
+    caja_r = d.textbbox((0, 0), "CÓDIGO DE RECEPCIÓN", font=rotulo)
+    caja_c = d.textbbox((0, 0), codigo, font=letra)
+    ancho = max(caja_r[2] - caja_r[0], caja_c[2] - caja_c[0]) + 16
+    x0, y0, x1, y1 = W - ancho - 6, 6, W - 6, 6 + 50
+    d.rectangle((x0, y0, x1, y1), fill=(6, 9, 16, 225), outline=(251, 191, 36, 255), width=2)
+    d.text((x0 + 8 - caja_r[0], y0 + 6 - caja_r[1]), "CÓDIGO DE RECEPCIÓN", font=rotulo, fill=(251, 191, 36, 255))
+    d.text((x0 + (x1 - x0 - (caja_c[2] - caja_c[0])) / 2 - caja_c[0], y0 + 22 - caja_c[1]), codigo, font=letra,
+           fill=(250, 250, 250, 255))
+
+
+def preparar(archivo, arriba, codigo):
+    """Recorte a 320×240 (Robot 36), franja con la pregunta y placa con el código de recepción."""
     foto = Image.open(FOTOS / archivo).convert("RGB")
     W, H = sstv.ANCHO, sstv.ALTO
     proporcion = W / H
@@ -75,13 +99,14 @@ def preparar(archivo, arriba):
     x = (W - (caja[2] - caja[0])) / 2 - caja[0]
     y = H - ALTO_FRANJA + (ALTO_FRANJA - (caja[3] - caja[1])) / 2 - caja[1]
     d.text((x, y), PREGUNTA, font=letra, fill=(250, 250, 250, 255))
+    placa_codigo(d, codigo, W)
     return Image.alpha_composite(img.convert("RGBA"), capa).convert("RGB")
 
 
 def main():
     SALIDA.mkdir(parents=True, exist_ok=True)
     for clave, (archivo, arriba) in VARIANTES.items():
-        img = preparar(archivo, arriba)
+        img = preparar(archivo, arriba, CODIGOS[clave])
         img.save(SALIDA / f"pista_{clave}_imagen.png")
         wav = SALIDA / f"pista_{clave}_11k.wav"
         sstv.codificar(img, str(wav))

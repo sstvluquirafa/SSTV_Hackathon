@@ -43,7 +43,7 @@
   const variante = () => VARIANTES[estado().variante] || VARIANTES[0];
   // Las fases del plan de vuelo, con la orden que se da en cada una
   const FASES = [
-    { nombre: "Recepción", orden: "Pulsad <b>RECIBIR TRANSMISIÓN</b> y decodificad la imagen con GranaSAT SSTV." },
+    { nombre: "Recepción", orden: "Pulsad <b>RECIBIR TRANSMISIÓN</b>, decodificad la imagen con GranaSAT SSTV y escribid su <b>código de recepción</b>." },
     { nombre: "Identificación", orden: "Escribid quién responde a la pregunta de la imagen y pulsad <b>COMPROBAR</b>." },
     { nombre: "Reconstrucción", orden: "Reconstruid la fotografía: pulsad una pieza junto al hueco o usad las flechas del teclado." },
     { nombre: "Entrega", orden: "Pulsad <b>EMITIR PIEZA</b>, decodificadla con GranaSAT SSTV y guardad la imagen para montar el QR." },
@@ -64,10 +64,10 @@
       <span class="r1-display" id="${id}" role="img" aria-label="${texto}">${App.segmentos(texto)}</span></div>`;
 
   // ---------- Fases: cuál toca, cuál se ve ----------
-  /** Fases terminadas: Recepción (transmisión oída o descargada), Identificación, Reconstrucción y Entrega. */
+  /** Fases terminadas: Recepción (código de la imagen escrito), Identificación, Reconstrucción y Entrega. */
   function hechas() {
     const e = estado();
-    return [!!(e.recibida || e.llave), !!e.llave, !!e.completado, !!e.fragmentoRecibido];
+    return [!!(e.codigo || e.llave), !!e.llave, !!e.completado, !!e.fragmentoRecibido];
   }
   /** La fase que toca (0–3); con todo hecho, la de Entrega. */
   const faseActual = () => { const i = hechas().indexOf(false); return i === -1 ? 3 : i; };
@@ -107,11 +107,15 @@
             <div class="r1-lista">
               <p class="r1-lista-tit">Antes de recibir</p>
               <ol>
-                <li>Abrid GranaSAT SSTV con la entrada de audio <b>CABLE Output</b>.</li>
-                <li>Comprobad que el sonido del PC sale por <b>CABLE Input (VB-Audio)</b>.</li>
-                <li>Pulsad <b>RECIBIR TRANSMISIÓN</b> y esperad unos 40 segundos sin tocar nada: la imagen aparece línea a línea.</li>
-                <li>Leed con atención la pregunta que viene en la imagen.</li>
+                <li>Abrid GranaSAT SSTV con la entrada <b>CABLE Output</b> (el PC debe sonar por <b>CABLE Input</b>).</li>
+                <li>Pulsad <b>RECIBIR TRANSMISIÓN</b> y esperad unos 40 segundos sin tocar nada.</li>
+                <li>Buscad el <b>código de recepción</b> arriba a la derecha de la imagen y escribidlo aquí.</li>
               </ol>
+              <form class="r1-codigo" id="r1-codigo-form" autocomplete="off">
+                <input class="r1-entrada r1-entrada-codigo" id="r1-codigo" placeholder="Código de la imagen" aria-label="Código de recepción" spellcheck="false">
+                <button class="r1-boton r1-boton-principal" id="r1-codigo-ok" type="submit">Comprobar</button>
+                <p class="r1-codigo-motivo" id="r1-codigo-motivo" role="status"></p>
+              </form>
             </div>
           </div>
           <div class="r1-mural-fase r1-m-identificacion" data-fase="1" hidden>
@@ -141,8 +145,6 @@
         <section class="r1-puesto" aria-label="Puesto del equipo">
           <div class="r1-puesto-fase r1-p-recepcion" data-fase="0">
             <div class="r1-mandos" id="r1-mandos-pista"><p class="r1-motivo">Cargando la transmisión…</p></div>
-            <div class="r1-extra"><button class="r1-boton r1-boton-sec" id="r1-ya" type="button" disabled>Ya tenemos la imagen</button>
-              <span class="r1-motivo" id="r1-ya-motivo">Disponible al empezar la recepción</span></div>
           </div>
           <div class="r1-puesto-fase r1-p-identificacion" data-fase="1" hidden>
             <div class="r1-intentos"><span class="r1-rotulo">Intentos</span><span class="r1-luces" id="r1-intentos" aria-hidden="true"></span><span class="r1-motivo" id="r1-intentos-texto"></span></div>
@@ -163,11 +165,12 @@
 
     $$(".r1-fase", el).forEach((b) => b.addEventListener("click", () => mostrarFase(Number(b.dataset.fase))));
     $("#r1-form").addEventListener("submit", (ev) => { ev.preventDefault(); comprobar(); });
-    $("#r1-ya").addEventListener("click", () => { marcar("recibida"); });
+    $("#r1-codigo-form").addEventListener("submit", (ev) => { ev.preventDefault(); comprobarCodigo(); });
     faseVista = faseActual();
     mostrarFase(faseVista);
     pintarPistas();
     pintarRespuesta();
+    pintarCodigo();
     pintarReloj();
     App.cadaSegundo(() => { pintarRespuesta(); pintarReloj(); App.comprobarBloqueo(ID); });
     App.comprobarBloqueo(ID);
@@ -240,15 +243,43 @@
       const audio = App.reproductor(caja, url, "pista_reto1.wav", "pista_reto1.wav", {
         tema: "control-mision", mandos: $("#r1-mandos-pista"), textos: { reproducir: "Recibir transmisión", detener: "Detener" },
       });
-      audio.addEventListener("play", () => { $("#r1-ya").disabled = !!estado().recibida || !!estado().llave; $("#r1-ya-motivo").textContent = ""; });
-      audio.addEventListener("ended", () => marcar("recibida"));
-      const bajar = $("#r1-mandos-pista a[download]");
-      if (bajar) bajar.addEventListener("click", () => marcar("recibida"));
-      if (estado().recibida || estado().llave) { $("#r1-ya").hidden = true; $("#r1-ya-motivo").textContent = ""; }
     } catch (e) {
       caja.innerHTML = `<p class="r1-cargando">No se ha podido cargar la transmisión. Avisad a la organización.</p>`;
       $("#r1-mandos-pista").innerHTML = "";
     }
+  }
+
+  /** El código de la imagen decodificada: abre solo su dato (no la llave del reto). Sin penalización. */
+  async function comprobarCodigo() {
+    const input = $("#r1-codigo"), motivo = $("#r1-codigo-motivo");
+    if (estado().codigo || estado().llave) return;
+    if (!Cripto.normalizar(input.value)) { input.focus(); return; }
+    $("#r1-codigo-ok").disabled = true;
+    motivo.textContent = "Comprobando…";
+    const ll = window.DATOS.reto1_llaves;
+    const ok = await Cripto.probar({ sal: ll.sal, iteraciones: ll.iteraciones, grupos: ll.datos }, input.value,
+      estado().variante || 0).catch(() => null);
+    $("#r1-codigo-ok").disabled = false;
+    if (ok) {
+      Sonido.exito();
+      motivo.textContent = "✔ Código correcto. ¡Imagen recibida!";
+      Progreso.anotar("Reto 1: código de recepción correcto.");
+      const codigo = Cripto.normalizar(input.value);
+      setTimeout(() => {
+        const seguir = faseVista === faseActual();
+        Progreso.cambiar(ID, (r) => { r.codigo = codigo; });
+        pintarCodigo();
+        if (seguir) mostrarFase(faseActual()); else pintarFases();
+      }, 900);
+    } else {
+      Sonido.error();
+      motivo.textContent = "Ese no es el código de vuestra imagen. Copiadlo de la placa de arriba a la derecha.";
+    }
+  }
+  function pintarCodigo() {
+    const hecho = !!(estado().codigo || estado().llave);
+    $("#r1-codigo").disabled = $("#r1-codigo-ok").disabled = hecho;
+    if (hecho) { $("#r1-codigo").value = ""; $("#r1-codigo").placeholder = "Código correcto"; $("#r1-codigo-motivo").textContent = "✔ Imagen recibida."; }
   }
 
   // ---------- Fase 2: identificación ----------
@@ -315,7 +346,8 @@
     $("#r1-comprobar").disabled = true;
     $("#r1-mensaje").textContent = "Comprobando…";
     // Solo vale la respuesta de la foto de este grupo
-    const llave = await Cripto.probar(window.DATOS.reto1_llaves, input.value, estado().variante || 0).catch(() => null);
+    // La respuesta es «código de recepción + nombre»: sin la imagen decodificada no se puede acertar probando nombres
+    const llave = await Cripto.probar(window.DATOS.reto1_llaves, `${e.codigo || ""} ${input.value}`, estado().variante || 0).catch(() => null);
     $("#r1-comprobar").disabled = false;
     if (llave) {
       Sonido.exito();
@@ -324,7 +356,6 @@
       pintarRespuesta();
       pintarPistas();
       pintarFases();
-      $("#r1-ya").hidden = true;
       setTimeout(() => { if (faseVista === 1) mostrarFase(faseActual()); else pintarFases(); }, 1200);
     } else {
       Sonido.error();

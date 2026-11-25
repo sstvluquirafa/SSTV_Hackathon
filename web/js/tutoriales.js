@@ -36,8 +36,8 @@
       etiqueta: "Cómo funciona",
       titulo: "Mensaje desde 1969",
       cuerpo: pasos([
-        ["Recibid la transmisión.", "Pulsad para emitirla y decodificadla con GranaSAT SSTV: aparecerá una fotografía histórica."],
-        ["Identificad la foto.", "Responded a la pregunta que acompaña a la imagen. Fijaos bien en los detalles."],
+        ["Recibid la transmisión.", "Pulsad para emitirla y decodificadla con GranaSAT SSTV: aparecerá una fotografía histórica. Escribid el <b>código de recepción</b> que viene arriba a la derecha."],
+        ["Identificad la foto.", "Responded a la pregunta que acompaña a la imagen. La web os dice quiénes iban en la misión: el que hizo la foto no sale en ella."],
         ["Reconstruid la imagen.", "Se abrirá un puzle de piezas deslizantes: ordenadlo moviendo las piezas hacia el hueco."],
       ]) + final(1),
     }),

@@ -234,6 +234,13 @@ body[data-vista="reto1"] .chip-verde { color: #8fd18a; }
 .r1-puesto .r1-mandos > .r1-motivo { grid-area: play; text-align: center; }
 .r1-extra { grid-area: extra; justify-self: end; display: grid; justify-items: end; gap: 4px; text-align: right; }
 .r1-extra .r1-motivo:empty { display: none; }
+/* Recepción: el código de la imagen, en la pantalla mural bajo los pasos */
+.r1-codigo { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 10px; }
+.r1-entrada-codigo { flex: 1 1 0; width: 0; min-width: 0; height: 52px; font-size: 22px; text-transform: uppercase; }
+.r1-entrada-codigo::placeholder { text-transform: none; font-size: 17px; }
+.r1-codigo .r1-boton { height: 52px; }
+.r1-codigo-motivo { flex-basis: 100%; margin: 0; font-size: 14px; line-height: 1.35; color: var(--r1-ambar-claro); }
+.r1-codigo-motivo:empty { display: none; }
 /* Identificación: intentos | respuesta | pista */
 .r1-intentos { display: grid; justify-items: start; gap: 6px; }
 .r1-respuesta { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 14px; }

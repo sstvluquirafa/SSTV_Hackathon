@@ -219,17 +219,22 @@ las siguientes), una sola **orden** con lo que toca, la **pantalla mural** con l
 teletipo de respuestas, mesa de luz del puzle, entrega) y el **puesto del equipo** con solo los mandos de esa fase: la
 acción principal grande e iluminada en ámbar en el centro («RECIBIR TRANSMISIÓN», «COMPROBAR», «EMITIR PIEZA») y las
 pistas como pulsadores rojos con tapa. Reloj de misión y displays de 7 segmentos (SVG). Cabe sin scroll a 1366×768
-(también con la ventana del navegador). Ningún rótulo nombra la misión ni a su tripulación: no pueden insinuar la
-respuesta. Fuentes: Barlow Condensed, IBM Plex Sans e IBM Plex Mono (en `web/assets/fonts/`).
+(también con la ventana del navegador). Ningún rótulo nombra la misión (es la respuesta de una pregunta del reto 2). Fuentes: Barlow Condensed, IBM Plex Sans e IBM Plex Mono (en `web/assets/fonts/`).
 
 1. **Pista SSTV con variantes** (`especificaciones/reto1_variantes.md`): a cada grupo le toca al azar una de cinco
    fotos históricas de la NASA (dominio público, en `recursos/imagenes/reto1_fotos/`), todas con «¿Quién hizo esta
-   fotografía?» en una franja oscura. En todas, el fotógrafo no sale en la foto y hay que razonar quién sostenía la
+   fotografía?» en una franja oscura y una placa arriba a la derecha con su **código de recepción** (`LYRA-38`,
+   `VEGA-52`…, en `CODIGOS` del generador). En todas, el fotógrafo no sale en la foto y hay que razonar quién sostenía la
    cámara. Las genera `herramientas/generar_pistas_reto1.py` (recorte a 320×240, franja con la pregunta, Robot 36 a
    11 025 Hz y comprobación de ida y vuelta). La web solo carga la pista de su grupo (`reto1_pista_<letra>.js`).
    Los grupos que ya jugaban con la foto única conservan la de Aldrin (variante a).
+   **Fase de recepción:** para pasar a identificación hay que escribir el código de la imagen decodificada (se
+   comprueba con una llave aparte, `comprobaciones` en `construir_web.py`, sin penalización por fallo). Oír o
+   descargar el audio ya no basta.
 2. Respuesta: quien hizo la foto (en `construir_web.py`, un grupo de respuestas por foto, como las variantes del
-   reto 2): solo la de su foto abre el reto. En la fase de identificación se ven siempre los **datos de la foto**
+   reto 2): solo la de su foto abre el reto. La llave se deriva de **«código de recepción + nombre»** (la web junta
+   el código ya comprobado con lo que escriben), así que sin decodificar la imagen no se acierta probando los nombres
+   de la tripulación, ni siquiera con F12. En la fase de identificación se ven siempre los **datos de la foto**
    (dónde y cuándo) y la **lista de astronautas de la misión con su papel**, junto a la idea clave «el que hizo la
    foto no sale en ella», para que puedan razonarlo por descarte o investigarlo en internet. Dos pistas por
    foto (bloquean 30 s y 60 s), en `web/js/reto1.js`: la primera ayuda a razonar quién falta en la foto y la segunda da

@@ -38,6 +38,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from medir_fotos_puzle import recortar_3x2, medir      # noqa: E402
 from reto2_generador import VARIANTES, contrasena as contrasena_reto2  # noqa: E402
 from generar_baliza_reto3 import PALABRA as PALABRA_BALIZA  # noqa: E402
+from generar_pistas_reto1 import CODIGOS as CODIGOS_RETO1  # noqa: E402
 
 Image.MAX_IMAGE_PIXELS = None
 RAIZ = Path(__file__).resolve().parent.parent
@@ -52,15 +53,20 @@ ITERACIONES = 150_000          # PBKDF2: lento para probar respuestas a lo bruto
 # (especificaciones/reto1_variantes.md); en el reto 2 cada variante (pregunta) tiene su propia contraseña.
 # En los dos, la respuesta de otra variante no abre nada.
 PISTAS_RETO1 = "abcde"         # generado/reto1/pista_<letra>_11k.wav (herramientas/generar_pistas_reto1.py)
+# Reto 1: la respuesta es «código de recepción + nombre». El código solo se ve en la imagen SSTV decodificada
+# (herramientas/generar_pistas_reto1.py), así que no se puede acertar probando nombres sin recibirla.
+NOMBRES_RETO1 = [  # el orden es el de PISTAS_RETO1: ¿quién hizo esta fotografía?
+    ["neil armstrong", "armstrong", "neil alden armstrong", "neil amstrong", "amstrong"],                  # a · Aldrin
+    ["michael collins", "mike collins", "collins", "michael colins", "colins"],                           # b · módulo lunar
+    ["james mcdivitt", "jim mcdivitt", "mcdivitt", "james mc divitt", "mc divitt", "james mcdivit", "mcdivit"],  # c · Ed White
+    ["william anders", "bill anders", "anders", "william andres"],                                         # d · Tierra sobre la Luna
+    ["harrison schmitt", "jack schmitt", "schmitt", "harrison smith", "harrison schmit", "schmit"],        # e · Cernan
+]
 RETOS = {
     "reto1": {
-        "grupos": [  # el orden es el de PISTAS_RETO1: ¿quién hizo esta fotografía?
-            ["neil armstrong", "armstrong", "neil alden armstrong", "neil amstrong", "amstrong"],                  # a · Aldrin
-            ["michael collins", "mike collins", "collins", "michael colins", "colins"],                           # b · módulo lunar
-            ["james mcdivitt", "jim mcdivitt", "mcdivitt", "james mc divitt", "mc divitt", "james mcdivit", "mcdivit"],  # c · Ed White
-            ["william anders", "bill anders", "anders", "william andres"],                                         # d · Tierra sobre la Luna
-            ["harrison schmitt", "jack schmitt", "schmitt", "harrison smith", "harrison schmit", "schmit"],        # e · Cernan
-        ],
+        "grupos": [[f"{CODIGOS_RETO1[letra]} {n}" for n in nombres] for letra, nombres in zip(PISTAS_RETO1, NOMBRES_RETO1)],
+        # Fase de recepción: el código de cada foto abre solo su dato (no la llave del reto)
+        "comprobaciones": [[CODIGOS_RETO1[letra]] for letra in PISTAS_RETO1],
         "archivos": {
             "audio": (RAIZ / "generado" / "qr" / "pieza_1.wav", "audio/wav"),
         },
