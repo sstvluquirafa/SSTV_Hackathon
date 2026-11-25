@@ -279,41 +279,68 @@ respuesta. Fuentes: Barlow Condensed, IBM Plex Sans e IBM Plex Mono (en `web/ass
 
 ## Reto 2 · "Telemetría interceptada" (duración objetivo: ~15 min)
 
-**Mecánica:** el alumno recibe una cadena cifrada aleatoria y la descifra en un mini-CyberChef integrado en la web.
+**Mecánica (versión 3):** el alumno recibe una transmisión partida en paquetes, la ordena, la descifra en un
+mini-CyberChef integrado en la web y resuelve la instrucción final con una tabla de telemetría.
 
-1. **Vigenère** con una clave que obtienen respondiendo a una pregunta de historia del espacio (una sola palabra).
-   Hay **10 variantes** (en `reto2_generador.py`): cada grupo recibe al azar una pregunta y su propia contraseña,
-   y la caja fuerte **solo acepta la contraseña de su grupo** (no se la pueden pasar entre grupos). Ejemplo:
-   «¿Qué misión de la NASA llevó al ser humano a la Luna en 1969?» → `APOLO` → `MACROSCOPIO-69`.
-   La clave ignora tildes, números y espacios (`Júpiter`, `Apolo 11` valen).
-2. **Dos capas más**, en una combinación sorteada. Tras cada paso hay que volver a consultar la "Chuleta del Espía".
-3. El resultado es la frase `LA CLAVE ES <CONTRASEÑA>` (una frase legible, para saber cuándo se ha acertado con César).
-   Su longitud nunca es múltiplo de 3, para que el Base64 lleve `=` y la combinación Espejo → Base64 conserve su pista.
-4. Introducen la contraseña en la caja fuerte de la web, que desbloquea el audio SSTV de su pieza del QR.
+1. **Paquetes desordenados.** La transmisión llega en **4 paquetes** desordenados. La **cabecera** de cada uno dice su
+   número de orden (`UNO`, `DOS`, `TRES`, `CUATRO`) en un formato distinto de la chuleta: Base64, Hex, **Binario**
+   (siempre sale uno), César o Espejo. Cada paquete tiene botones para probar a leer su cabecera con cada formato
+   (César con su rueda) y botones de puesto (1–4). «Unir los paquetes» comprueba el orden: si es bueno, la receta
+   empieza con la transmisión completa; si no, un aviso amable (sin penalización). El sorteo de los paquetes se hace en
+   la web (`partir`, `cabecera`, `sortearPaquetes` en `web/js/operaciones.js`).
+2. **Vigenère** con una clave que obtienen respondiendo a una pregunta de historia del espacio (una sola palabra).
+   Hay **10 variantes** (en `reto2_generador.py`): cada grupo recibe al azar una pregunta y su propia instrucción final,
+   así que la contraseña de un grupo no sirve a otro. La clave ignora tildes, números y espacios (`Júpiter`, `Apolo 11` valen).
+3. **Dos o tres capas más**, en una combinación sorteada, entre Base64, Hex, Espejo, César y **Números** (A=1 … Z=26,
+   letras con «-» y palabras con espacios). Tras cada paso hay que volver a consultar la "Chuleta del Espía".
+4. **La frase final es una instrucción**, no la contraseña: `LA CLAVE ES EL CODIGO DEL SATELITE MAS FRIO`,
+   `… CON MENOS BATERIA DE LA LISTA`, `… QUE VUELA MAS ALTO`… La web muestra desde el principio la **tabla de
+   telemetría** de 12 satélites (batería, temperatura, altitud, año de lanzamiento y masa). Cada instrucción señala un
+   satélite distinto y la contraseña es su **código** (por ejemplo `HB-39`; con o sin guion).
+5. Introducen el código en la caja fuerte de la web, que desbloquea el audio SSTV de su pieza del QR.
+
+| Variante (clave) | Instrucción final | Contraseña |
+|---|---|---|
+| APOLO | … CON MENOS BATERIA DE LA LISTA | LM-73 |
+| SPUTNIK | … CON MAS BATERIA DE LA LISTA | PN-84 |
+| GAGARIN | … MAS CALIENTE | ZT-16 |
+| HUBBLE | … MAS FRIO | HB-39 |
+| LAIKA | … QUE VUELA MAS ALTO | RV-52 |
+| MARTE | … QUE VUELA MAS BAJO | WS-07 |
+| VOYAGER | … MAS ANTIGUO DE LA LISTA | CJ-61 |
+| JÚPITER | … MAS MODERNO | TF-45 |
+| PLUTÓN | … QUE MAS PESA DE LA LISTA | YD-92 |
+| SATURNO | … QUE MENOS PESA DE LA LISTA | NK-30 |
+
+La frase y su versión en Números nunca miden un múltiplo de 3 (por eso algunas acaban en «DE LA LISTA»): así su Base64
+lleva `=` y las combinaciones Espejo → Base64 conservan su pista.
 
 **Combinaciones sorteadas** (orden en que el alumno las quita tras Vigenère). Están verificadas en `herramientas/reto2_generador.py`:
 
 | Combinación | El "clic" que tienen que hacer |
 |---|---|
 | Base64 → César | Sale texto con letras cambiadas: probar desplazamientos hasta leer español |
-| Hex → César | Igual, pero partiendo de hexadecimal |
-| Espejo → César | El `96-` al principio delata que está del revés |
-| Espejo → Base64 | El `=` aparece al **principio**: está dado la vuelta |
-| Base64 → Hex | Al quitar el Base64 aparece hexadecimal: otra capa más |
-| Hex → Espejo | Al quitar el Hex sale la frase al revés |
-| Base64 → Espejo | Igual, partiendo de Base64 |
+| Base64 → Números | Al quitar el Base64 salen números del 1 al 26 con guiones |
+| Espejo → Base64 → César | El `=` aparece al **principio**: está dado la vuelta |
+| Hex → Base64 → César | Al quitar el Hex aparece Base64: otra capa más |
+| Base64 → Espejo → César | Sale una frase al revés y con letras cambiadas |
+| Hex → Espejo → César | Igual, partiendo de hexadecimal |
+| Espejo → Base64 → Números | El `=` al principio y, dentro, números de letras |
+| Base64 → Hex → Espejo | Del Base64 sale Hex y del Hex la frase al revés |
 
 - **César con desplazamiento aleatorio** (de 1 a 25, sin el 13). La herramienta tiene un control para probar desplazamientos.
 - César siempre va en la capa interior, sobre texto legible, para que encaje con "parece español con letras cambiadas".
-- **Binario no se sortea:** solo tiene 0 y 1, Vigenère no lo cambia y la clave sobraría. Está en la herramienta y la chuleta como distractor.
+- Números siempre va dentro de Base64 (sus cifras no tienen letras y Vigenère no las cambiaría) y nunca dentro de Espejo.
+- **Binario** no se usa como capa (la cadena sería enorme y Vigenère no lo cambia): aparece en las cabeceras de los paquetes.
+- El banco descarta las cadenas en las que Vigenère apenas cambia nada (un Hex casi sin letras con la clave en la «A»).
 
-**Herramienta (mini-CyberChef, sin internet):** 6 operaciones (Vigenère, Hexadecimal, Base64, César, Binario y Espejo)
+**Herramienta (mini-CyberChef, sin internet):** 7 operaciones (Vigenère, Hexadecimal, Base64, César, Binario, Espejo y Números)
 encadenables como una receta, con la salida en directo. No indica si cada paso es correcto.
 - Vigenère igual que CyberChef: solo desplaza letras A-Z, **conserva mayúsculas y minúsculas** y la clave **solo avanza con letras**
   (si no, el Base64 se rompe). Ignora caracteres no alfabéticos en la clave (así `APOLO 11` también funciona).
 - Si una operación falla (por ejemplo, Base64 inválido), muestra un aviso amable en lugar de romperse.
 
-**Chuleta del Espía:** misma tabla que la de referencia (Base64, Hex, César, Binario, Espejo). La fila "Magic" se sustituye por pistas.
+**Chuleta del Espía:** misma tabla que la de referencia (Base64, Hex, César, Binario, Espejo) más Números (A=1 … Z=26). La fila "Magic" se sustituye por pistas.
 En la web se llama «Identificación de formatos» y está en un cajón a la derecha (pestaña «Chuleta», verde brillante;
 late cuando toca identificar el formato del último resultado). Cada formato lleva su nombre como etiqueta verde arriba.
 Pulsar **Enter** en la clave hace lo mismo que la tecla VIGENÈRE (solo si la receta está vacía).
@@ -341,8 +368,10 @@ parte siempre de la cadena interceptada), el modo «cifrar» de cada operación 
 
 **En la web:** «¿Qué tipo de código es esto?» y la «Pista de rescate» (dice la siguiente operación) son pistas:
 cada uso bloquea el reto 30 s más que el anterior (ver «Web local»).
-La web no lleva la frase: elige una de las 760 cadenas posibles (10 variantes × 76) del banco que genera `reto2_generador.py --exportar`,
-que incluye huellas SHA-256 de cada etapa para que las pistas sepan por dónde va el grupo.
+La web no lleva la frase: elige una de las ~1200 cadenas posibles (10 variantes × 8 combinaciones × desplazamientos de César)
+del banco que genera `reto2_generador.py --exportar`, que incluye huellas SHA-256 de cada etapa para que las pistas sepan
+por dónde va el grupo. Con los paquetes sin unir, la pista de rescate dice el formato de una cabecera que aún no se lee
+bien; con la frase final ya en claro, remite a la tabla de telemetría.
 
 ## Reto 3 · "La baliza" → pieza 3 del QR (duración objetivo: ~15 min)
 

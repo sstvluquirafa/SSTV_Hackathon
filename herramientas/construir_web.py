@@ -36,7 +36,7 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from medir_fotos_puzle import recortar_3x2, medir      # noqa: E402
-from reto2_generador import VARIANTES, frase            # noqa: E402
+from reto2_generador import VARIANTES, contrasena as contrasena_reto2  # noqa: E402
 from generar_baliza_reto3 import PALABRA as PALABRA_BALIZA  # noqa: E402
 
 Image.MAX_IMAGE_PIXELS = None
@@ -67,7 +67,8 @@ RETOS = {
         "fotos_puzle": RAIZ / "recursos" / "imagenes" / "puzle" / "fotos.json",
     },
     "reto2": {
-        "grupos": [[contrasena, frase(contrasena)] for _, _, contrasena in VARIANTES],
+        # La contraseña es el código del satélite que pide la instrucción final (con o sin guion: se normaliza)
+        "grupos": [[contrasena_reto2(v)] for v in range(len(VARIANTES))],
         "archivos": {
             "audio": (RAIZ / "generado" / "qr" / "pieza_2.wav", "audio/wav"),
         },

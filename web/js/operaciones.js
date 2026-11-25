@@ -87,6 +87,25 @@
 
   const espejo = (texto) => Array.from(texto).reverse().join("");
 
+  /** Números: A=1, B=2… Z=26. Las letras de una palabra van separadas por «-» y las palabras por espacios. */
+  function aNumeros(texto) {
+    return texto.toUpperCase().split(" ").map((p) => Array.from(p).map((c) => {
+      if (c < "A" || c > "Z") throw new ErrorAmable("Números solo sabe convertir letras de la A a la Z.");
+      return c.charCodeAt(0) - 64;
+    }).join("-")).join(" ");
+  }
+  function deNumeros(texto) {
+    const t = texto.trim().replace(/\s+/g, " ");
+    if (!t) return "";
+    if (!/^[0-9]+([- ][0-9]+)*$/.test(t))
+      throw new ErrorAmable("Esto no son números de letras: solo puede llevar números separados por - o por espacios.");
+    return t.split(" ").map((p) => p.split("-").map((n) => {
+      const k = Number(n);
+      if (k < 1 || k > 26) throw new ErrorAmable(`El ${n} no es ninguna letra: en este código cada letra va del 1 (A) al 26 (Z).`);
+      return String.fromCharCode(64 + k);
+    }).join("")).join(" ");
+  }
+
   // ---------- Operaciones de la receta ----------
   // modo: "descifrar" (quitar la capa) o "cifrar" (ponerla). César solo tiene desplazamiento.
   const OPERACIONES = {
@@ -96,6 +115,7 @@
     cesar: { nombre: "César", detalle: "desplazar", aplicar: (t, p) => cesar(t, Number(p.n) || 0) },
     binario: { nombre: "Binario", detalle: "0 1", aplicar: (t, p) => (p.modo === "cifrar" ? aBinario(t) : deBinario(t)) },
     espejo: { nombre: "Espejo", detalle: "al revés", aplicar: (t) => espejo(t) },
+    numeros: { nombre: "Números", detalle: "A=1 … Z=26", aplicar: (t, p) => (p.modo === "cifrar" ? aNumeros(t) : deNumeros(t)) },
   };
 
   /** Aplica la receta. Devuelve { salida, pasos: [salida de cada paso], error, pasoError }. */
@@ -118,7 +138,8 @@
 
   // ---------- Analizador de la pista "¿Qué tipo de código es esto?" ----------
   const PALABRAS = new Set(("la el los las un una unos unas de del al a en y o que es se su sus por para con sin no lo le " +
-    "mi tu este esta clave mensaje hola secreto mision codigo luna nave base estacion espacio").split(" "));
+    "mi tu este esta clave mensaje hola secreto mision codigo luna nave base estacion espacio satelite mas menos " +
+    "lista tabla uno dos tres cuatro").split(" "));
 
   /** Parte de las palabras del texto que son palabras españolas muy comunes (0 a 1). */
   function pareceEspanol(texto) {
@@ -143,11 +164,13 @@
     if (!t) return { tipo: "vacio", mensaje: "No hay texto que analizar. Pega la transmisión en la entrada." };
     if (/^[01]+$/.test(sinEsp) && sinEsp.length >= 8)
       return { tipo: "binario", mensaje: "Solo hay ceros y unos: parece <b>binario</b>." };
+    if (/^[0-9]+([- ][0-9]+)+$/.test(t) && /-/.test(t) && t.split(/[- ]/).every((n) => +n >= 1 && +n <= 26))
+      return { tipo: "numeros", mensaje: "Números del 1 al 26 unidos con guiones y separados por espacios: parecen <b>números de letras</b> (A=1, B=2…)." };
     if (/^[0-9A-Fa-f]+$/.test(sinEsp) && /[0-9]/.test(sinEsp) && sinEsp.length >= 6 && sinEsp.length % 2 === 0)
       return { tipo: "hex", mensaje: "Solo hay números y letras de la A a la F, por parejas: parece <b>hexadecimal</b>." };
     if (/^={1,2}[A-Za-z0-9+/]{6,}$/.test(sinEsp))
       return { tipo: "espejo", mensaje: "Hay un <b>=</b> al <b>principio</b>. En Base64 el relleno va al final… este texto está <b>dado la vuelta</b>." };
-    if (/^[A-Za-z0-9+/]{6,}={0,2}$/.test(sinEsp) && !/\s/.test(t) && /[0-9]/.test(sinEsp)) {
+    if (/^[A-Za-z0-9+/]{6,}={0,2}$/.test(sinEsp) && !/\s/.test(t) && (/[0-9]/.test(sinEsp) || (/[a-z]/.test(sinEsp) && /[A-Z]/.test(sinEsp) && sinEsp.length % 4 === 0))) {
       let legible = true;
       try { deBase64(sinEsp); } catch (e) { legible = false; }
       return legible
@@ -167,5 +190,64 @@
     return { tipo: "desconocido", mensaje: "Letras sin sentido que no encajan con ningún código de la chuleta. Puede ser <b>Vigenère</b> (necesita la clave) o que alguna operación de la receta sobre o tenga mal el ajuste." };
   }
 
-  raiz.Operaciones = { ErrorAmable, vigenere, cesar, aBase64, deBase64, aHex, deHex, aBinario, deBinario, espejo, OPERACIONES, cocinar, pareceEspanol, analizar };
+  // ---------- Paquetes de telemetría (primer paso del reto 2) ----------
+  // La transmisión llega partida en 4 paquetes desordenados. La cabecera de cada uno dice su número de orden escrito con
+  // letras (UNO, DOS, TRES, CUATRO), codificado en un formato de la chuleta distinto para cada paquete.
+  const NUMEROS = ["UNO", "DOS", "TRES", "CUATRO"];
+  const FORMATOS_CABECERA = ["base64", "hex", "binario", "cesar", "espejo"];
+  const N_PAQUETES = NUMEROS.length;
+
+  /** Parte la cadena en 4 trozos seguidos de longitudes parecidas (por caracteres, no por bytes). */
+  function partir(cadena, n = N_PAQUETES) {
+    const c = Array.from(cadena), trozos = [];
+    let i = 0;
+    for (let k = 0; k < n; k++) {
+      const largo = Math.floor(c.length / n) + (k < c.length % n ? 1 : 0);
+      trozos.push(c.slice(i, i + largo).join(""));
+      i += largo;
+    }
+    return trozos;
+  }
+
+  /** La cabecera del paquete con número de orden `numero` (0 = UNO) en el formato dado. */
+  function cabecera(numero, formato, desplazamiento) {
+    const palabra = NUMEROS[numero];
+    switch (formato) {
+      case "base64": return aBase64(palabra);
+      case "hex": return aHex(palabra);
+      case "binario": return aBinario(palabra);
+      case "cesar": return cesar(palabra, desplazamiento);
+      case "espejo": return espejo(palabra);
+      default: throw new Error("formato de cabecera desconocido: " + formato);
+    }
+  }
+
+  /** Sorteo de los paquetes de un grupo: orden en que se muestran (nunca el bueno), formato de cada cabecera (todos
+   *  distintos) y desplazamiento de César si lo hay. `azar` es una función como Math.random. */
+  function sortearPaquetes(azar = Math.random) {
+    const barajar = (lista) => {
+      const l = lista.slice();
+      for (let i = l.length - 1; i > 0; i--) { const j = Math.floor(azar() * (i + 1)); [l[i], l[j]] = [l[j], l[i]]; }
+      return l;
+    };
+    let orden;
+    do { orden = barajar([...Array(N_PAQUETES).keys()]); } while (orden.every((x, i) => x === i) || orden[0] === 0);
+    // El binario siempre sale (es el único sitio donde aparece); los otros tres se sortean entre los demás
+    const formatos = barajar(["binario", ...barajar(FORMATOS_CABECERA.filter((f) => f !== "binario")).slice(0, N_PAQUETES - 1)]);
+    const desplazamientos = formatos.map(() => { let n; do { n = 1 + Math.floor(azar() * 25); } while (n === 13); return n; });
+    return { orden, formatos, desplazamientos };
+  }
+
+  /** Los paquetes tal y como se muestran: [{ numero, cabecera, carga }] en el orden sorteado. */
+  function paquetes(cadena, sorteo) {
+    const trozos = partir(cadena);
+    return sorteo.orden.map((numero) => ({
+      numero, carga: trozos[numero],
+      cabecera: cabecera(numero, sorteo.formatos[numero], sorteo.desplazamientos[numero]),
+      formato: sorteo.formatos[numero],
+    }));
+  }
+
+  raiz.Operaciones = { ErrorAmable, vigenere, cesar, aBase64, deBase64, aHex, deHex, aBinario, deBinario, espejo, aNumeros, deNumeros, OPERACIONES, cocinar, pareceEspanol, analizar,
+    NUMEROS, FORMATOS_CABECERA, N_PAQUETES, partir, cabecera, sortearPaquetes, paquetes };
 })(typeof window !== "undefined" ? window : globalThis);

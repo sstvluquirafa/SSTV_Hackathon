@@ -14,7 +14,7 @@
   // Una línea por prueba, con el nombre de su tarjeta en el panel
   const RESUMEN_RETO = {
     reto1: "recibid una foto histórica por radio, averiguad quién la hizo y reconstruidla.",
-    reto2: "descifrad un mensaje del satélite capa a capa hasta encontrar la contraseña.",
+    reto2: "ordenad los paquetes de una transmisión, descifradla capa a capa y usad la telemetría para encontrar la contraseña.",
     reto3: "captad una señal de radio con el SDR y descifrad la palabra en Morse.",
     reto4: "investigad un sabotaje con las pruebas del caso y descubrid al culpable.",
   };
@@ -46,17 +46,18 @@
       titulo: "Telemetría interceptada",
       // Las capas como una cebolla: sin decir qué método lleva cada capa interior (eso es el reto)
       cuerpo: `<div class="tut-capas">
-        <p>El mensaje está cifrado en <b>capas, como una cebolla</b>. Cada capa usa <b>un solo método</b> de cifrado. Hay que
-          quitarlas <b>de una en una</b>, de fuera hacia dentro: al quitar una, aparece la siguiente.</p>
+        <p>La transmisión llega <b>partida en paquetes</b> y, una vez unida, está cifrada en <b>capas, como una cebolla</b>.
+          Cada capa usa <b>un solo método</b>. Hay que quitarlas <b>de una en una</b>, de fuera hacia dentro.</p>
         <div class="tut-cebolla" aria-hidden="true">
           <div><span>Capa 1 · Vigenère</span>
             <div><span>Capa 2 · ?</span>
               <div><span>Capa 3 · ?</span>
-                <div class="tut-cebolla-centro">Contraseña</div></div></div></div>
+                <div class="tut-cebolla-centro">Mensaje</div></div></div></div>
         </div></div>` + pasos([
+        ["Ordenad los paquetes.", "La cabecera de cada paquete dice su número en uno de los formatos de la <b>chuleta</b>. Leedla, dad a cada paquete su puesto y unidlos."],
         ["Conseguid la clave.", "Vuestra respuesta a la pregunta de historia del espacio abre la primera capa (Vigenère)."],
-        ["Quitad las capas una a una.", "Cada operación quita una capa. Buscad la forma del resultado en la <b>chuleta</b>: os dice qué método aplicar después."],
-        ["Abrid la caja fuerte.", "Cuando leáis la contraseña, escribidla en la caja. Tenéis 5 intentos."],
+        ["Quitad las capas una a una.", "Buscad la forma de cada resultado en la <b>chuleta</b>: os dice qué método aplicar después. Puede haber dos o tres capas más."],
+        ["Usad la telemetría.", "El mensaje final os dice qué buscar en la <b>tabla de telemetría</b>. Escribid en la caja fuerte el código del satélite que pide. Tenéis 5 intentos."],
       ]) + final(2),
     }),
     reto3: () => ({

@@ -1,6 +1,15 @@
 """
 Reto 2 · Telemetría interceptada — generador y verificador de cadenas.
 
+Recorrido del alumno (versión 3):
+  1. La transmisión llega partida en 4 PAQUETES desordenados. La cabecera de cada uno dice su número de orden
+     (UNO, DOS, TRES, CUATRO) codificado con un formato de la chuleta; hay que descodificarlas y ordenarlos.
+     (Los paquetes se sortean en la web: web/js/operaciones.js → partir, cabecera, sortearPaquetes.)
+  2. Vigenère con la clave de la pregunta de historia del espacio.
+  3. Dos o tres capas sorteadas (Base64, Hex, Espejo, César y Números A=1…Z=26).
+  4. El mensaje final no es la contraseña: es una INSTRUCCIÓN («LA CLAVE ES EL CODIGO DEL SATELITE MAS FRIO») que
+     se resuelve con la tabla de telemetría de la constelación que muestra la web.
+
 Sirve de referencia para la web (que hará lo mismo en JavaScript) y como batería de pruebas:
 cada combinación se cifra y luego se descifra paso a paso como lo haría el alumno.
 
@@ -18,24 +27,60 @@ import base64
 import random
 import unicodedata
 
-# --- Variantes: pregunta → clave de Vigenère (una palabra) y contraseña de la caja fuerte -------------
-# Las claves pueden llevar tildes: Vigenère las ignora (JÚPITER = JUPITER).
-# Las contraseñas son ASCII (sin tildes ni Ñ), la frase no puede medir un múltiplo de 3 (ver pruebas)
-# y siempre empieza por "LA CLAVE ES", para que
-# el alumno sepa cuándo ha acertado con César y el analizador de pistas la reconozca como español.
-VARIANTES = [
-    ("¿Qué misión de la NASA llevó al ser humano a la Luna en 1969?", "APOLO", "MACROSCOPIO-69"),
-    ("¿Cómo se llamaba el primer satélite artificial, lanzado por la URSS en 1957?", "SPUTNIK", "TELESCOPIO-57"),
-    ("¿Cuál es el apellido del primer ser humano que viajó al espacio, en 1961?", "GAGARIN", "RADIOFAROS-61"),
-    ("¿Qué telescopio espacial, lanzado en 1990, lleva el apellido de un astrónomo estadounidense?", "HUBBLE", "ASTROLABIO-90"),
-    ("¿Cómo se llamaba la perra que fue el primer animal en dar vueltas alrededor de la Tierra?", "LAIKA", "PERISCOPIO-58"),
-    ("¿Qué planeta es conocido como «el planeta rojo»?", "MARTE", "GIROSCOPIO-21"),
-    ("¿Cómo se llaman las dos sondas de la NASA lanzadas en 1977 que ya han salido del sistema solar?", "VOYAGER", "CRONOMETRO-77"),
-    ("¿Cuál es el planeta más grande del sistema solar?", "JÚPITER", "MAGNETRONES-79"),
-    ("¿Qué astro dejó de ser planeta en 2006 y pasó a ser «planeta enano»?", "PLUTÓN", "PLANISFERIO-06"),
-    ("¿Qué planeta tiene los anillos más famosos del sistema solar?", "SATURNO", "SISMOGRAFO-04"),
+# --- Tabla de telemetría (la web la muestra tal cual; no es secreta) ----------------------------------
+# Cada columna tiene un máximo y un mínimo claros y cada uno es de un satélite distinto: así cada instrucción tiene una
+# sola respuesta y cada variante una contraseña distinta. NASHIRA y ALTAIR no son la respuesta de ninguna.
+COLUMNAS = [("bateria", "Batería (%)"), ("temperatura", "Temperatura (°C)"), ("altitud", "Altitud (km)"),
+            ("lanzamiento", "Lanzamiento (año)"), ("masa", "Masa (kg)")]
+TELEMETRIA = [  # nombre, código, batería, temperatura, altitud, lanzamiento, masa
+    ("ALTAIR", "QX-28", 87, 12, 540, 2019, 180),
+    ("BELLATRIX", "LM-73", 15, 8, 610, 2017, 240),
+    ("CAPELLA", "ZT-16", 64, 41, 480, 2020, 150),
+    ("DENEB", "RV-52", 72, 19, 1210, 2016, 310),
+    ("ELNATH", "HB-39", 58, -23, 700, 2021, 95),
+    ("FOMALHAUT", "PN-84", 98, 15, 520, 2018, 210),
+    ("GACRUX", "WS-07", 44, 22, 350, 2022, 130),
+    ("HADAR", "CJ-61", 69, 5, 830, 2009, 270),
+    ("IZAR", "TF-45", 53, 28, 590, 2025, 160),
+    ("KOCHAB", "YD-92", 81, 11, 760, 2015, 420),
+    ("MIRA", "NK-30", 36, 17, 650, 2019, 12),
+    ("NASHIRA", "EG-58", 61, 25, 900, 2014, 330),
 ]
-frase = lambda contrasena: f"LA CLAVE ES {contrasena}"
+
+# --- Variantes: pregunta → clave de Vigenère (una palabra), instrucción final y su respuesta -----------
+# Las claves pueden llevar tildes: Vigenère las ignora (JÚPITER = JUPITER).
+# La instrucción: (lo que pide la frase, columna, "max" o "min"). La frase siempre empieza por "LA CLAVE ES", para
+# que el alumno sepa cuándo ha acertado con César y el analizador la reconozca como español. Su longitud y la de su
+# versión en Números no pueden ser múltiplo de 3 (si no, su Base64 no lleva «=» y Espejo → Base64 pierde la pista):
+# por eso algunas acaban en «DE LA LISTA».
+VARIANTES = [
+    ("¿Qué misión de la NASA llevó al ser humano a la Luna en 1969?", "APOLO", ("CON MENOS BATERIA DE LA LISTA", "bateria", "min")),
+    ("¿Cómo se llamaba el primer satélite artificial, lanzado por la URSS en 1957?", "SPUTNIK", ("CON MAS BATERIA DE LA LISTA", "bateria", "max")),
+    ("¿Cuál es el apellido del primer ser humano que viajó al espacio, en 1961?", "GAGARIN", ("MAS CALIENTE", "temperatura", "max")),
+    ("¿Qué telescopio espacial, lanzado en 1990, lleva el apellido de un astrónomo estadounidense?", "HUBBLE", ("MAS FRIO", "temperatura", "min")),
+    ("¿Cómo se llamaba la perra que fue el primer animal en dar vueltas alrededor de la Tierra?", "LAIKA", ("QUE VUELA MAS ALTO", "altitud", "max")),
+    ("¿Qué planeta es conocido como «el planeta rojo»?", "MARTE", ("QUE VUELA MAS BAJO", "altitud", "min")),
+    ("¿Cómo se llaman las dos sondas de la NASA lanzadas en 1977 que ya han salido del sistema solar?", "VOYAGER", ("MAS ANTIGUO DE LA LISTA", "lanzamiento", "min")),
+    ("¿Cuál es el planeta más grande del sistema solar?", "JÚPITER", ("MAS MODERNO", "lanzamiento", "max")),
+    ("¿Qué astro dejó de ser planeta en 2006 y pasó a ser «planeta enano»?", "PLUTÓN", ("QUE MAS PESA DE LA LISTA", "masa", "max")),
+    ("¿Qué planeta tiene los anillos más famosos del sistema solar?", "SATURNO", ("QUE MENOS PESA DE LA LISTA", "masa", "min")),
+]
+
+
+def instruccion(variante):
+    """La frase final que lee el alumno."""
+    return f"LA CLAVE ES EL CODIGO DEL SATELITE {VARIANTES[variante][2][0]}"
+
+
+def contrasena(variante):
+    """La respuesta: el código del satélite que cumple la instrucción, buscado en la tabla."""
+    _, columna, extremo = VARIANTES[variante][2]
+    k = 2 + [c for c, _ in COLUMNAS].index(columna)
+    fila = (max if extremo == "max" else min)(TELEMETRIA, key=lambda f: f[k])
+    return fila[1]
+
+
+frase = instruccion   # compatibilidad: frase(v) es lo que hay que leer al final
 
 
 # --- Operaciones (igual que CyberChef) -------------------------------------
@@ -78,27 +123,41 @@ a_hex = lambda s: s.encode().hex().upper()
 de_hex = lambda s: bytes.fromhex(s).decode()
 espejo = lambda s: s[::-1]
 
+
+def a_numeros(texto):
+    """A=1, B=2… Z=26: las letras de una palabra separadas por «-» y las palabras por espacios."""
+    palabras = texto.upper().split(" ")
+    assert all(c.isascii() and c.isalpha() for p in palabras for c in p), "Números solo cifra letras A-Z y espacios"
+    return " ".join("-".join(str(ord(c) - 64) for c in p) for p in palabras)
+
+
+def de_numeros(texto):
+    return " ".join("".join(chr(64 + int(n)) for n in p.split("-")) for p in texto.split(" "))
+
 # --- Combinaciones permitidas ------------------------------------------------
 # Cada una: (nombre, [capas en el orden en que el ALUMNO las quita tras Vigenère])
 # César siempre va en la capa interior (sobre texto legible), para que "parezca español con letras cambiadas".
+# Números siempre va dentro de Base64 (sus cifras no tienen letras y Vigenère no las cambiaría) y nunca dentro de
+# Espejo (las cifras al revés cambian de número). La mayoría son de tres capas.
 COMBINACIONES = [
-    ("Base64 → César",  ["base64", "cesar"]),
-    ("Hex → César",     ["hex", "cesar"]),
-    ("Espejo → César",  ["espejo", "cesar"]),
-    ("Espejo → Base64", ["espejo", "base64"]),
-    ("Base64 → Hex",    ["base64", "hex"]),
-    ("Hex → Espejo",    ["hex", "espejo"]),
-    ("Base64 → Espejo", ["base64", "espejo"]),
+    ("Base64 → César",           ["base64", "cesar"]),
+    ("Base64 → Números",         ["base64", "numeros"]),
+    ("Espejo → Base64 → César",  ["espejo", "base64", "cesar"]),
+    ("Hex → Base64 → César",     ["hex", "base64", "cesar"]),
+    ("Base64 → Espejo → César",  ["base64", "espejo", "cesar"]),
+    ("Hex → Espejo → César",     ["hex", "espejo", "cesar"]),
+    ("Espejo → Base64 → Números", ["espejo", "base64", "numeros"]),
+    ("Base64 → Hex → Espejo",    ["base64", "hex", "espejo"]),
 ]
 
-CIFRAR = {"base64": a_base64, "hex": a_hex, "espejo": espejo}
-DESCIFRAR = {"base64": de_base64, "hex": de_hex, "espejo": espejo}
+CIFRAR = {"base64": a_base64, "hex": a_hex, "espejo": espejo, "numeros": a_numeros}
+DESCIFRAR = {"base64": de_base64, "hex": de_hex, "espejo": espejo, "numeros": de_numeros}
 DESPLAZAMIENTOS = [k for k in range(1, 26) if k != 13]
 
 
 def cifrar(variante, capas, n):
-    _, clave, contrasena = VARIANTES[variante]
-    texto = frase(contrasena)
+    clave = VARIANTES[variante][1]
+    texto = instruccion(variante)
     for capa in reversed(capas):                     # se cifra de dentro hacia fuera
         texto = cesar(texto, n) if capa == "cesar" else CIFRAR[capa](texto)
     return vigenere(texto, clave)
@@ -136,15 +195,20 @@ def todas_las_cadenas():
     for v in range(len(VARIANTES)):
         for i, (_, capas) in enumerate(COMBINACIONES):
             for n in (DESPLAZAMIENTOS if "cesar" in capas else [None]):
+                cadena = cifrar(v, capas, n)
+                # Fuera las cadenas en las que Vigenère apenas cambia nada (un Hex casi sin letras con la clave en
+                # la «A»): se podrían resolver sin la clave.
+                if sum(a != b for a, b in zip(cadena, vigenere(cadena, VARIANTES[v][1], True))) < 6:
+                    continue
                 banco.append({"variante": v, "combinacion": i, "capas": capas, "desplazamiento_cesar": n,
-                              "cadena": cifrar(v, capas, n)})
+                              "cadena": cadena})
     return banco
 
 
 def vectores_de_prueba(rng):
     """Entradas y salidas de cada operación, para comprobar que la versión JS hace lo mismo."""
-    textos = [frase(c) for _, _, c in VARIANTES[:3]] + ["Hola, Mundo 123!", "aBcXyZ-09 +/=",
-                                                       a_base64(frase("X-1")), a_hex(frase("X-1"))]
+    textos = [instruccion(v) for v in range(3)] + ["Hola, Mundo 123!", "aBcXyZ-09 +/=",
+                                                  a_base64(instruccion(3)), a_hex(instruccion(4))]
     textos += ["".join(rng.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 +/=-")
                        for _ in range(rng.randint(5, 40))) for _ in range(30)]
     claves = ["APOLO", "apolo 11", "Luna", "K", "Júpiter", "plutón", "Ñandú 3"]
@@ -153,6 +217,8 @@ def vectores_de_prueba(rng):
         v.append({"op": "base64", "entrada": t, "salida": a_base64(t)})
         v.append({"op": "hex", "entrada": t, "salida": a_hex(t)})
         v.append({"op": "espejo", "entrada": t, "salida": espejo(t)})
+        if all(c.isascii() and (c.isalpha() or c == " ") for c in t) and "  " not in t and t.strip() == t:
+            v.append({"op": "numeros", "entrada": t, "salida": a_numeros(t)})
         for n in (1, 7, 13, 25):
             v.append({"op": "cesar", "entrada": t, "n": n, "salida": cesar(t, n)})
         for c in claves:
@@ -170,7 +236,7 @@ def exportar(raiz):
     banco = todas_las_cadenas()
     for r in banco:                                   # el banco también se comprueba
         pasos = resolver(r)
-        assert pasos[-1][1] == frase(VARIANTES[r["variante"]][2])
+        assert pasos[-1][1] == instruccion(r["variante"])
         # Huella de cada etapa: la web la compara con la salida del alumno para saber por dónde va
         # (y dar pistas) sin llevar ningún texto intermedio en claro.
         r["etapas"] = [hashlib.sha256(t.encode()).hexdigest()[:16] for _, t in pasos]
@@ -179,6 +245,10 @@ def exportar(raiz):
         # Para la web: la pregunta y, para la pista de rescate, cuántas letras tiene la clave y por cuál empieza
         "variantes": [{"pregunta": p, "letras": len(letras_clave(c)), "inicial": letras_clave(c)[0]}
                       for p, c, _ in VARIANTES],
+        # La tabla de telemetría que se ve en la web (no dice qué fila es la respuesta de cada grupo)
+        "telemetria": {"columnas": [{"id": c, "nombre": n} for c, n in COLUMNAS],
+                       "filas": [{"nombre": f[0], "codigo": f[1], **{c: f[2 + i] for i, (c, _) in enumerate(COLUMNAS)}}
+                                 for f in TELEMETRIA]},
         "banco": banco,
     }
     (raiz / "web" / "assets" / "data").mkdir(parents=True, exist_ok=True)
@@ -189,7 +259,8 @@ def exportar(raiz):
         encoding="utf-8")
     (raiz / "generado" / "reto2").mkdir(parents=True, exist_ok=True)
     (raiz / "generado" / "reto2" / "vectores_prueba.json").write_text(
-        json.dumps({"variantes": [{"clave": c, "frase": frase(k)} for _, c, k in VARIANTES],
+        json.dumps({"variantes": [{"clave": VARIANTES[v][1], "frase": instruccion(v), "contrasena": contrasena(v)}
+                                  for v in range(len(VARIANTES))],
                     "vectores": vectores_de_prueba(random.Random(69))},
                    ensure_ascii=False, indent=1), encoding="utf-8")
     return len(banco)
@@ -203,19 +274,25 @@ if __name__ == "__main__":
         print(f"Banco de {n} cadenas en web/assets/data/reto2_cadenas.js y vectores en generado/reto2/.")
         sys.exit()
     rng = random.Random(2026)
-    # 0) Las claves y contraseñas son válidas
-    for p, c, k in VARIANTES:
+    # 0) Claves, instrucciones y respuestas válidas
+    for v, (p, c, _) in enumerate(VARIANTES):
         assert len(letras_clave(c)) >= 5, c
-        assert k.isascii() and k == k.upper(), k
-        # Si la frase tiene un nº de caracteres múltiplo de 3, su Base64 no lleva "=" de relleno
-        # y la combinación Espejo → Base64 pierde su pista ("el = aparece al principio").
-        assert len(frase(k)) % 3 != 0, f"{k}: la frase no puede tener un nº de caracteres múltiplo de 3"
-    assert len({k for _, _, k in VARIANTES}) == len(VARIANTES), "contraseñas repetidas"
+        f = instruccion(v)
+        # Si la frase (o su versión en Números) mide un múltiplo de 3, su Base64 no lleva «=» de relleno
+        # y las combinaciones con Espejo → Base64 pierden su pista («el = aparece al principio»).
+        assert len(f) % 3 and len(a_numeros(f)) % 3, f"{f}: la frase y su versión en Números no pueden medir un múltiplo de 3"
+        assert de_numeros(a_numeros(f)) == f
+    respuestas = [contrasena(v) for v in range(len(VARIANTES))]
+    assert len(set(respuestas)) == len(VARIANTES), "dos variantes con la misma contraseña"
+    for _, columna, extremo in (x[2] for x in VARIANTES):     # cada extremo es único (sin empates)
+        k = 2 + [c for c, _ in COLUMNAS].index(columna)
+        valores = sorted(f[k] for f in TELEMETRIA)
+        assert (valores[-1] != valores[-2]) if extremo == "max" else (valores[0] != valores[1]), columna
     # 1) Cada combinación funciona en cada variante y la clave es imprescindible
     for _ in range(700):
         r = generar(random.Random(rng.random()))
         pasos = resolver(r)
-        assert pasos[-1][1] == frase(VARIANTES[r["variante"]][2]), (r, pasos)
+        assert pasos[-1][1] == instruccion(r["variante"]), (r, pasos)
         assert vigenere(r["cadena"], VARIANTES[r["variante"]][1], True) != r["cadena"], "Vigenère no cambia nada"
     # Las tildes de la clave no cambian nada
     assert vigenere("HOLA", "Júpiter") == vigenere("HOLA", "JUPITER")
@@ -226,4 +303,7 @@ if __name__ == "__main__":
         print(f"\n## {nombre}\n  alumno recibe: {r['cadena']}")
         for paso, salida in resolver(r):
             print(f"  {paso:<15} -> {salida}")
+    print("\n## Instrucciones y contraseñas")
+    for v in range(len(VARIANTES)):
+        print(f"  {VARIANTES[v][1]:<8} {instruccion(v):<62} -> {contrasena(v)}")
     print(f"\nTodas las combinaciones verificadas ({len(VARIANTES)} variantes, 700 cadenas aleatorias).")

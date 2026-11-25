@@ -87,6 +87,51 @@ body.r2-desbloqueo .r2-vineta { opacity: 0.35; transition: opacity 200ms; }
 .r2-cadena-meta { margin-top: 14px; font-size: 14px; color: var(--r2-mute); display: flex; gap: 18px; flex-wrap: wrap; }
 .r2-cadena-meta span::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--r2-scramble); box-shadow: 0 0 8px var(--r2-scramble); margin-right: 8px; vertical-align: 2px; }
 .r2-ruido { color: var(--r2-scramble); text-shadow: 0 0 10px rgba(61, 250, 122, 0.55); }
+.r2-cadena.larga { font-size: clamp(15px, 1.7vw, 21px); line-height: 1.35; }
+
+/* ---------- Paso 1: los paquetes desordenados ---------- */
+.r2-intro b { color: var(--r2-ink); font-weight: 700; }
+.r2-banda-txt .r2-intro { max-width: 90ch; }
+.r2-paquetes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 6px; }
+.r2-paquete {
+  display: grid; align-content: start; gap: 6px; min-width: 0; padding: 12px; border: 1px solid var(--r2-line-2);
+  border-radius: 10px; background: rgba(8, 13, 11, 0.94);
+}
+.r2-paquete-cab { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.r2-paquete-letra { font: 700 16px var(--r2-ui); color: var(--r2-ink); }
+.r2-paquete-rotulo { margin: 4px 0 0; font: 500 11px var(--r2-ui); letter-spacing: 0.12em; text-transform: uppercase; color: var(--r2-mute); }
+.r2-paquete-cabecera { margin: 0; font: 500 16px/1.35 var(--r2-mono); color: var(--r2-scramble); word-break: break-all; text-shadow: 0 0 10px rgba(61, 250, 122, 0.35); }
+.r2-paquete-carga { margin: 0; font: 400 13px/1.4 var(--r2-mono); color: var(--r2-code); word-break: break-all; opacity: 0.85; }
+.r2-paquete-formatos { display: flex; flex-wrap: wrap; gap: 4px; }
+.r2-mini, .r2-puesto {
+  min-height: 30px; padding: 0 7px; border: 1px solid #2f4238; border-radius: 5px; background: #0c1410; color: var(--r2-soft);
+  font: 600 11px var(--r2-mono); letter-spacing: 0.04em; cursor: pointer;
+}
+.r2-mini:hover:not(:disabled), .r2-puesto:hover:not(:disabled) { border-color: #4b6656; color: var(--r2-ink); }
+.r2-mini.activa, .r2-puesto.activa { border-color: var(--r2-scramble); color: var(--r2-code); box-shadow: 0 0 8px rgba(61, 250, 122, 0.3); }
+.r2-mini:disabled, .r2-puesto:disabled { opacity: 0.45; cursor: not-allowed; }
+.r2-paquete-lectura { margin: 0; min-height: 22px; font: 600 15px/1.35 var(--r2-mono); color: var(--r2-code); word-break: break-word; }
+.r2-paquete-lectura.aviso { font: 400 13px/1.35 var(--r2-ui); color: var(--r2-warn); }
+.r2-puestos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.r2-puesto { font-size: 15px; min-height: 34px; }
+.r2-rueda-mini { display: inline-flex; align-items: center; gap: 6px; }
+.r2-unir { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 14px; }
+.r2-unir .r2-mensaje { margin: 0; }
+.r2-paquetes.r2-toca { border-radius: 12px; box-shadow: 0 0 0 1px rgba(61, 250, 122, 0.35), 0 0 18px rgba(61, 250, 122, 0.12); }
+@media (max-width: 1100px) { .r2-paquetes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---------- Tabla de telemetría ---------- */
+.r2-telemetria { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--r2-line); }
+.r2-telemetria h2 { margin: 0 0 4px; font: 700 17px/1.4 var(--r2-ui); color: var(--r2-ink); }
+.r2-telemetria.r2-toca { padding: 14px; margin-inline: -14px; border-radius: 10px; box-shadow: 0 0 0 1px rgba(61, 250, 122, 0.35); }
+.r2-tabla-marco { overflow-x: auto; }
+.r2-tabla { width: 100%; border-collapse: collapse; font: 400 14px/1.3 var(--r2-mono); color: var(--r2-soft); }
+.r2-tabla th, .r2-tabla td { padding: 6px 8px; border-bottom: 1px solid var(--r2-line); text-align: right; white-space: nowrap; }
+.r2-tabla thead th { font: 600 12px/1.3 var(--r2-ui); color: var(--r2-mute); text-transform: none; vertical-align: bottom; white-space: normal; }
+.r2-tabla thead th:nth-child(-n+2) { text-align: left; }
+.r2-tabla tbody th { text-align: left; color: var(--r2-ink); font-weight: 600; }
+.r2-tabla td.r2-codigo { color: var(--r2-code); text-align: left; }
+.r2-tabla tbody tr:hover { background: rgba(61, 250, 122, 0.05); }
 
 /* ---------- Mesa de trabajo ---------- */
 .r2-mesa { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; align-items: start; }
@@ -166,7 +211,7 @@ body.r2-desbloqueo .r2-vineta { opacity: 0.35; transition: opacity 200ms; }
 @keyframes r2-toca { 50% { box-shadow: 0 0 0 1px rgba(61, 250, 122, 0.25), 0 0 8px rgba(61, 250, 122, 0.06); } }
 
 /* ---------- Teclas de operación con relieve y LED de la última usada ---------- */
-.r2-teclas { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-top: 20px; }
+.r2-teclas { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; margin-top: 20px; }
 .r2-tecla {
   position: relative; min-height: 56px; padding-top: 10px; border: 1px solid #2f4238; border-radius: 7px; background: #0c1410; color: var(--r2-ink);
   font: 600 13px var(--r2-mono); letter-spacing: 0.06em; cursor: pointer;
